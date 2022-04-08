@@ -1,10 +1,10 @@
 import xarray as xr
 
 from voto.data.db_session import initialise_database
-from voto.services.dive_service import add_glidermission
+from voto.services.profile_service import add_glidermission
 
 
-def add_all_dives():
+def add_all_profiles():
     file = '/home/callum/Documents/data-flow/comlete_data/mission_grid.nc'
     ds = xr.open_dataset(file)
     add_glidermission(ds)
@@ -12,4 +12,4 @@ def add_all_dives():
 
 if __name__ == '__main__':
     initialise_database()
-    add_all_dives()
+    add_all_profiles()

@@ -2,7 +2,7 @@ import mongoengine
 from datetime import datetime
 
 
-class Diveold(mongoengine.Document):
+class ProfileOld(mongoengine.Document):
     number = mongoengine.IntField(required=True)
     mission = mongoengine.IntField(required=True)
     glider = mongoengine.IntField(required=True)
@@ -11,7 +11,7 @@ class Diveold(mongoengine.Document):
     time = mongoengine.DateTimeField(default=datetime.now())
     meta = {
         'db_alias': 'core',
-        'collection': 'dives',
+        'collection': 'profile',
         'indexes': [
             'number',
             'mission',
@@ -20,7 +20,7 @@ class Diveold(mongoengine.Document):
     }
 
 
-class Dive(mongoengine.EmbeddedDocument):
+class Profile(mongoengine.EmbeddedDocument):
     number = mongoengine.IntField(required=True)
     mission = mongoengine.IntField(required=True)
     glider = mongoengine.IntField(required=True)
@@ -43,7 +43,7 @@ class GliderMission(mongoengine.Document):
     is_complete = mongoengine.BooleanField(default=False)
     last_modified = mongoengine.DateTimeField(default=datetime.now())
 
-    dives = mongoengine.EmbeddedDocumentListField(Dive)
+    profiles = mongoengine.EmbeddedDocumentListField(Profile)
 
     meta = {
         'db_alias': 'core',
