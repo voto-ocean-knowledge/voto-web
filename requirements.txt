@@ -1,3 +1,5 @@
 flask
 mongoengine
 werkzeug
+netcdf4
+xarray
