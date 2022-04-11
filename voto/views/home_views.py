@@ -9,4 +9,5 @@ blueprint = flask.Blueprint("home", __name__, template_folder="templates")
 @response(template_file="home/index.html")
 def index():
     vm = IndexViewModel()
+    vm.check_missions()
     return vm.to_dict()
