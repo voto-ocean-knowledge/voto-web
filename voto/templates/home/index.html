@@ -1,8 +1,53 @@
 {% extends "layout.html" %}
 
 {% block additional_css %}
+    <!-- JS and CSS for leaflet maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+        integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+        crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+        integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+        crossorigin=""></script>
+    <!-- Link to providers CSS and javascript for leaflet provider extension-->
+    <script src="http://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="static/js/leaflet-providers.js"></script>
     <title>homepage</title>
 {% endblock %}
+
 {% block main_content %}
-total profiles completed {{profile_count}}
+
+    total profiles completed {{profile_count}}
+
+    <div id="map" style="height: 800px; "></div>
+    <script>
+        // create map
+        var map = L.map('map').setView([56, 14], 7);
+
+        // A series of optional map layers. ortho has addTo(map) so is on by default
+        var gebco =  L.tileLayer.wms('https://www.gebco.net/data_and_products/gebco_web_services/2019/mapserv?', {
+            layers: 'GEBCO_2019_Grid',
+            attribution: 'GEBCO Compilation Group (2020)'})
+        var Stamen_Watercolor = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}', {
+	    attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+	    subdomains: 'abcd',  minZoom: 1, maxZoom: 16, ext: 'jpg'});
+        var orthofr = L.tileLayer.provider('GeoportailFrance.orthos').addTo(map);
+        var OpenStreetMap_Mapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+	        maxZoom: 19,
+	        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'});
+
+        // Add basemap layers to a layer group
+        var basemaps = {
+            Ortho: orthofr,
+            GEBCO: gebco,
+            watercolor: Stamen_Watercolor,
+            OSM: OpenStreetMap_Mapnik
+        };
+
+        // add controls to map
+        controlPanel = L.control.layers(basemaps);
+        controlPanel.addTo(map);
+
+    </script>
+
+
 {% endblock %}
