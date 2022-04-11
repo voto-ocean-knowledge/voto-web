@@ -10,5 +10,5 @@ def test_homepage_missions():
         r: Response = home_views.index()
 
     assert r.status_code == 200
-    assert b"completed" in r.data
+    assert b"profiles" in r.data
     # noinspection PyUnresolvedReferences
