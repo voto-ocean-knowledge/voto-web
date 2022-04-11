@@ -13,3 +13,11 @@ repos:
     rev: 3ce7615
     hooks:
     - id: flake8
+- repo: local
+  hooks:
+    - id: pytest-check
+      name: pytest-check
+      entry: pytest tests/_all_tests.py
+      language: system
+      pass_filenames: false
+      always_run: true
