@@ -38,6 +38,7 @@ class GliderMission(mongoengine.Document):
     wmo_id = mongoengine.IntField()
     is_complete = mongoengine.BooleanField(default=False)
     last_modified = mongoengine.DateTimeField(default=datetime.now())
+    total_profiles = mongoengine.IntField(default=0)
 
     profiles = mongoengine.EmbeddedDocumentListField(Profile)
 

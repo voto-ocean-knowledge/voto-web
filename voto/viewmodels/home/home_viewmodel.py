@@ -13,8 +13,7 @@ class IndexViewModel(ViewModelBase):
         self.profile_count = totals
 
     def check_missions(self):
-        gliders = [55]
-        missions = [33]
+        gliders, missions = profile_services.recent_glidermissions()
         glider_points_json = []
         glider_lines_json = []
         gliders_json = []
