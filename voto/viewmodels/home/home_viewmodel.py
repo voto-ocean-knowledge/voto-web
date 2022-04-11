@@ -7,4 +7,3 @@ class IndexViewModel(ViewModelBase):
         super().__init__()
         totals = profile_services.totals()
         self.profile_count = totals
-

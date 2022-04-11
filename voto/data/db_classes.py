@@ -10,13 +10,9 @@ class ProfileOld(mongoengine.Document):
     lat = mongoengine.FloatField()
     time = mongoengine.DateTimeField(default=datetime.now())
     meta = {
-        'db_alias': 'core',
-        'collection': 'profile',
-        'indexes': [
-            'number',
-            'mission',
-            'glider'
-        ]
+        "db_alias": "core",
+        "collection": "profile",
+        "indexes": ["number", "mission", "glider"],
     }
 
 
@@ -46,10 +42,10 @@ class GliderMission(mongoengine.Document):
     profiles = mongoengine.EmbeddedDocumentListField(Profile)
 
     meta = {
-        'db_alias': 'core',
-        'collection': 'glidermissions',
-        'indexes': [
-            'mission',
-            'glider',
-        ]
+        "db_alias": "core",
+        "collection": "glidermissions",
+        "indexes": [
+            "mission",
+            "glider",
+        ],
     }
