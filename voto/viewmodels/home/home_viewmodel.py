@@ -1,6 +1,6 @@
 from voto.services.json_conversion import glidermission_to_json, blank_json_dict
 from voto.viewmodels.shared.viewmodelbase import ViewModelBase
-import voto.services.profile_service as profile_service
+import voto.services.mission_service as profile_service
 
 
 class IndexViewModel(ViewModelBase):

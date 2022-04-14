@@ -1,7 +1,7 @@
 import xarray as xr
 from pathlib import Path
 from voto.data.db_session import initialise_database
-from voto.services.profile_service import add_glidermission
+from voto.services.mission_service import add_glidermission
 
 
 def add_all_profiles():
