@@ -6,14 +6,15 @@ blank_json_dict = {"type": "FeatureCollection", "features": []}
 def glidermission_to_json(glider, mission):
     mission = GliderMission.objects(glider=glider, mission=mission).first()
     profiles = mission.profiles
+    glider_fill = str(mission.glider).zfill(3)
     features = []
     coords = []
     dive_item = {}
     for i, profile in enumerate(profiles):
         coords.append([profile.lon, profile.lat])
         popup = (
-            f"SEA{profile.glider} Mission {profile.mission}<br>profile {profile.number}"
-            f"<br> {str(profile.time)[:16]}"
+            f"SEA{glider_fill}<br><a href='/SEA{mission.glider}/M{mission.mission}'> Mission {profile.mission}</a>"
+            f"<br>profile {profile.number}<br> {str(profile.time)[:16]}"
         )
         dive_item = {
             "geometry": {"type": "Point", "coordinates": [profile.lon, profile.lat]},
@@ -38,7 +39,8 @@ def glidermission_to_json(glider, mission):
                 "geometry": {"type": "LineString", "coordinates": coords},
                 "type": "Feature",
                 "properties": {
-                    "popupContent": f"SEA{mission.glider} Mission {mission.mission}",
+                    "popupContent": f"SEA{glider_fill}<br><a href='/SEA{mission.glider}/M{mission.mission}'>"
+                    f" Mission {mission.mission}</a>",
                     "gliderOrder": 0,
                 },
                 "id": 0,

@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+
+{% block additional_css %}
+    <title>Missions</title>
+{% endblock %}
+{% block main_content %}
+
+    <div class="container glider-list">
+
+        <h2>Missions</h2>
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">Glider </th>
+                <th scope="col">Mission</th>
+                <th scope="col">Location</th>
+                <th scope="col">Link</th>
+                <th scope="col"></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for m in glidermissions %}
+
+                <tr>
+                <td>SEA{{m.glider}}</td>
+                <td>{{m.mission}}</td>
+                <td>{{m.sea_name}}</td>
+                <td><a href="/SEA{{ m.glider }}/M{{m.mission}}" class="btn btn-primary" role="button">To mission</a></td>
+            {%  endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}

@@ -16,9 +16,13 @@
 
 {% block main_content %}
 
-    total profiles completed {{profile_count}}
+    <div class="container hero">
+        <h2 class="mt-4">Ocean Knowledge live locations</h2>
+        Our <strong>{{glider_count}}</strong> gliders have recorded <strong>{{ "{:,}".format(profile_count) }}</strong>
+        profiles and racked up <strong>{{total_time}}</strong> at sea
+    </div>
 
-    <div id="map" style="height: 800px; "></div>
+    <div id="map" style="height: 400px; "></div>
     <script>
 
         // geojson
@@ -41,7 +45,7 @@
 	    function popupText(feature, layer) {
 		    layer.bindPopup(feature.properties.popupContent);}
         // create map
-        var map = L.map('map').setView([57, 14], 7);
+        var map = L.map('map').setView([57, 14], 6);
 
         // A series of optional map layers. ortho has addTo(map) so is on by default
         var gebco =  L.tileLayer.wms('https://www.gebco.net/data_and_products/gebco_web_services/2019/mapserv?', {
@@ -86,6 +90,16 @@
         controlPanel.addTo(map);
 
     </script>
-
+    <div class="container current-missions">
+        <h2 class="mt-4">Near real time data</h2>
+      <div class="row mb-2">
+        <div class="col-lg-6 themed-grid-col"><img class="img-fluid" src={{map_0}}><br><img class="img-fluid" src={{combi_plot_0}}><br></div>
+        <div class="col-lg-6 themed-grid-col"><img class="img-fluid" src={{map_1}}><br><img class="img-fluid" src={{combi_plot_1}}><br></div>
+        <div class="col-lg-6 themed-grid-col"><img class="img-fluid" src={{map_2}}><br><img class="img-fluid" src={{combi_plot_2}}><br></div>
+        <div class="col-lg-6 themed-grid-col"><img class="img-fluid" src={{map_3}}><br><img class="img-fluid" src={{combi_plot_3}}><br></div>
+        <div class="col-lg-6 themed-grid-col"><img class="img-fluid" src={{map_4}}><br><img class="img-fluid" src={{combi_plot_4}}><br></div>
+        <div class="col-lg-6 themed-grid-col"><img class="img-fluid" src={{map_5}}><br><img class="img-fluid" src={{combi_plot_5}}><br></div>
+        </div>
+    </div>
 
 {% endblock %}

@@ -23,6 +23,7 @@ def add_glidermission(ds, total_profiles=None):
     times = ds.time.values
     mission.start = datetime.datetime.utcfromtimestamp(times[0].tolist() / 1e9)
     mission.end = datetime.datetime.utcfromtimestamp(times[-1].tolist() / 1e9)
+    mission.sea_name = attrs["sea_name"]
 
     i = 0
     for i in range(len(profiles)):
@@ -44,10 +45,22 @@ def add_glidermission(ds, total_profiles=None):
 def totals():
     missions = GliderMission.objects()
     total_profiles = 0
+    gliders = []
+    total_time = datetime.timedelta(seconds=0)
     for mission in missions:
         profiles = mission.total_profiles
+        gliders.append(mission.glider)
         total_profiles += profiles
-    return total_profiles
+        mission_time = mission.end - mission.start
+        total_time += mission_time
+
+    num_gliders = len(set(gliders))
+    seconds = total_time.total_seconds()
+    if seconds > 365 * 24 * 60 * 60:
+        time_str = f"{int(seconds // (365 * 24 * 60 * 60))} years {int(seconds // 24 * 60 * 60)} days"
+    else:
+        time_str = f"{int(seconds // (24 * 60 * 60))} days"
+    return total_profiles, num_gliders, time_str
 
 
 def recent_glidermissions(timespan=datetime.timedelta(days=14)):
@@ -60,3 +73,8 @@ def recent_glidermissions(timespan=datetime.timedelta(days=14)):
             recent_gliders.append(mission.glider)
             recent_missions.append(mission.mission)
     return recent_gliders, recent_missions
+
+
+def select_glidermission(glider, mission):
+    mission_obj = GliderMission.objects(glider=glider, mission=mission).first()
+    return mission_obj
