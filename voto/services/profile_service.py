@@ -72,3 +72,8 @@ def recent_glidermissions(timespan=datetime.timedelta(days=14)):
             recent_gliders.append(mission.glider)
             recent_missions.append(mission.mission)
     return recent_gliders, recent_missions
+
+
+def select_glidermission(glider, mission):
+    mission_obj = GliderMission.objects(glider=glider, mission=mission).first()
+    return mission_obj
