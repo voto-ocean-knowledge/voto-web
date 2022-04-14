@@ -16,7 +16,11 @@
 
 {% block main_content %}
 
-    Our {{glider_count}} gliders have recorded {{ "{:,}".format(profile_count) }} profiles and racked up {{total_time}} at sea
+    <div class="container hero">
+        <h2 class="mt-4">Ocean Knowledge live locations</h2>
+        Our <strong>{{glider_count}}</strong> gliders have recorded <strong>{{ "{:,}".format(profile_count) }}</strong>
+        profiles and racked up <strong>{{total_time}}</strong> at sea
+    </div>
 
     <div id="map" style="height: 800px; "></div>
     <script>
