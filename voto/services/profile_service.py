@@ -23,6 +23,7 @@ def add_glidermission(ds, total_profiles=None):
     times = ds.time.values
     mission.start = datetime.datetime.utcfromtimestamp(times[0].tolist() / 1e9)
     mission.end = datetime.datetime.utcfromtimestamp(times[-1].tolist() / 1e9)
+    mission.sea_name = attrs["sea_name"]
 
     i = 0
     for i in range(len(profiles)):
