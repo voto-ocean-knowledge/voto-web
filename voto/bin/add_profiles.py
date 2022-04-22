@@ -2,6 +2,7 @@ import xarray as xr
 from pathlib import Path
 from voto.data.db_session import initialise_database
 from voto.services.mission_service import add_glidermission
+from voto.services.platform_service import update_glider
 
 
 def add_all_profiles():
@@ -17,7 +18,8 @@ def add_all_profiles():
                 continue
         max_profile = 2 * max(dive_nums)
         ds = xr.open_dataset(file)
-        add_glidermission(ds, total_profiles=max_profile)
+        mission = add_glidermission(ds, total_profiles=max_profile)
+        update_glider(mission)
 
 
 if __name__ == "__main__":

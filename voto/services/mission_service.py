@@ -40,6 +40,7 @@ def add_glidermission(ds, total_profiles=None):
     else:
         mission.total_profiles = i
     mission.save()
+    return mission
 
 
 def totals():
