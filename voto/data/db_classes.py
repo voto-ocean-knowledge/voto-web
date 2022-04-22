@@ -2,17 +2,17 @@ import mongoengine
 from datetime import datetime
 
 
-class ProfileOld(mongoengine.Document):
-    number = mongoengine.IntField(required=True)
-    mission = mongoengine.IntField(required=True)
+class Glider(mongoengine.Document):
     glider = mongoengine.IntField(required=True)
-    lon = mongoengine.FloatField()
-    lat = mongoengine.FloatField()
-    time = mongoengine.DateTimeField(default=datetime.now())
+    name = mongoengine.StringField(required=True)
+    missions = mongoengine.ListField(default=[])
+    total_profiles = mongoengine.IntField(default=0)
+    total_seconds = mongoengine.IntField(default=0)
+    active = mongoengine.BooleanField(default=False)
     meta = {
         "db_alias": "core",
-        "collection": "profile",
-        "indexes": ["number", "mission", "glider"],
+        "collection": "gliders",
+        "indexes": ["glider"],
     }
 
 
