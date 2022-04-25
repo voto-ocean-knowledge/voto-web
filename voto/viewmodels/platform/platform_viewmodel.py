@@ -13,4 +13,4 @@ class GliderViewModel(ViewModelBase):
         self.glider_fill = str(glider_num).zfill(3)
 
     def validate(self):
-        self.glider = Glider.objects(glider=self.glider_num)
+        self.glider = Glider.objects(glider=self.glider_num).first()

@@ -7,8 +7,15 @@ def add_glidermission(ds, total_profiles=None):
     ds: dataset loaded from gridded netcdf output by pyglider
     num_profiles: optionally specify total number of dives
     """
+    GliderMission.objects()
     mission = GliderMission()
     attrs = ds.attrs
+    # delete the mission if it already exists
+    old_mission = GliderMission.objects(
+        glider=int(attrs["glider_serial"]), mission=int(attrs["deployment_id"])
+    ).first()
+    if old_mission:
+        old_mission.delete()
     mission.mission = int(attrs["deployment_id"])
     mission.glider = int(attrs["glider_serial"])
     mission.lon_min = attrs["geospatial_lon_min"]
@@ -57,10 +64,13 @@ def totals():
 
     num_gliders = len(set(gliders))
     seconds = total_time.total_seconds()
-    if seconds > 365 * 24 * 60 * 60:
-        time_str = f"{int(seconds // (365 * 24 * 60 * 60))} years {int(seconds // 24 * 60 * 60)} days"
+    total_days = int(seconds / (24 * 60 * 60))
+    years = total_days // 365
+    days = total_days - (365 * years)
+    if years:
+        time_str = f"{years} years {days} days"
     else:
-        time_str = f"{int(seconds // (24 * 60 * 60))} days"
+        time_str = f"{days} days"
     return total_profiles, num_gliders, time_str
 
 
