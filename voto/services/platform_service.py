@@ -26,9 +26,8 @@ def glider_calc_totals(glider):
         return glider
     total_profiles = 0
     total_seconds = 0
-    glider.active = False
     # set a time sufficiently in the past to not count as an active mission
-    most_recent = datetime.datetime.now() - datetime.timedelta(days=365)
+    most_recent = datetime.datetime.now() - datetime.timedelta(days=3650)
     for mission_num in glider.missions:
         mission = GliderMission.objects(
             glider=glider.glider, mission=mission_num
@@ -38,9 +37,6 @@ def glider_calc_totals(glider):
         most_recent = max((most_recent, mission.end))
     glider.total_profiles = total_profiles
     glider.total_seconds = total_seconds
-    # If a mission ended recently (on in the future) the glider is active
-    if datetime.datetime.now() - most_recent < datetime.timedelta(days=7):
-        glider.active = True
     glider.save()
     return glider
 
@@ -62,3 +58,8 @@ def update_glider(mission):
     glider.missions = [mission.mission]
     glider = glider_calc_totals(glider)
     return glider
+
+
+def select_glider(glider):
+    glider_obj = Glider.objects(glider=glider).first()
+    return glider_obj

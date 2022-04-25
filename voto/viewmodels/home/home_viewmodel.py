@@ -1,6 +1,6 @@
 from voto.services.json_conversion import glidermission_to_json, blank_json_dict
 from voto.viewmodels.shared.viewmodelbase import ViewModelBase
-import voto.services.mission_service as profile_service
+import voto.services.mission_service as mission_service
 
 
 class IndexViewModel(ViewModelBase):
@@ -13,10 +13,10 @@ class IndexViewModel(ViewModelBase):
             self.profile_count,
             self.glider_count,
             self.total_time,
-        ) = profile_service.totals()
+        ) = mission_service.totals()
 
     def check_missions(self):
-        gliders, missions = profile_service.recent_glidermissions()
+        gliders, missions = mission_service.recent_glidermissions()
         glider_points_json = []
         glider_lines_json = []
         gliders_json = []
@@ -25,8 +25,6 @@ class IndexViewModel(ViewModelBase):
             glider_points_json.append(point_json)
             glider_lines_json.append(line_json)
             gliders_json.append(glider_dict)
-            self.glidermission = profile_service.select_glidermission(glider, mission)
-            self.glider_fill = str(glider).zfill(3)
             self.__setattr__(
                 f"combi_plot_{i}",
                 f"/static/img/glider/nrt/SEA{glider}/M{mission}/SEA{glider}_M{mission}.png",

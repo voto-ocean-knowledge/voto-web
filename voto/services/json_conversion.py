@@ -1,4 +1,5 @@
 from voto.data.db_classes import GliderMission
+from voto.services.platform_service import select_glider
 
 blank_json_dict = {"type": "FeatureCollection", "features": []}
 
@@ -6,14 +7,17 @@ blank_json_dict = {"type": "FeatureCollection", "features": []}
 def glidermission_to_json(glider, mission):
     mission = GliderMission.objects(glider=glider, mission=mission).first()
     profiles = mission.profiles
+    glider = select_glider(mission.glider)
     glider_fill = str(mission.glider).zfill(3)
+    name = glider.name
     features = []
     coords = []
     dive_item = {}
     for i, profile in enumerate(profiles):
         coords.append([profile.lon, profile.lat])
         popup = (
-            f"SEA{glider_fill}<br><a href='/SEA{mission.glider}/M{mission.mission}'> Mission {profile.mission}</a>"
+            f"<a href='/fleet/SEA{mission.glider}'>SEA{glider_fill} {name}</a><br>"
+            f"<a href='/SEA{mission.glider}/M{mission.mission}'> Mission {profile.mission}</a>"
             f"<br>profile {profile.number}<br> {str(profile.time)[:16]}"
         )
         dive_item = {

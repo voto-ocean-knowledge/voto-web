@@ -8,7 +8,6 @@ class Glider(mongoengine.Document):
     missions = mongoengine.ListField(default=[])
     total_profiles = mongoengine.IntField(default=0)
     total_seconds = mongoengine.IntField(default=0)
-    active = mongoengine.BooleanField(default=False)
     meta = {
         "db_alias": "core",
         "collection": "gliders",
