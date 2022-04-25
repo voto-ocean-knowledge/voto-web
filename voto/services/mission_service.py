@@ -1,4 +1,5 @@
 import datetime
+import numpy as np
 from voto.data.db_classes import Profile, GliderMission
 from voto.services.utility_functions import seconds_to_pretty
 
@@ -34,6 +35,10 @@ def add_glidermission(ds, total_profiles=None, mission_complete=False):
     lons = ds.longitude.values
     lats = ds.latitude.values
     times = ds.time.values
+    depth_grid = np.tile(ds.depth, (len(ds.time), 1)).T
+    depth_grid[np.isnan(ds.pressure)] = np.nan
+    max_depths = np.nanmax(depth_grid, 0)
+    total_depth = 0
     mission.start = datetime.datetime.utcfromtimestamp(times[0].tolist() / 1e9)
     mission.end = datetime.datetime.utcfromtimestamp(times[-1].tolist() / 1e9)
     mission.sea_name = attrs["sea_name"]
@@ -47,11 +52,16 @@ def add_glidermission(ds, total_profiles=None, mission_complete=False):
         profile.lon = lons[i]
         profile.lat = lats[i]
         profile.time = datetime.datetime.utcfromtimestamp(times[i].tolist() / 1e9)
+        profile.max_depth = max_depths[i]
         mission.profiles.append(profile)
+        total_depth += max_depths[i]
     if total_profiles:
         mission.total_profiles = total_profiles
+        # hack to approximate total depth from subset of dives
+        total_depth = total_depth * (total_profiles / i)
     else:
         mission.total_profiles = i
+    mission.total_depth = total_depth
     mission.save()
     return mission
 

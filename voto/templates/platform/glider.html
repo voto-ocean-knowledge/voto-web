@@ -6,6 +6,8 @@
 {% block main_content %}
     <div class="container mission-summary">
         <h2 class="mt-4">SEA{{glider_fill}}</h2>
-        <p>This is a glider
+        <p>This glider has completed {{total_missions}} missions during {{pretty_time}}.
+            It has completed {{glider.total_profiles}} vertical profiles, covering a total vertical distance of {{ "{:,}".format(glider.total_depth) }} m.
+            Equivalent to diving to the deepest part of the ocean and back {{marianas}} times.
     </div>
 {% endblock %}

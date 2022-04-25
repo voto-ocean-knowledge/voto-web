@@ -8,6 +8,7 @@ class Glider(mongoengine.Document):
     missions = mongoengine.ListField(default=[])
     total_profiles = mongoengine.IntField(default=0)
     total_seconds = mongoengine.IntField(default=0)
+    total_depth = mongoengine.IntField(default=0)
     meta = {
         "db_alias": "core",
         "collection": "gliders",
@@ -22,6 +23,7 @@ class Profile(mongoengine.EmbeddedDocument):
     lon = mongoengine.FloatField()
     lat = mongoengine.FloatField()
     time = mongoengine.DateTimeField(default=datetime.now())
+    max_depth = mongoengine.FloatField()
 
 
 class GliderMission(mongoengine.Document):
@@ -38,6 +40,7 @@ class GliderMission(mongoengine.Document):
     is_complete = mongoengine.BooleanField(default=False)
     last_modified = mongoengine.DateTimeField(default=datetime.now())
     total_profiles = mongoengine.IntField(default=0)
+    total_depth = mongoengine.IntField(default=0)
 
     profiles = mongoengine.EmbeddedDocumentListField(Profile)
 

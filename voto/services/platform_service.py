@@ -26,6 +26,7 @@ def glider_calc_totals(glider):
         return glider
     total_profiles = 0
     total_seconds = 0
+    total_depth = 0
     # set a time sufficiently in the past to not count as an active mission
     most_recent = datetime.datetime.now() - datetime.timedelta(days=3650)
     for mission_num in glider.missions:
@@ -34,9 +35,11 @@ def glider_calc_totals(glider):
         ).first()
         total_profiles += mission.total_profiles
         total_seconds += (mission.end - mission.start).total_seconds()
+        total_depth += mission.total_depth
         most_recent = max((most_recent, mission.end))
     glider.total_profiles = total_profiles
     glider.total_seconds = total_seconds
+    glider.total_depth = total_depth
     glider.save()
     return glider
 

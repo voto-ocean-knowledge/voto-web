@@ -19,3 +19,6 @@ class GliderViewModel(ViewModelBase):
 
     def validate(self):
         self.glider = Glider.objects(glider=self.glider_num).first()
+        self.total_missions = len(self.glider.missions)
+        self.pretty_time = seconds_to_pretty(self.glider.total_seconds)
+        self.marianas = round(self.glider.total_depth / 21968, 1)
