@@ -1,7 +1,10 @@
 import datetime
 import numpy as np
+import logging
 from voto.data.db_classes import Profile, GliderMission
 from voto.services.utility_functions import seconds_to_pretty
+
+_log = logging.getLogger(__name__)
 
 
 def add_glidermission(ds, total_profiles=None, mission_complete=False):
@@ -20,8 +23,13 @@ def add_glidermission(ds, total_profiles=None, mission_complete=False):
     # If mission haas already been completed, do not replace with NRT data
     if old_mission:
         if not mission_complete and old_mission.is_complete:
+            _log.warning(
+                f"Attempted overwrite of misson SEA{old_mission.glider} M{old_mission.mission} "
+                f"with NRT data. Blocked"
+            )
             return old_mission
     if old_mission:
+        _log.info(f"Delete mission SEA{old_mission.glider} M{old_mission.mission}")
         old_mission.delete()
     mission.mission = int(attrs["deployment_id"])
     mission.glider = int(attrs["glider_serial"])
@@ -63,6 +71,7 @@ def add_glidermission(ds, total_profiles=None, mission_complete=False):
         mission.total_profiles = i
     mission.total_depth = total_depth
     mission.save()
+    _log.info(f"Add mission SEA{mission.glider} M{mission.mission}")
     return mission
 
 

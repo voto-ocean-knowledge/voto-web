@@ -3,6 +3,9 @@ import json
 import os
 import sys
 import datetime
+import logging
+
+_log = logging.getLogger(__name__)
 
 folder = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, folder)
@@ -53,6 +56,7 @@ def update_glider(mission):
         Glider.objects(glider=mission.glider).update(
             add_to_set__missions=mission.mission
         )
+        _log.info(f"Add mission {mission.mission} to SEA{mission.glider}")
         glider = glider_calc_totals(glider)
         return glider
     glider = Glider()
@@ -60,6 +64,7 @@ def update_glider(mission):
     glider.name = glider_name_lookup(mission.glider)
     glider.missions = [mission.mission]
     glider = glider_calc_totals(glider)
+    _log.info(f"Add glider SEA{mission.glider}")
     return glider
 
 

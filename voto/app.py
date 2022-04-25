@@ -1,5 +1,6 @@
 import os
 import sys
+import logging
 from flask import Flask
 
 folder = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -34,6 +35,13 @@ def register_blueprints():
 
 
 if __name__ == "__main__":
+    logging.basicConfig(
+        filename=f"{folder}/voto.log",
+        filemode="a",
+        format="%(asctime)s %(levelname)-8s %(message)s",
+        level=logging.INFO,
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
     main()
 else:
     configure()

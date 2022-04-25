@@ -1,8 +1,12 @@
 import xarray as xr
 from pathlib import Path
+import logging
+import os
 from voto.data.db_session import initialise_database
 from voto.services.mission_service import add_glidermission
 from voto.services.platform_service import update_glider
+
+folder = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
 
 def add_all_profiles():
@@ -23,5 +27,12 @@ def add_all_profiles():
 
 
 if __name__ == "__main__":
+    logging.basicConfig(
+        filename=f"{folder}/voto_add_data.log",
+        filemode="a",
+        format="%(asctime)s %(levelname)-8s %(message)s",
+        level=logging.INFO,
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
     initialise_database()
     add_all_profiles()
