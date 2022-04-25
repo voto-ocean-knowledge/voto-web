@@ -3,10 +3,11 @@ from voto.data.db_classes import Profile, GliderMission
 from voto.services.utility_functions import seconds_to_pretty
 
 
-def add_glidermission(ds, total_profiles=None):
+def add_glidermission(ds, total_profiles=None, mission_complete=False):
     """
     ds: dataset loaded from gridded netcdf output by pyglider
     num_profiles: optionally specify total number of dives
+    mission_complete: True if using a completed mission ds, False if nrt (default)
     """
     GliderMission.objects()
     mission = GliderMission()
@@ -15,6 +16,10 @@ def add_glidermission(ds, total_profiles=None):
     old_mission = GliderMission.objects(
         glider=int(attrs["glider_serial"]), mission=int(attrs["deployment_id"])
     ).first()
+    # If mission haas already been completed, do not replace with NRT data
+    if old_mission:
+        if not mission_complete and old_mission.is_complete:
+            return old_mission
     if old_mission:
         old_mission.delete()
     mission.mission = int(attrs["deployment_id"])
