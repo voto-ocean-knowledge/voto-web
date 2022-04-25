@@ -1,10 +1,15 @@
 from voto.data.db_classes import Glider
+from voto.services.utility_functions import seconds_to_pretty
 from voto.viewmodels.shared.viewmodelbase import ViewModelBase
 
 
 class PlatformListViewModel(ViewModelBase):
     def __init__(self):
-        self.gliders = Glider.objects()
+        gliders = Glider.objects()
+        for glider in gliders:
+            glider.glider_fill = str(glider.glider).zfill(3)
+            glider.pretty_time = seconds_to_pretty(glider.total_seconds)
+        self.gliders = gliders
 
 
 class GliderViewModel(ViewModelBase):

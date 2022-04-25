@@ -34,7 +34,7 @@ def glider_calc_totals(glider):
             glider=glider.glider, mission=mission_num
         ).first()
         total_profiles += mission.total_profiles
-        total_seconds += (mission.end - mission.start).seconds
+        total_seconds += (mission.end - mission.start).total_seconds()
         most_recent = max((most_recent, mission.end))
     glider.total_profiles = total_profiles
     glider.total_seconds = total_seconds

@@ -1,5 +1,6 @@
 import datetime
 from voto.data.db_classes import Profile, GliderMission
+from voto.services.utility_functions import seconds_to_pretty
 
 
 def add_glidermission(ds, total_profiles=None):
@@ -61,16 +62,9 @@ def totals():
         total_profiles += profiles
         mission_time = mission.end - mission.start
         total_time += mission_time
-
     num_gliders = len(set(gliders))
     seconds = total_time.total_seconds()
-    total_days = int(seconds / (24 * 60 * 60))
-    years = total_days // 365
-    days = total_days - (365 * years)
-    if years:
-        time_str = f"{years} years {days} days"
-    else:
-        time_str = f"{days} days"
+    time_str = seconds_to_pretty(seconds)
     return total_profiles, num_gliders, time_str
 
 
