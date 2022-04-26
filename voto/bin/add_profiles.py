@@ -24,6 +24,14 @@ def add_all_profiles():
         ds = xr.open_dataset(file)
         mission = add_glidermission(ds, total_profiles=max_profile)
         update_glider(mission)
+    full_dir = Path(
+        "/home/callum/Documents/data-flow/comlete_data/data/data_l0_pyglider/complete_mission"
+    )
+    full_ncs = list(full_dir.rglob("*gridfiles/*.nc"))
+    for file in full_ncs:
+        ds = xr.open_dataset(file)
+        mission = add_glidermission(ds, mission_complete=True)
+        update_glider(mission)
 
 
 if __name__ == "__main__":

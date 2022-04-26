@@ -70,8 +70,12 @@ def add_glidermission(ds, total_profiles=None, mission_complete=False):
     else:
         mission.total_profiles = i
     mission.total_depth = total_depth
+    if mission_complete:
+        mission.is_complete = True
     mission.save()
-    _log.info(f"Add mission SEA{mission.glider} M{mission.mission}")
+    _log.info(
+        f"Add mission SEA{mission.glider} M{mission.mission} (complete: {mission_complete})"
+    )
     return mission
 
 

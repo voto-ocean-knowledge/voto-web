@@ -34,8 +34,15 @@ class GliderMissionViewModel(ViewModelBase):
         )
         self.start_date = str(self.glidermission.start)[:10]
         self.end_date = str(self.glidermission.end)[:10]
+        if self.glidermission.is_complete:
+            img_type = "complete_mission"
+        else:
+            img_type = "nrt"
         self.combi_plot = (
-            f"/static/img/glider/nrt/SEA{self.glider}/M{self.mission}"
+            f"/static/img/glider/{img_type}/SEA{self.glider}/M{self.mission}"
             f"/SEA{self.glider}_M{self.mission}.png"
         )
-        self.map = f"/static/img/glider/nrt/SEA{self.glider}/M{self.mission}/SEA{self.glider}_M{self.mission}_map.png"
+        self.map = (
+            f"/static/img/glider/{img_type}/SEA{self.glider}/"
+            f"M{self.mission}/SEA{self.glider}_M{self.mission}_map.png "
+        )
