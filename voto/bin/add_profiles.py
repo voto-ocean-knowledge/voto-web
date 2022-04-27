@@ -9,7 +9,7 @@ from voto.services.platform_service import update_glider
 folder = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
 
-def add_all_profiles():
+def add_nrt_profiles():
     in_dir = Path("/home/callum/Documents/data-flow/nrt_data")
     ncs = list(in_dir.rglob("*gridfiles/*.nc"))
     for file in ncs:
@@ -24,6 +24,9 @@ def add_all_profiles():
         ds = xr.open_dataset(file)
         mission = add_glidermission(ds, total_profiles=max_profile)
         update_glider(mission)
+
+
+def add_complete_profiles():
     full_dir = Path(
         "/home/callum/Documents/data-flow/comlete_data/data/data_l0_pyglider/complete_mission"
     )
@@ -43,4 +46,4 @@ if __name__ == "__main__":
         datefmt="%Y-%m-%d %H:%M:%S",
     )
     initialise_database()
-    add_all_profiles()
+    add_nrt_profiles()

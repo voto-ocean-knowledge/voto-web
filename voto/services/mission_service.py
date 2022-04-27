@@ -50,8 +50,10 @@ def add_glidermission(ds, total_profiles=None, mission_complete=False):
     mission.start = datetime.datetime.utcfromtimestamp(times[0].tolist() / 1e9)
     mission.end = datetime.datetime.utcfromtimestamp(times[-1].tolist() / 1e9)
     mission.sea_name = attrs["sea_name"]
+    mission.profiles = list(profiles)
 
     i = 0
+    profile_objs = []
     for i in range(len(profiles)):
         profile = Profile()
         profile.mission = mission.mission
@@ -61,8 +63,16 @@ def add_glidermission(ds, total_profiles=None, mission_complete=False):
         profile.lat = lats[i]
         profile.time = datetime.datetime.utcfromtimestamp(times[i].tolist() / 1e9)
         profile.max_depth = max_depths[i]
-        mission.profiles.append(profile)
+        profile_objs.append(profile)
         total_depth += max_depths[i]
+    _log.info(f"Add profiles from SEA{mission.glider} M{mission.mission}")
+    # Need to save profiles to DB to get their object IDs
+    Profile.objects().insert(profile_objs, load_bulk=True)
+    # Get the profile object IDs to pass to the mission
+    profile_ids = Profile.objects.filter(
+        glider=mission.glider, mission=mission.mission
+    ).scalar("id")
+    mission.profile_ids = profile_ids
     if total_profiles:
         mission.total_profiles = total_profiles
         # hack to approximate total depth from subset of dives
@@ -111,3 +121,10 @@ def recent_glidermissions(timespan=datetime.timedelta(days=14)):
 def select_glidermission(glider, mission):
     mission_obj = GliderMission.objects(glider=glider, mission=mission).first()
     return mission_obj
+
+
+def profiles_from_mission(glidermission):
+    profiles = Profile.objects(
+        mission=glidermission.mission, glider=glidermission.glider
+    ).order_by("number")
+    return profiles

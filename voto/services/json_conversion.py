@@ -1,4 +1,5 @@
 from voto.data.db_classes import GliderMission
+from voto.services.mission_service import profiles_from_mission
 from voto.services.platform_service import select_glider
 
 blank_json_dict = {"type": "FeatureCollection", "features": []}
@@ -6,7 +7,7 @@ blank_json_dict = {"type": "FeatureCollection", "features": []}
 
 def glidermission_to_json(glider, mission):
     mission = GliderMission.objects(glider=glider, mission=mission).first()
-    profiles = mission.profiles
+    profiles = profiles_from_mission(mission)
     glider = select_glider(mission.glider)
     glider_fill = str(mission.glider).zfill(3)
     name = glider.name
