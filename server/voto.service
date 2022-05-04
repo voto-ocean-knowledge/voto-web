@@ -1,0 +1,15 @@
+[Unit]
+Description=uWSGI voto server instance
+After=syslog.target
+
+[Service]
+ExecStart=/app/voto/venv/bin/uwsgi -H /app/voto/venv --master --processes 4 --threads 2 --http :5000 --manage-script-name --python-path /app/voto --mount /=wsgi:app
+RuntimeDirectory=/app/voto/
+Restart=always
+KillSignal=SIGQUIT
+Type=notify
+StandardError=syslog
+NotifyAccess=all
+
+[Install]
+WantedBy=multi-user.target
