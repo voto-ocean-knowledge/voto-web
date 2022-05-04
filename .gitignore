@@ -141,3 +141,4 @@ output
 
 itgc/static/img/tiles/
 voto/static/img/glider/
+mongo_secrets.json
