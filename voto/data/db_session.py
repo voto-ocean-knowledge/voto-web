@@ -14,6 +14,7 @@ def initialise_database(user=None, password=None, port=27017, server="localhost"
             authentication_source="admin",
             authentication_mechanism="SCRAM-SHA-1",
             dbname="glider",
+            connect=False,
         )
         mongoengine.connect(
             host=f"mongodb://{data['username']}:{data['password']}@{data['host']}:{data['port']}/{data['dbname']}"
