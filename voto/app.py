@@ -49,7 +49,7 @@ def register_blueprints():
 
 if __name__ == "__main__":
     logging.basicConfig(
-        filename=f"{folder}/voto.log",
+        filename=f"{secrets['log_dir']}/voto.log",
         filemode="a",
         format="%(asctime)s %(levelname)-8s %(message)s",
         level=logging.INFO,

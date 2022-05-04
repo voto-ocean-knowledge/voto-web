@@ -54,7 +54,7 @@ if __name__ == "__main__":
         "directory", type=str, help="Absolute path to the directory of processd files"
     )
     logging.basicConfig(
-        filename=f"{folder}/voto_add_data.log",
+        filename=f"{secrets['log_dir']}/voto_add_data.log",
         filemode="a",
         format="%(asctime)s %(levelname)-8s %(message)s",
         level=logging.INFO,
