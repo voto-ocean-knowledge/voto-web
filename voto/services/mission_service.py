@@ -118,6 +118,13 @@ def get_missions_df():
     return df
 
 
+def get_profiles_df():
+    profiles = Profile.objects().as_pymongo()
+    df = pd.DataFrame(list(profiles))
+    df.to_csv("profiles.csv")
+    return df
+
+
 def recent_glidermissions(timespan=datetime.timedelta(days=14)):
     missions = GliderMission.objects()
     recent_gliders = []

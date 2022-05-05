@@ -7,10 +7,14 @@ from matplotlib.patches import Patch
 import datetime
 import pandas as pd
 import numpy as np
+from pyproj import Transformer
+import cartopy.crs as ccrs
+import cartopy
+from matplotlib.colors import LogNorm
 
 folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 sys.path.insert(0, folder)
-from voto.services.mission_service import get_missions_df
+from voto.services.mission_service import get_missions_df, get_profiles_df
 from voto.data.db_session import initialise_database
 from voto.data.db_classes import Stat
 
@@ -98,6 +102,43 @@ def glider_uptime(df):
         stat.save()
 
 
+def coverage(df):
+    coasts_10m = cartopy.feature.NaturalEarthFeature(
+        name="land", category="physical", scale="50m", edgecolor="0.5", facecolor="0.8"
+    )
+    trans_to_m = Transformer.from_crs("EPSG:4326", "+proj=utm +zone=33", always_xy=True)
+    trans_to_m.transform(df.lon.min() - 1, df.lat.min() - 1)
+    df["x"], df["y"] = trans_to_m.transform(df.lon, df.lat)
+    step = 10 * 1000  # 10 km gridsize
+    x_grid = np.arange(df.x.min() - step, df.x.max() + 2 * step, step)
+    y_grid = np.arange(df.y.min() - step, df.y.max() + 2 * step, step)
+    profile_grid = np.empty((len(x_grid), len(y_grid)))
+    profile_grid[:] = np.nan
+    for i, x in enumerate(x_grid):
+        for j, y in enumerate(y_grid):
+            df_ne = df[np.logical_and(df.x > x, df.y > y)]
+            df_in = df_ne[np.logical_and(df_ne.x < x + step, df_ne.y < y + step)]
+            profile_grid[i, j] = len(df_in)
+    profile_grid[profile_grid < 5] = np.nan
+    profile_grid = profile_grid.T
+
+    fig = plt.figure(figsize=(6, 8))
+    ax = plt.axes(projection=ccrs.UTM(zone=33))
+    ax.gridlines()
+    ax.set_extent([9, 20, 54, 59], crs=ccrs.PlateCarree())
+    ax.add_feature(coasts_10m)
+    pcol = ax.pcolor(
+        x_grid,
+        y_grid,
+        profile_grid,
+        norm=LogNorm(vmin=1, vmax=profile_grid[~np.isnan(profile_grid)].max()),
+        cmap="Blues",
+    )
+    fig.colorbar(ax=ax, mappable=pcol, shrink=0.5)
+    ax.set_title("Profiles per 10 km square")
+    fig.savefig(f"{folder}/voto/static/img/glider/coverage")
+
+
 if __name__ == "__main__":
     logging.basicConfig(
         filename=f"{secrets['log_dir']}/voto_stats_data.log",
@@ -115,3 +156,5 @@ if __name__ == "__main__":
     mission_df = get_missions_df()
     gantt_plot(mission_df)
     glider_uptime(mission_df)
+    profiles_df = get_profiles_df()
+    coverage(profiles_df)
