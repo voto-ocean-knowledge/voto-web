@@ -62,7 +62,7 @@ class GliderMission(mongoengine.Document):
 
 class Stat(mongoengine.Document):
     name = mongoengine.StringField(required=True)
-    value = mongoengine.FloatField(required=True)
+    value = mongoengine.DictField(required=True)
     meta = {
         "db_alias": "core",
         "collection": "stats",

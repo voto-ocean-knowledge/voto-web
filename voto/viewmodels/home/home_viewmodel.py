@@ -37,3 +37,16 @@ class IndexViewModel(ViewModelBase):
         self.glider_points = glider_points_json
         self.glider_lines = glider_lines_json
         self.gliders = gliders_json
+
+
+class StatsViewModel(ViewModelBase):
+    def __init__(self):
+        super().__init__()
+        self.stats = mission_service.get_stats("glider_uptime")
+        stats_pretty = {}
+        for name, val in self.stats.items():
+            if val < 1:
+                val = val * 100
+
+            stats_pretty[name] = str(val.__round__(1))
+        self.stats_pretty = stats_pretty

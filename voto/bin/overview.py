@@ -90,16 +90,18 @@ def glider_uptime(df):
             "glider_deployed": up_total,
             "glider_in_baltic": up_baltic,
             "glider_in_skaggerak": up_skag,
-            "glider_in_both": gliderin,
+            "num_glider_in_both": gliderin,
         }
     )
     df_uptime.index = df_uptime.hours
     df_uptime.drop(["hours"], axis=1, inplace=True)
     df_uptime["both"] = df_uptime.glider_in_baltic * df_uptime.glider_in_skaggerak
     up_stats = df_uptime.sum() / len(df_uptime)
+    up_dict = {}
     for name, value in zip(up_stats.index, up_stats.values):
-        stat = Stat(name=name, value=value)
-        stat.save()
+        up_dict[name] = value
+    stat = Stat(name="glider_uptime", value=up_dict)
+    stat.save()
 
 
 def coverage(df):

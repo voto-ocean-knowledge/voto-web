@@ -2,7 +2,7 @@ import datetime
 import numpy as np
 import pandas as pd
 import logging
-from voto.data.db_classes import Profile, GliderMission
+from voto.data.db_classes import Profile, GliderMission, Stat
 from voto.services.utility_functions import seconds_to_pretty
 
 _log = logging.getLogger(__name__)
@@ -121,7 +121,6 @@ def get_missions_df():
 def get_profiles_df():
     profiles = Profile.objects().as_pymongo()
     df = pd.DataFrame(list(profiles))
-    df.to_csv("profiles.csv")
     return df
 
 
@@ -147,3 +146,8 @@ def profiles_from_mission(glidermission):
         mission=glidermission.mission, glider=glidermission.glider
     ).order_by("number")
     return profiles
+
+
+def get_stats(name):
+    stats = Stat.objects(name=name).only("value").first()
+    return stats.value
