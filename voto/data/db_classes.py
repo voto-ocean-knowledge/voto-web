@@ -58,3 +58,12 @@ class GliderMission(mongoengine.Document):
         "collection": "glidermissions",
         "indexes": ["mission", "glider", "profile_ids"],
     }
+
+
+class Stat(mongoengine.Document):
+    name = mongoengine.StringField(required=True)
+    value = mongoengine.FloatField(required=True)
+    meta = {
+        "db_alias": "core",
+        "collection": "stats",
+    }

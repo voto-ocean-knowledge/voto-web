@@ -1,5 +1,6 @@
 import datetime
 import numpy as np
+import pandas as pd
 import logging
 from voto.data.db_classes import Profile, GliderMission
 from voto.services.utility_functions import seconds_to_pretty
@@ -104,6 +105,17 @@ def totals():
     seconds = total_time.total_seconds()
     time_str = seconds_to_pretty(seconds)
     return total_profiles, num_gliders, time_str
+
+
+def get_missions_df():
+    missions = (
+        GliderMission.objects()
+        .only("glider", "mission", "start", "end", "sea_name")
+        .as_pymongo()
+    )
+    df = pd.DataFrame(list(missions))
+    df["duration"] = df.end - df.start
+    return df
 
 
 def recent_glidermissions(timespan=datetime.timedelta(days=14)):
