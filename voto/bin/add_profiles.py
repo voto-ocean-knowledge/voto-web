@@ -40,7 +40,12 @@ def add_complete_profiles(full_dir):
     _log.info(f"adding complete missions from {full_dir}")
     full_ncs = list(full_dir.rglob("*gridfiles/*.nc"))
     _log.info(f"found {len(full_ncs)} files")
-    for file in full_ncs:
+    valid_ncs = []
+    for path in full_ncs:
+        if "sub" not in str(path):
+            valid_ncs.append(path)
+    _log.info(f"found {len(valid_ncs)} files that are not subs")
+    for file in valid_ncs:
         ds = xr.open_dataset(file)
         mission = add_glidermission(ds, mission_complete=True)
         update_glider(mission)
