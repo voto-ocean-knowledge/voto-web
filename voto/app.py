@@ -35,6 +35,7 @@ def configure(local=False):
             password=secrets["mongo_password"],
             port=int(secrets["mongo_port"]),
             server=secrets["mongo_server"],
+            db=secrets["mongo_db"],
         )
     _log.info("DB setup completed.")
 

@@ -27,11 +27,7 @@ class Profile(mongoengine.Document):
     meta = {
         "db_alias": "core",
         "collection": "profiles",
-        "indexes": [
-            "number",
-            "mission",
-            "glider",
-        ],
+        "indexes": ["number", "mission", "glider", "time"],
     }
 
 
@@ -50,13 +46,14 @@ class GliderMission(mongoengine.Document):
     last_modified = mongoengine.DateTimeField(default=datetime.now())
     total_profiles = mongoengine.IntField(default=0)
     total_depth = mongoengine.IntField(default=0)
+    total_distance_m = mongoengine.FloatField(default=0)
     profiles = mongoengine.ListField()
     profile_ids = mongoengine.ListField(mongoengine.ObjectIdField())
 
     meta = {
         "db_alias": "core",
         "collection": "glidermissions",
-        "indexes": ["mission", "glider", "profile_ids"],
+        "indexes": ["mission", "glider", "profile_ids", "start", "end"],
     }
 
 
@@ -65,5 +62,5 @@ class Stat(mongoengine.Document):
     value = mongoengine.DictField(required=True)
     meta = {
         "db_alias": "core",
-        "collection": "stats",
+        "collection": "gliderstats",
     }

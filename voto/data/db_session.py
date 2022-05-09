@@ -4,7 +4,9 @@ import logging
 _log = logging.getLogger(__name__)
 
 
-def initialise_database(user=None, password=None, port=27017, server="localhost"):
+def initialise_database(
+    user=None, password=None, port=27017, server="localhost", db="glider"
+):
     if user or password:
         data = dict(
             username=user,
@@ -13,7 +15,7 @@ def initialise_database(user=None, password=None, port=27017, server="localhost"
             port=port,
             authentication_source="admin",
             authentication_mechanism="SCRAM-SHA-1",
-            dbname="glider",
+            dbname=db,
         )
         mongoengine.connect(
             host=f"mongodb://{data['username']}:{data['password']}@{data['host']}:{data['port']}/{data['dbname']}"
