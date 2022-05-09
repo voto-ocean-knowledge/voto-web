@@ -142,3 +142,4 @@ output
 itgc/static/img/tiles/
 voto/static/img/glider/
 *secrets*.json
+*.csv
