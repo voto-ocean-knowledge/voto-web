@@ -5,18 +5,20 @@
 {% endblock %}
 {% block main_content %}
     <div class="container hero">
-        <h2 class="mt-4">Ocean Knowledge live locations</h2>
-        Our <strong>{{glider_count}}</strong> gliders have recorded <strong>{{ "{:,}".format(profile_count) }}</strong>
-        profiles and racked up <strong>{{total_time}}</strong> at sea covering <strong>{{total_dist}} km</strong>.
+        <h2>Vital Statistics</h2>
+        <p></p>Our <strong>{{glider_count}}</strong> gliders have recorded <strong>{{ "{:,}".format(profile_count) }}</strong>
+        profiles and racked up <strong>{{total_time}}</strong> at sea covering <strong>{{total_dist}} km</strong>.</p>
     </div>
     <div class="container mission-summary">
         <p>Since the beginning of March 2021 we have had at least one glider in the water <strong>{{stats_pretty["glider_deployed"]}} %</strong> of the time.<br>
            We have had at least on glider in the Skagerrak/Kattegat basin  <strong>{{stats_pretty["glider_in_skaggerak"]}} %</strong> of the time.
             and in the Baltic basin during <strong>{{stats_pretty["glider_in_baltic"]}} %</strong>.<br>
-            On average, we have had <strong>{{stats_pretty["glider_in_both"]}}</strong> gliders in the water during this period.
-    </div>
-    <div class="row mb-2">
-      <div class="col-lg-4 themed-grid-col"><img class="img-fluid" src="/static/img/glider/coverage.png"><br></div>
-      <div class="col-lg-4 themed-grid-col"><img class="img-fluid" src=/static/img/glider/gantt_all_ops.png><br></div>
+            On average, we have had <strong>{{stats_pretty["num_glider_in_both"]}}</strong> gliders in the water during this period.</p>
+        <a href="/static/img/glider/missions.csv" download="missions.csv" class="btn btn-primary">Download missions</a>
+        <a href="/static/img/glider/profiles.csv" download="profiles.csv" class="btn btn-primary">Download profiles</a><br>
+        <div class="row mb-2">
+            <div class="col-lg-12 themed-grid-col"><img class="img-fluid" src=/static/img/glider/gantt_all_ops.png><br></div>
+            <div class="col-lg-12 themed-grid-col"><img class="img-fluid" src="/static/img/glider/coverage.png"><br></div>
+        </div>
     </div>
 {% endblock %}

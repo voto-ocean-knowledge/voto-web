@@ -141,6 +141,15 @@ def coverage(df):
     fig.savefig(f"{secrets['plots_dir']}/coverage")
 
 
+def generate_stats():
+    df = get_missions_df()
+    df.drop(["_id"], axis=1, inplace=True)
+    df.to_csv(f"{secrets['plots_dir']}/missions.csv", index=False)
+    df = get_profiles_df()
+    df.drop(["_id"], axis=1, inplace=True)
+    df.to_csv(f"{secrets['plots_dir']}/profiles.csv", index=False)
+
+
 if __name__ == "__main__":
     logging.basicConfig(
         filename=f"{secrets['log_dir']}/voto_stats_data.log",
@@ -161,3 +170,4 @@ if __name__ == "__main__":
     glider_uptime(mission_df)
     profiles_df = get_profiles_df()
     coverage(profiles_df)
+    generate_stats()
