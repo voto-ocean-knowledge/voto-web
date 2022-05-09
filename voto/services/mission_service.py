@@ -74,6 +74,8 @@ def add_glidermission(ds, total_profiles=None, mission_complete=False):
         glider=mission.glider, mission=mission.mission
     ).scalar("id")
     mission.profile_ids = profile_ids
+    profiles = profiles_from_glidermission(mission.glider, mission.mission)
+    mission.total_distance_m = total_mission_distance(profiles)
     if total_profiles:
         mission.total_profiles = total_profiles
         # hack to approximate total depth from subset of dives
@@ -95,16 +97,19 @@ def totals():
     total_profiles = 0
     gliders = []
     total_time = datetime.timedelta(seconds=0)
+    total_dist = 0
     for mission in missions:
         profiles = mission.total_profiles
         gliders.append(mission.glider)
         total_profiles += profiles
         mission_time = mission.end - mission.start
         total_time += mission_time
+        total_dist += mission.total_distance_m
     num_gliders = len(set(gliders))
     seconds = total_time.total_seconds()
     time_str = seconds_to_pretty(seconds)
-    return total_profiles, num_gliders, time_str
+    dist_km = int(total_dist / 1000)
+    return total_profiles, num_gliders, time_str, dist_km
 
 
 def get_missions_df():
@@ -124,7 +129,7 @@ def get_profiles_df():
     return df
 
 
-def recent_glidermissions(timespan=datetime.timedelta(days=14)):
+def recent_glidermissions(timespan=datetime.timedelta(days=3)):
     missions = GliderMission.objects()
     recent_gliders = []
     recent_missions = []
@@ -142,12 +147,34 @@ def select_glidermission(glider, mission):
 
 
 def profiles_from_mission(glidermission):
-    profiles = Profile.objects(
-        mission=glidermission.mission, glider=glidermission.glider
-    ).order_by("number")
+    return profiles_from_glidermission(glidermission.glider, glidermission.mission)
+
+
+def profiles_from_glidermission(glider, mission):
+    profiles = Profile.objects(mission=mission, glider=glider).order_by("number")
     return profiles
 
 
 def get_stats(name):
     stats = Stat.objects(name=name).only("value").first()
     return stats.value
+
+
+def distance_m(dlon, dlat, lat):
+    dy = dlon * 111000
+    dx = dlat * 111000 * np.cos(np.deg2rad(lat))
+    return np.sqrt(dx**2 + dy**2)
+
+
+def total_mission_distance(profiles):
+    previous_profile = None
+    distance = 0
+    for profile in profiles:
+        if not previous_profile:
+            previous_profile = profile
+            continue
+        dlon = profile.lon - previous_profile.lon
+        dlat = profile.lat - previous_profile.lat
+        distance += distance_m(dlon, dlat, profile.lat)
+        previous_profile = profile
+    return distance

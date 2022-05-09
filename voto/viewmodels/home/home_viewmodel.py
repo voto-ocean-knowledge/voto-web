@@ -13,6 +13,7 @@ class IndexViewModel(ViewModelBase):
             self.profile_count,
             self.glider_count,
             self.total_time,
+            self.total_dist,
         ) = mission_service.totals()
 
     def check_missions(self):
@@ -42,6 +43,12 @@ class IndexViewModel(ViewModelBase):
 class StatsViewModel(ViewModelBase):
     def __init__(self):
         super().__init__()
+        (
+            self.profile_count,
+            self.glider_count,
+            self.total_time,
+            self.total_dist,
+        ) = mission_service.totals()
         self.stats = mission_service.get_stats("glider_uptime")
         stats_pretty = {}
         for name, val in self.stats.items():
