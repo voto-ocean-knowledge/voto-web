@@ -62,7 +62,7 @@ def gantt_plot(df):
     c_dict = {"Skagerrak": "C0", "Baltic": "C1"}
     legend_elements = [Patch(facecolor=c_dict[i], label=i) for i in c_dict]
     plt.legend(handles=legend_elements)
-    fig.savefig(f"{folder}/voto/static/img/glider/gantt_all_ops")
+    fig.savefig(f"{secrets['plots_dir']}/gantt_all_ops")
 
 
 def uptime(df_up, hours):
@@ -138,7 +138,7 @@ def coverage(df):
     )
     fig.colorbar(ax=ax, mappable=pcol, shrink=0.5)
     ax.set_title("Profiles per 10 km square")
-    fig.savefig(f"{folder}/voto/static/img/glider/coverage")
+    fig.savefig(f"{secrets['plots_dir']}/coverage")
 
 
 if __name__ == "__main__":
