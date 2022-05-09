@@ -30,6 +30,10 @@ def add_glidermission(ds, total_profiles=None, mission_complete=False):
             )
             return old_mission
     if old_mission:
+        _log.info(
+            f"Delete profiles from mission SEA{old_mission.glider} M{old_mission.mission}"
+        )
+        delete_profiles_glidermission(old_mission.glider, old_mission.mission)
         _log.info(f"Delete mission SEA{old_mission.glider} M{old_mission.mission}")
         old_mission.delete()
     mission.mission = int(attrs["deployment_id"])
@@ -115,11 +119,21 @@ def totals():
 def get_missions_df():
     missions = (
         GliderMission.objects()
-        .only("glider", "mission", "start", "end", "sea_name")
+        .only(
+            "glider",
+            "mission",
+            "start",
+            "end",
+            "sea_name",
+            "total_distance_m",
+            "total_depth",
+        )
         .as_pymongo()
     )
     df = pd.DataFrame(list(missions))
     df["duration"] = df.end - df.start
+    df["days"] = df.duration.dt.days
+    df["km_per_day"] = df.total_distance_m / (1000 * df.days)
     return df
 
 
@@ -153,6 +167,11 @@ def profiles_from_mission(glidermission):
 def profiles_from_glidermission(glider, mission):
     profiles = Profile.objects(mission=mission, glider=glider).order_by("number")
     return profiles
+
+
+def delete_profiles_glidermission(glider, mission):
+    profiles = Profile.objects(mission=mission, glider=glider)
+    profiles.delete()
 
 
 def get_stats(name):
