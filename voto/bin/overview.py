@@ -37,10 +37,10 @@ def gantt_plot(df):
     for sea in df.sea_name:
         if "Baltic" in sea:
             colors.append("C1")
-        elif "Skag" in sea:
+        elif "Skag" in sea or "Kat" in sea:
             colors.append("C0")
         else:
-            print("bork")
+            print(f"sea {sea} not recognised")
     df["color"] = colors
 
     glider_str = []
@@ -154,6 +154,7 @@ if __name__ == "__main__":
         password=secrets["mongo_password"],
         port=int(secrets["mongo_port"]),
         server=secrets["mongo_server"],
+        db=secrets["mongo_db"],
     )
     mission_df = get_missions_df()
     gantt_plot(mission_df)

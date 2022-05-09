@@ -69,6 +69,7 @@ if __name__ == "__main__":
         password=secrets["mongo_password"],
         port=int(secrets["mongo_port"]),
         server=secrets["mongo_server"],
+        db=secrets["mongo_db"],
     )
     dir_path = Path(args.directory)
     if not dir_path.exists():
