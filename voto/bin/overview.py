@@ -4,13 +4,15 @@ import json
 import sys
 import matplotlib.pyplot as plt
 from matplotlib.patches import Patch
+from matplotlib import font_manager
+from matplotlib.colors import LogNorm
+import matplotlib
 import datetime
 import pandas as pd
 import numpy as np
 from pyproj import Transformer
 import cartopy.crs as ccrs
 import cartopy
-from matplotlib.colors import LogNorm
 
 folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 sys.path.insert(0, folder)
@@ -21,6 +23,14 @@ from voto.data.db_classes import Stat
 _log = logging.getLogger(__name__)
 with open(folder + "/mongo_secrets.json") as json_file:
     secrets = json.load(json_file)
+
+# Using VOTO standard styles
+font_dirs = [f"{folder}/voto/static/fonts/roboto/"]
+font_files = font_manager.findSystemFonts(fontpaths=font_dirs)
+plt.rcParams["font.family"] = "roboto"
+matplotlib.rcParams["axes.prop_cycle"] = matplotlib.cycler(
+    color=["#2d5af6", "#f77a3c", "#33d173", "#f94141"]
+)
 
 
 def gantt_plot(df):
@@ -48,21 +58,23 @@ def gantt_plot(df):
         glider_str.append(f"SEA{str(num).zfill(3)}")
     df["glider_str"] = glider_str
     first_days = pd.date_range(start_date, end=df.end.max(), freq="MS")
-    diffs = pd.Series(first_days - first_days[0])
-    xticks = diffs.dt.days
+    xticks = pd.Series(first_days[::3] - first_days[0]).dt.days
 
-    fig, ax = plt.subplots(figsize=(12, 6))
+    xtick_minor = pd.Series(first_days - first_days[0]).dt.days
+
+    fig, ax = plt.subplots(figsize=(6, 4))
     ax.barh(df.glider_str, df.duration_days, left=df.start_day_num, color=df.color)
 
-    xtick_labels = first_days.strftime("%b %y")
+    xtick_labels = first_days[::3].strftime("%b %y")
     ax.set_xticks(xticks)
     ax.set_xticklabels(xtick_labels)
+    ax.set_xticks(xtick_minor, minor=True)
     plt.xticks(rotation=45)
     ax.set(xlim=(20, (datetime.datetime.now() - start_date).days))
     c_dict = {"Skagerrak": "C0", "Baltic": "C1"}
     legend_elements = [Patch(facecolor=c_dict[i], label=i) for i in c_dict]
     plt.legend(handles=legend_elements)
-    fig.savefig(f"{secrets['plots_dir']}/gantt_all_ops")
+    fig.savefig(f"{secrets['plots_dir']}/gantt_all_ops", bbox_inches="tight")
 
 
 def uptime(df_up, hours):
@@ -124,7 +136,7 @@ def coverage(df):
     profile_grid[profile_grid < 5] = np.nan
     profile_grid = profile_grid.T
 
-    fig = plt.figure(figsize=(6, 8))
+    fig = plt.figure(figsize=(4, 6))
     ax = plt.axes(projection=ccrs.UTM(zone=33))
     ax.gridlines()
     ax.set_extent([9, 20, 54, 59], crs=ccrs.PlateCarree())
@@ -138,7 +150,7 @@ def coverage(df):
     )
     fig.colorbar(ax=ax, mappable=pcol, shrink=0.5)
     ax.set_title("Profiles per 10 km square")
-    fig.savefig(f"{secrets['plots_dir']}/coverage")
+    fig.savefig(f"{secrets['plots_dir']}/coverage", bbox_inches="tight")
 
 
 def generate_stats():

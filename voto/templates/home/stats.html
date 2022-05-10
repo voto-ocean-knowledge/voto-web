@@ -14,12 +14,17 @@
            We have had at least one glider in the Skagerrak/Kattegat basin  <strong>{{stats_pretty["glider_in_skaggerak"]}} %</strong> of the time.
             and in the Baltic basin during <strong>{{stats_pretty["glider_in_baltic"]}} %</strong>.<br>
             On average, we have had <strong>{{stats_pretty["num_glider_in_both"]}}</strong> gliders in the water during this period.</p>
+        <br>
+        <h2> Spatiotemporal coverage</h2>
+        <br>
+        <div class="row mb-2">
+            <div class="col-lg-6 themed-grid-col"><img class="img-fluid" src=/static/img/glider/gantt_all_ops.png><br></div>
+            <div class="col-lg-6 themed-grid-col"><img class="img-fluid" src="/static/img/glider/coverage.png"><br></div>
+        </div>
+        <br>
         <h2>Download mission metadata</h2>
+        csv files containing mission and profile metadata from all missions conducted.<br>
         <a href="/static/img/glider/missions.csv" download="missions.csv" class="btn btn-primary">Download missions</a>
         <a href="/static/img/glider/profiles.csv" download="profiles.csv" class="btn btn-primary">Download profiles</a><br>
-        <div class="row mb-2">
-            <div class="col-lg-12 themed-grid-col"><img class="img-fluid" src=/static/img/glider/gantt_all_ops.png><br></div>
-            <div class="col-lg-12 themed-grid-col"><img class="img-fluid" src="/static/img/glider/coverage.png"><br></div>
-        </div>
     </div>
 {% endblock %}
