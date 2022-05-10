@@ -39,14 +39,14 @@
             {% for m in glidermissions %}
 
                 <tr>
-                <td><a href="/fleet/SEA{{ m.glider }}">SEA{{m.glider_fill}}</a></td>
+                <td><a href="/fleet/SEA{{ m.glider }}" class="link-primary">SEA{{m.glider_fill}}</a></td>
                 <td>{{m.mission}}</td>
                 <td>{{m.sea_name}}</td>
-                <td><a href="{{ m.project_url}}" role="button">{{m.project}}</a></td>
+                <td><a href="{{ m.project_url}}"  class="link-primary">{{m.project}} </a></td>
                 <td>{{m.duration_pretty}}</td>
                 <td>{{m.start_pretty}}</td>
                 <td>{{m.variables_pretty}}</td>
-                <td><a href="/SEA{{ m.glider }}/M{{m.mission}}" class="btn btn-primary" role="button">SEA{{m.glider_fill}} M{{m.mission}}</a></td>
+                <td><a href="/SEA{{ m.glider }}/M{{m.mission}}" class="btn btn-primary" role="button">M{{m.mission}}</a></td>
             {%  endfor %}
             </tbody>
         </table>
