@@ -11,7 +11,7 @@
     $(document).ready( function () {
         $('#missions_table').DataTable({
         "iDisplayLength": 25,
-        "order": [[ 3, "desc" ]]
+        "order": [[ 5, "desc" ]]
         });
     } );
     </script>
@@ -22,14 +22,16 @@
     <div class="container glider-list">
 
         <h2>Missions</h2>
-        <table class="table table-bordered table-hover" id="missions_table">
+        <table class="table table-hover" id="missions_table">
             <thead>
             <tr>
                 <th scope="col">Glider </th>
                 <th scope="col">Mission</th>
                 <th scope="col">Location</th>
-                <th scope="col">Start</th>
+                <th scope="col">Project</th>
                 <th scope="col">Duration (days)</th>
+                <th scope="col">Start</th>
+                <th scope="col">Additional variables</th>
                 <th scope="col">Link</th>
             </tr>
             </thead>
@@ -37,11 +39,13 @@
             {% for m in glidermissions %}
 
                 <tr>
-                <td>SEA{{m.glider_fill}}</td>
+                <td><a href="/fleet/SEA{{ m.glider }}">SEA{{m.glider_fill}}</a></td>
                 <td>{{m.mission}}</td>
                 <td>{{m.sea_name}}</td>
-                <td>{{m.start_pretty}}</td>
+                <td><a href="{{ m.project_url}}" role="button">{{m.project}}</a></td>
                 <td>{{m.duration_pretty}}</td>
+                <td>{{m.start_pretty}}</td>
+                <td>{{m.variables_pretty}}</td>
                 <td><a href="/SEA{{ m.glider }}/M{{m.mission}}" class="btn btn-primary" role="button">SEA{{m.glider_fill}} M{{m.mission}}</a></td>
             {%  endfor %}
             </tbody>
