@@ -7,7 +7,12 @@ from voto.services import mission_service
 
 class MissionViewModel(ViewModelBase):
     def __init__(self):
-        self.glidermissions = GliderMission.objects()
+        glider_missions = GliderMission.objects()
+        for gm in glider_missions:
+            gm.glider_fill = str(gm.glider).zfill(3)
+            gm.start_pretty = str(gm.start)[:10]
+            gm.duration_pretty = (gm.end - gm.start).days
+        self.glidermissions = glider_missions
 
 
 class GliderMissionViewModel(ViewModelBase):
