@@ -1,5 +1,47 @@
+/* VOTO fonts */
+* {
+    font-family: Roboto, sans-serif;
+    font-weight: 400;
+  }
+h1 {
+    font-family: Kanit;
+    font-weight: 700;
+}
+h2 {
+  font-weight: 700;
+    font-size: 24px;
+}
+
+
+/* Bootstrap override colors */
+/* change the background color */
+.navbar-custom {
+    background-color: #001489;
+}
+
+/* change the brand and text color */
+.navbar-custom .navbar-brand,
+.navbar-custom .navbar-text {
+    color: #ffffff;
+}
+
+/* change the link color */
+.navbar-custom .navbar-nav .nav-link {
+    color: #ffffff;
+}
+
+/* change the color of active or hovered links */
+.navbar-custom .nav-item:hover .nav-link {
+    color: #36a9e0;
+}
+.link-primary {color: #001489;}
+.btn-primary {background-color: #001489;}
+
+/* Spacing */
 footer {
-    margin-top: 30px;
+    margin-top: 60px;
     text-align: center;
+    background-color: #001489;
+    color: #ffffff;
 
 }

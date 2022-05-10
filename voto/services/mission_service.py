@@ -6,6 +6,21 @@ from voto.data.db_classes import Profile, GliderMission, Stat
 from voto.services.utility_functions import seconds_to_pretty
 
 _log = logging.getLogger(__name__)
+desire_vars = {
+    "oxygen_concentration",
+    "chlorophyll",
+    "turbidity",
+    "phycocyanin",
+    "backscatter",
+    "cdom",
+    "down_irradiance_380",
+    "ad2cp_heading",
+}
+replace = {
+    "ad2cp_heading": "adcp",
+    "oxygen_concentration": "oxygen",
+    "down_irradiance_380": "irradiance",
+}
 
 
 def add_glidermission(ds, total_profiles=None, mission_complete=False):
@@ -56,6 +71,17 @@ def add_glidermission(ds, total_profiles=None, mission_complete=False):
     mission.end = datetime.datetime.utcfromtimestamp(times[-1].tolist() / 1e9)
     mission.sea_name = attrs["sea_name"]
     mission.profiles = list(profiles)
+
+    mission.project = attrs["project"]
+    mission.project_url = attrs["project_url"]
+    present_vars = list(desire_vars.intersection(list(ds)))
+    pretty_vars = []
+    for var in present_vars:
+        if var in replace.keys():
+            pretty_vars.append(replace[var])
+        else:
+            pretty_vars.append(var)
+    mission.variables = pretty_vars
 
     i = 0
     profile_objs = []
