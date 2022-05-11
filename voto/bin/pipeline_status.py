@@ -56,7 +56,7 @@ def check_yml():
         if Path(f"/data/plots/complete_mission/SEA{glider}/M{mission}").exists():
             item.complete_plots = True
         _log.info(f"add SEA{glider} M{mission}")
-        item.up = item.complete_plots + item.nrt_plots
+        item.up = bool(item.complete_plots + item.nrt_plots)
         item.save()
 
 
