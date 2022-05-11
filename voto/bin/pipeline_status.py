@@ -31,7 +31,11 @@ def check_yml():
             _log.info(f"delete SEA{glider} M{mission}")
         if Path(f"/data/data_raw/nrt/SEA{glider}/M{mission}").exists():
             item.nrt_profiles = len(
-                list(Path(f"/data/data_raw/nrt/SEA{glider}/M{mission}").glob("*pld*"))
+                list(
+                    Path(
+                        f"/data/data_raw/nrt/SEA{str(glider).zfill(3)}/{str(mission).zfill(6)}/C-Csv"
+                    ).glob("*pld*")
+                )
             )
         if Path(f"/data/data_raw/complete_mission/SEA{glider}/M{mission}").exists():
             item.complete_profiles = len(
@@ -52,6 +56,7 @@ def check_yml():
         if Path(f"/data/plots/complete_mission/SEA{glider}/M{mission}").exists():
             item.complete_plots = True
         _log.info(f"add SEA{glider} M{mission}")
+        item.up = item.complete_plots + item.nrt_plots
         item.save()
 
 
@@ -67,6 +72,11 @@ def check_files():
                 item = PipeLineMission(glider=glider, mission=mission, yml=False)
                 item.save()
                 _log.info(f"SEA{glider} M{mission} has nrt files with no yml")
+            elif not old_item.yml:
+                old_item.delete()
+                item = PipeLineMission(glider=glider, mission=mission, yml=False)
+                item.save()
+                _log.info(f"SEA{glider} M{mission} has nrt files with no yml. Updated")
 
 
 if __name__ == "__main__":

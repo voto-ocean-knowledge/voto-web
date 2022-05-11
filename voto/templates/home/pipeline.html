@@ -1,14 +1,54 @@
 {% extends "layout.html" %}
 
 {% block additional_css %}
-    <title>Stats</title>
+    <title>Pipeline Status</title>
+    <!-- CSS and javascript for datatables, requires jquery-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+    <!-- Setup dataatables-->
+    <script>
+    $(document).ready( function () {
+        $('#pipeline_table').DataTable({
+        "paging": false,
+        });
+    } );
+    </script>
 {% endblock %}
 {% block main_content %}
-    <div class="container hero">
-        <h1>Pipeline status</h1>
-        {{pipeline}}
-        {{len(pipeline)}}
-        {{pipeline[0]}}
+
+
+    <div class="container glider-list">
+
+        <h2>Pipeline Status</h2>
+        <table class="table table-hover" id="pipeline_table">
+            <thead>
+            <tr>
+                <th scope="col">Glider </th>
+                <th scope="col">Mission</th>
+                <th scope="col">nrt profiles</th>
+                <th scope="col">nrt proc</th>
+                <th scope="col">nrt plots</th>
+                <th scope="col">complete profiles</th>
+                <th scope="col">complete proc</th>
+                <th scope="col">complete plots</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for m in pipeline %}
+
+                <tr>
+                <td><a href="/fleet/SEA{{ m.glider }}" class="link-primary">SEA{{m.glider_fill}}</a></td>
+                <td><a href="/SEA{{ m.glider }}/M{{m.mission}}">M{{m.mission}}</a></td>
+                <td>{{m.nrt_profiles}}</td>
+                <td>{{m.nrt_proc}}</td>
+                <td>{{m.nrt_plots}}</td>
+                <td>{{m.complete_profiles}}</td>
+                <td>{{m.complete_proc}}</td>
+                <td>{{m.complete_plots}}</td>
+            {%  endfor %}
+            </tbody>
+        </table>
     </div>
 
 {% endblock %}

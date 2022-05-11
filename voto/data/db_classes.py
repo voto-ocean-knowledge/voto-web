@@ -79,6 +79,7 @@ class PipeLineMission(mongoengine.Document):
     complete_proc = mongoengine.BooleanField(default=False)
     nrt_plots = mongoengine.BooleanField(default=False)
     complete_plots = mongoengine.BooleanField(default=False)
+    up = mongoengine.BooleanField(default=False)
 
     meta = {
         "db_alias": "core",

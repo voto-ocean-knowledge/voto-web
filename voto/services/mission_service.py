@@ -226,4 +226,7 @@ def total_mission_distance(profiles):
 
 
 def pipeline_stats(yml_only=True):
-    return PipeLineMission.objects(yml=yml_only)
+    pipes = PipeLineMission.objects(yml=yml_only)
+    for pipe in pipes:
+        pipe.glider_fill = str(pipe.glider).zfill(3)
+    return pipes
