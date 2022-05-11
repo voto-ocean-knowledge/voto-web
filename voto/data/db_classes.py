@@ -67,3 +67,20 @@ class Stat(mongoengine.Document):
         "db_alias": "core",
         "collection": "gliderstats",
     }
+
+
+class PipeLineMission(mongoengine.Document):
+    mission = mongoengine.IntField(required=True)
+    glider = mongoengine.IntField(required=True)
+    nrt_profiles = mongoengine.IntField(default=0)
+    complete_profiles = mongoengine.IntField(default=0)
+    nrt_proc = mongoengine.BooleanField(default=False)
+    complete_proc = mongoengine.BooleanField(default=False)
+    nrt_plots = mongoengine.BooleanField(default=False)
+    complete_plots = mongoengine.BooleanField(default=False)
+
+    meta = {
+        "db_alias": "core",
+        "collection": "glidermissions",
+        "indexes": ["mission", "glider"],
+    }
