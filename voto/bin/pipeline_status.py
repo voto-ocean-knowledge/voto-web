@@ -28,6 +28,7 @@ def check_yml():
         old_item = PipeLineMission.objects(glider=glider, mission=mission).first()
         if old_item:
             old_item.delete()
+            _log.info(f"delete SEA{glider} M{mission}")
         if Path(f"/data/data_raw/nrt/SEA{glider}/M{mission}").exists():
             item.nrt_profiles = len(
                 list(Path(f"/data/data_raw/nrt/SEA{glider}/M{mission}").glob("*pld*"))
@@ -50,6 +51,7 @@ def check_yml():
             item.nrt_plots = True
         if Path(f"/data/plots/complete_mission/SEA{glider}/M{mission}").exists():
             item.complete_plots = True
+        _log.info(f"add SEA{glider} M{mission}")
         item.save()
 
 
@@ -60,15 +62,21 @@ def check_files():
             parts = mission.parts
             glider = int(parts[-3][-3:])
             mission = int(parts[-2])
-            print(f"SEAA{glider} M{mission}")
             old_item = PipeLineMission.objects(glider=glider, mission=mission).first()
             if not old_item:
                 item = PipeLineMission(glider=glider, mission=mission, yml=False)
                 item.save()
-                print("files with no yml")
+                _log.info(f"SEA{glider} M{mission} has nrt files with no yml")
 
 
 if __name__ == "__main__":
+    logging.basicConfig(
+        filename=f"{secrets['log_dir']}/voto_pipeline.log",
+        filemode="a",
+        format="%(asctime)s %(levelname)-8s %(message)s",
+        level=logging.INFO,
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
     initialise_database(
         user=secrets["mongo_user"],
         password=secrets["mongo_password"],

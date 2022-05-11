@@ -57,3 +57,9 @@ class StatsViewModel(ViewModelBase):
 
             stats_pretty[name] = str(val.__round__(1))
         self.stats_pretty = stats_pretty
+
+
+class PipelineViewModel(ViewModelBase):
+    def __init__(self):
+        super().__init__()
+        self.pipeline = mission_service.pipeline_stats()

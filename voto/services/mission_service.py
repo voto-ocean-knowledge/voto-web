@@ -2,7 +2,7 @@ import datetime
 import numpy as np
 import pandas as pd
 import logging
-from voto.data.db_classes import Profile, GliderMission, Stat
+from voto.data.db_classes import Profile, GliderMission, Stat, PipeLineMission
 from voto.services.utility_functions import seconds_to_pretty
 
 _log = logging.getLogger(__name__)
@@ -223,3 +223,7 @@ def total_mission_distance(profiles):
         distance += distance_m(dlon, dlat, profile.lat)
         previous_profile = profile
     return distance
+
+
+def pipeline_stats(yml_only=True):
+    return PipeLineMission.objects(yml=yml_only)

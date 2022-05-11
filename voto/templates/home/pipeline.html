@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+
+{% block additional_css %}
+    <title>Stats</title>
+{% endblock %}
+{% block main_content %}
+    <div class="container hero">
+        <h1>Pipeline status</h1>
+        {{pipeline}}
+        {{len(pipeline)}}
+        {{pipeline[0]}}
+    </div>
+
+{% endblock %}
