@@ -29,9 +29,17 @@ def check_yml():
         if old_item:
             old_item.delete()
         if Path(f"/data/data_raw/nrt/SEA{glider}/M{mission}").exists():
-            item.nrt_profiles = True
+            item.nrt_profiles = len(
+                list(Path(f"/data/data_raw/nrt/SEA{glider}/M{mission}").glob("*pld*"))
+            )
         if Path(f"/data/data_raw/complete_mission/SEA{glider}/M{mission}").exists():
-            item.complete_profiles = True
+            item.complete_profiles = len(
+                list(
+                    Path(
+                        f"/data/data_raw/complete_mission/SEA{glider}/M{mission}"
+                    ).glob("*pld*")
+                )
+            )
         if Path(f"/data/data_l0_pyglider/nrt/SEA{glider}/M{mission}").exists():
             item.nrt_proc = True
         if Path(
@@ -48,8 +56,16 @@ def check_yml():
 def check_files():
     glidermissions = Path("/data/data_raw/nrt").glob("**/")
     for mission in glidermissions:
-        print(mission)
-    pass
+        if mission.name == "C-Csv":
+            parts = mission.parts
+            glider = int(parts[-3][-3:])
+            mission = int(parts[-2])
+            print(f"SEAA{glider} M{mission}")
+            old_item = PipeLineMission.objects(glider=glider, mission=mission).first()
+            if not old_item:
+                item = PipeLineMission(glider=glider, mission=mission, yml=False)
+                item.save()
+                print("files with no yml")
 
 
 if __name__ == "__main__":

@@ -72,6 +72,7 @@ class Stat(mongoengine.Document):
 class PipeLineMission(mongoengine.Document):
     mission = mongoengine.IntField(required=True)
     glider = mongoengine.IntField(required=True)
+    yml = mongoengine.BooleanField(default=True)
     nrt_profiles = mongoengine.IntField(default=0)
     complete_profiles = mongoengine.IntField(default=0)
     nrt_proc = mongoengine.BooleanField(default=False)
