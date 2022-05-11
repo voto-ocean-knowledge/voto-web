@@ -22,12 +22,12 @@ def main():
     app.run(debug=True, port=5006)
 
 
-def configure(local=False):
+def configure():
     _log.info("Configuring Flask app:")
 
     register_blueprints()
     _log.info("Registered blueprints")
-    if local:
+    if "mongo_user" not in secrets.keys():
         initialise_database(user=None, password=None)
     else:
         initialise_database(
