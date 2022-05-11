@@ -11,6 +11,7 @@
     $(document).ready( function () {
         $('#pipeline_table').DataTable({
         "paging": false,
+        "order": [[ 8, "asc" ]]
         });
     } );
     </script>
@@ -32,6 +33,7 @@
                 <th scope="col">complete profiles</th>
                 <th scope="col">complete proc</th>
                 <th scope="col">complete plots</th>
+                <th scope="col">up</th>
             </tr>
             </thead>
             <tbody>
@@ -46,6 +48,7 @@
                 <td>{{m.complete_profiles}}</td>
                 <td>{{m.complete_proc}}</td>
                 <td>{{m.complete_plots}}</td>
+                <td>{{m.up}}</td>
             {%  endfor %}
             </tbody>
         </table>

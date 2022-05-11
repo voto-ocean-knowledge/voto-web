@@ -29,7 +29,9 @@ def check_yml():
         if old_item:
             old_item.delete()
             _log.info(f"delete SEA{glider} M{mission}")
-        if Path(f"/data/data_raw/nrt/SEA{glider}/M{mission}").exists():
+        if Path(
+            f"/data/data_raw/nrt/SEA{str(glider).zfill(3)}/{str(mission).zfill(6)}/C-Csv"
+        ).exists():
             item.nrt_profiles = len(
                 list(
                     Path(
