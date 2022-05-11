@@ -2,12 +2,56 @@
 
 {% block additional_css %}
     <title>SEA{{glider_fill}}</title>
+<!-- CSS and javascript for datatables, requires jquery-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+<!-- Setup datatables-->
+<script>
+    $(document).ready( function () {
+        $('#missions_table').DataTable({
+        "paging": false,
+        "order": [[ 4, "desc" ]]
+        });
+    } );
+    </script>
 {% endblock %}
 {% block main_content %}
     <div class="container mission-summary">
-        <h2 class="mt-4">SEA{{glider_fill}}</h2>
-        <p>This glider has completed {{total_missions}} missions during {{pretty_time}}.
-            It has completed {{glider.total_profiles}} vertical profiles, covering a total vertical distance of {{ "{:,}".format(glider.total_depth) }} m.
-            Equivalent to diving to the deepest part of the ocean and back {{marianas}} times.
+        <h2 class="mt-4">SEA{{glider_fill}} {{glider.name}}</h2>
+        <p>{{glider.name}} has completed {{total_missions}} missions and spent {{pretty_time}} at sea.<br>
+            {{glider.name}} has recorded {{"{:,}".format(glider.total_profiles)}} vertical profiles, covering a total vertical distance of {{ "{:,}".format(glider.total_depth) }} m.
+            This is equivalent to diving to the deepest part of the ocean and back {{marianas}} times.<br>
+            If {{glider.name}}'s wings were capable of operating in a vacuum, it could have flown to the International Space Station and back {{iss}} times.
     </div>
+<div class="container glider-list">
+
+    <h2>Missions</h2>
+    <table class="table table-hover" id="missions_table">
+        <thead>
+        <tr>
+            <th scope="col">Mission</th>
+            <th scope="col">Location</th>
+            <th scope="col">Project</th>
+            <th scope="col">Duration (days)</th>
+            <th scope="col">Start</th>
+            <th scope="col">Additional variables</th>
+            <th scope="col">Link</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for m in glidermissions %}
+
+        <tr>
+            <td>{{m.mission}}</td>
+            <td>{{m.sea_name}}</td>
+            <td><a href="{{ m.project_url}}"  class="link-primary">{{m.project}} </a></td>
+            <td>{{m.duration_pretty}}</td>
+            <td>{{m.start_pretty}}</td>
+            <td>{{m.variables_pretty}}</td>
+            <td><a href="/SEA{{ m.glider }}/M{{m.mission}}" class="btn btn-primary" role="button">M{{m.mission}}</a></td>
+            {%  endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}
