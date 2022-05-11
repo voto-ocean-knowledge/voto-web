@@ -81,6 +81,6 @@ class PipeLineMission(mongoengine.Document):
 
     meta = {
         "db_alias": "core",
-        "collection": "glidermissions",
+        "collection": "pipelinestatus",
         "indexes": ["mission", "glider"],
     }
