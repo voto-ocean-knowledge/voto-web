@@ -40,6 +40,21 @@ class IndexViewModel(ViewModelBase):
         self.gliders = gliders_json
 
 
+class MonitorViewModel(ViewModelBase):
+    def __init__(self):
+        super().__init__()
+        gliders, missions = mission_service.recent_glidermissions()
+        for i, (glider, mission) in enumerate(zip(gliders, missions)):
+            self.__setattr__(
+                f"battery_{i}",
+                f"/static/img/glider/nrt/SEA{glider}/M{mission}/battery.png",
+            )
+            self.__setattr__(
+                f"battery_prediction_{i}",
+                f"/static/img/glider/nrt/SEA{glider}/M{mission}/battery_prediction.png",
+            )
+
+
 class StatsViewModel(ViewModelBase):
     def __init__(self):
         super().__init__()

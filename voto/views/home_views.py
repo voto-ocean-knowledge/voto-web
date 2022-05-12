@@ -4,6 +4,7 @@ from voto.viewmodels.home.home_viewmodel import (
     IndexViewModel,
     StatsViewModel,
     PipelineViewModel,
+    MonitorViewModel,
 )
 
 blueprint = flask.Blueprint("home", __name__, template_folder="templates")
@@ -28,4 +29,11 @@ def stats_view():
 @response(template_file="home/pipeline.html")
 def pipeline_view():
     vm = PipelineViewModel()
+    return vm.to_dict()
+
+
+@blueprint.route("/monitor")
+@response(template_file="home/monitor.html")
+def monitor_view():
+    vm = MonitorViewModel()
     return vm.to_dict()
