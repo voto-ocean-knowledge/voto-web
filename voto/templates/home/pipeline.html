@@ -6,12 +6,25 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+    <!-- datatable datetime support-->
+    <script src="static/js/moment.js"></script>
+    <script src="static/js/datetime.js"></script>
+
     <!-- Setup dataatables-->
     <script>
     $(document).ready( function () {
         $('#pipeline_table').DataTable({
         "paging": false,
-        "order": [[ 8, "asc" ]]
+        "order": [[ 4, "desc" ]],
+        "columnDefs": [ {
+        targets: [2,4],
+        render: $.fn.dataTable.render.moment('YYYY-MM-DD HH:mm:s.SSSS', 'YYYY-MM-DD HH:mm' )
+        } ],
+        'rowCallback': function(row, data, index){
+        if(data[10] == "False"){
+            $(row).find('td:eq(10)').css('color', 'red');
+
+        }}
         });
     } );
     </script>
@@ -27,7 +40,9 @@
             <tr>
                 <th scope="col">Glider </th>
                 <th scope="col">Mission</th>
+                <th scope="col">yml date</th>
                 <th scope="col">nrt profiles</th>
+                <th scope="col">nrt raw time</th>
                 <th scope="col">nrt proc</th>
                 <th scope="col">nrt plots</th>
                 <th scope="col">complete profiles</th>
@@ -41,9 +56,11 @@
 
                 <tr>
                 <td><a href="/fleet/SEA{{ m.glider }}" class="link-primary">SEA{{m.glider_fill}}</a></td>
-                <td><a href="/SEA{{ m.glider }}/M{{m.mission}}">M{{m.mission}}</a></td>
+                <td><a href="/SEA{{ m.glider }}/M{{m.mission}}" class="link-primary">M{{m.mission}}</a></td>
+                <td>{{m.yml_time}}</td>
                 <td>{{m.nrt_profiles}}</td>
-                <td>{{m.nrt_proc}}</td>
+                <td>{{m.nrt_profiles_mtime}}</td>
+                <td>{{m.nrt_proc_mtime}}</td>
                 <td>{{m.nrt_plots}}</td>
                 <td>{{m.complete_profiles}}</td>
                 <td>{{m.complete_proc}}</td>

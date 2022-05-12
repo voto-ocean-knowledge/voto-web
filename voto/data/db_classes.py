@@ -73,9 +73,18 @@ class PipeLineMission(mongoengine.Document):
     mission = mongoengine.IntField(required=True)
     glider = mongoengine.IntField(required=True)
     yml = mongoengine.BooleanField(default=True)
+    yml_time = mongoengine.DateTimeField(
+        default=(datetime(1970, 1, 1, 0, 0, 0, 111111))
+    )
     nrt_profiles = mongoengine.IntField(default=0)
+    nrt_profiles_mtime = mongoengine.DateTimeField(
+        default=(datetime(1970, 1, 1, 0, 0, 0, 111111))
+    )
     complete_profiles = mongoengine.IntField(default=0)
     nrt_proc = mongoengine.BooleanField(default=False)
+    nrt_proc_mtime = mongoengine.DateTimeField(
+        default=(datetime(1970, 1, 1, 0, 0, 0, 111111))
+    )
     complete_proc = mongoengine.BooleanField(default=False)
     nrt_plots = mongoengine.BooleanField(default=False)
     complete_plots = mongoengine.BooleanField(default=False)
