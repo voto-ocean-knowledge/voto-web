@@ -60,10 +60,10 @@ def check_yml():
             item.complete_profiles_mtime = most_recent_mtime(
                 complete_path.glob("*pld*")
             )
-        complete_proc_path = (
+        complete_proc_path = Path(
             f"/data/data_l0_pyglider/complete_mission/SEA{glider}/M{mission}"
         )
-        if Path(complete_proc_path).exists():
+        if complete_proc_path.exists():
             item.complete_proc = True
             item.complete_proc_mtime = most_recent_mtime(
                 (complete_proc_path / "gridfiles").glob("*.nc")
