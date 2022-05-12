@@ -1,6 +1,8 @@
 import mongoengine
 from datetime import datetime
 
+default_mtime = datetime(1970, 1, 1, 0, 0, 0, 111111)
+
 
 class Glider(mongoengine.Document):
     glider = mongoengine.IntField(required=True)
@@ -73,21 +75,19 @@ class PipeLineMission(mongoengine.Document):
     mission = mongoengine.IntField(required=True)
     glider = mongoengine.IntField(required=True)
     yml = mongoengine.BooleanField(default=True)
-    yml_time = mongoengine.DateTimeField(
-        default=(datetime(1970, 1, 1, 0, 0, 0, 111111))
-    )
+    yml_time = mongoengine.DateTimeField(default=default_mtime)
     nrt_profiles = mongoengine.IntField(default=0)
-    nrt_profiles_mtime = mongoengine.DateTimeField(
-        default=(datetime(1970, 1, 1, 0, 0, 0, 111111))
-    )
-    complete_profiles = mongoengine.IntField(default=0)
+    nrt_profiles_mtime = mongoengine.DateTimeField(default=default_mtime)
     nrt_proc = mongoengine.BooleanField(default=False)
-    nrt_proc_mtime = mongoengine.DateTimeField(
-        default=(datetime(1970, 1, 1, 0, 0, 0, 111111))
-    )
-    complete_proc = mongoengine.BooleanField(default=False)
+    nrt_proc_mtime = mongoengine.DateTimeField(default=default_mtime)
     nrt_plots = mongoengine.BooleanField(default=False)
+    nrt_plots_mtime = mongoengine.DateTimeField(default=default_mtime)
+    complete_profiles = mongoengine.IntField(default=0)
+    complete_profiles_mtime = mongoengine.DateTimeField(default=default_mtime)
+    complete_proc = mongoengine.BooleanField(default=False)
+    complete_proc_mtime = mongoengine.DateTimeField(default=default_mtime)
     complete_plots = mongoengine.BooleanField(default=False)
+    complete_plots_mtime = mongoengine.DateTimeField(default=default_mtime)
     up = mongoengine.BooleanField(default=False)
 
     meta = {

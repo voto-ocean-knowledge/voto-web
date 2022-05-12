@@ -44,24 +44,38 @@ def check_yml():
         if nrt_path.exists():
             item.nrt_profiles = len(list(nrt_path.glob("*pld*")))
             item.nrt_profiles_mtime = most_recent_mtime(nrt_path.glob("*pld*"))
+        nrt_proc_path = Path(f"/data/data_l0_pyglider/nrt/SEA{glider}/M{mission}")
+        if nrt_proc_path.exists():
+            item.nrt_proc = True
+            item.nrt_proc_mtime = most_recent_mtime(
+                (nrt_proc_path / "gridfiles").glob("*.nc")
+            )
+        nrt_plot_path = Path(f"/data/plots/nrt/SEA{glider}/M{mission}")
+        if nrt_plot_path.exists():
+            item.nrt_plots = True
+            item.nrt_plots_mtime = most_recent_mtime(nrt_plot_path.glob("*.png"))
         complete_path = Path(f"/data/data_raw/complete_mission/SEA{glider}/M{mission}")
         if complete_path.exists():
             item.complete_profiles = len(list(complete_path.glob("*pld*")))
-        if Path(f"/data/data_l0_pyglider/nrt/SEA{glider}/M{mission}").exists():
-            item.nrt_proc = True
-            item.nrt_proc_mtime = most_recent_mtime(
-                Path(
-                    f"/data/data_l0_pyglider/nrt/SEA{glider}/M{mission}/gridfiles"
-                ).glob("*.nc")
+            item.complete_profiles_mtime = most_recent_mtime(
+                complete_path.glob("*pld*")
             )
-        if Path(
+        complete_proc_path = (
             f"/data/data_l0_pyglider/complete_mission/SEA{glider}/M{mission}"
-        ).exists():
+        )
+        if Path(complete_proc_path).exists():
             item.complete_proc = True
-        if Path(f"/data/plots/nrt/SEA{glider}/M{mission}").exists():
-            item.nrt_plots = True
-        if Path(f"/data/plots/complete_mission/SEA{glider}/M{mission}").exists():
+            item.complete_proc_mtime = most_recent_mtime(
+                (complete_proc_path / "gridfiles").glob("*.nc")
+            )
+        complete_plot_path = Path(
+            f"/data/plots/complete_mission/SEA{glider}/M{mission}"
+        )
+        if complete_plot_path.exists():
             item.complete_plots = True
+            item.complete_plots_mtime = most_recent_mtime(
+                complete_plot_path.glob("*.png")
+            )
         _log.info(f"add SEA{glider} M{mission}")
         item.up = bool(item.complete_plots + item.nrt_plots)
         item.save()

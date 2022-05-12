@@ -17,14 +17,21 @@
         "paging": false,
         "order": [[ 4, "desc" ]],
         "columnDefs": [ {
-        targets: [2,4],
+        targets: [2,4,5,6,8,9,10],
         render: $.fn.dataTable.render.moment('YYYY-MM-DD HH:mm:s.SSSS', 'YYYY-MM-DD HH:mm' )
         } ],
         'rowCallback': function(row, data, index){
-        if(data[10] == "False"){
-            $(row).find('td:eq(10)').css('color', 'red');
-
-        }}
+        if(data[11] == "False"){
+            $(row).find('td:eq(11)').css('color', 'red');}
+        if(data[5] < data[2] || data[5] < data[4]){
+            $(row).find('td:eq(5)').css('color', 'red');}
+        if(data[6] < data[5]){
+            $(row).find('td:eq(6)').css('color', 'red');}
+        if(data[9] < data[2] || data[9] < data[8]){
+            $(row).find('td:eq(9)').css('color', 'red');}
+        if(data[10] < data[9]){
+            $(row).find('td:eq(10)').css('color', 'red');}
+        }
         });
     } );
     </script>
@@ -46,6 +53,7 @@
                 <th scope="col">nrt proc</th>
                 <th scope="col">nrt plots</th>
                 <th scope="col">complete profiles</th>
+                <th scope="col">complete raw time</th>
                 <th scope="col">complete proc</th>
                 <th scope="col">complete plots</th>
                 <th scope="col">up</th>
@@ -61,10 +69,11 @@
                 <td>{{m.nrt_profiles}}</td>
                 <td>{{m.nrt_profiles_mtime}}</td>
                 <td>{{m.nrt_proc_mtime}}</td>
-                <td>{{m.nrt_plots}}</td>
+                <td>{{m.nrt_plots_mtime}}</td>
                 <td>{{m.complete_profiles}}</td>
-                <td>{{m.complete_proc}}</td>
-                <td>{{m.complete_plots}}</td>
+                <td>{{m.complete_profiles_mtime}}</td>
+                <td>{{m.complete_proc_mtime}}</td>
+                <td>{{m.complete_plots_mtime}}</td>
                 <td>{{m.up}}</td>
             {%  endfor %}
             </tbody>
