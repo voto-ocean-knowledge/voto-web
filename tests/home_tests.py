@@ -16,6 +16,8 @@ def test_mission_list_page():
         r: Response = mission_views.mission_list()
     assert r.status_code == 200
     assert b"Missions" in r.data
+    # noinspection PyUnresolvedReferences
+    assert len(r.model.get("glidermissions")) > 10
 
 
 def test_mission_page():
@@ -30,6 +32,8 @@ def test_platform_list_page():
         r: Response = platform_views.platform_list()
     assert r.status_code == 200
     assert b"Gliders" in r.data
+    # noinspection PyUnresolvedReferences
+    assert len(r.model.get("gliders")) > 5
 
 
 def test_glider_page():
@@ -37,6 +41,8 @@ def test_glider_page():
         r: Response = platform_views.glider_page(63)
     assert r.status_code == 200
     assert b"glider" in r.data
+    # noinspection PyUnresolvedReferences
+    assert len(r.model.get("glidermissions")) > 5
 
 
 def test_stats_page():
@@ -58,3 +64,5 @@ def test_pipline():
         r: Response = home_views.pipeline_view()
     assert r.status_code == 200
     assert b"Pipeline" in r.data
+    # noinspection PyUnresolvedReferences
+    assert len(r.model.get("pipeline")) > 50
