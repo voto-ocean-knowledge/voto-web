@@ -17,6 +17,16 @@ with open(folder + "/mongo_secrets.json") as json_file:
     secrets = json.load(json_file)
 
 
+def init_db():
+    initialise_database(
+        user=secrets["mongo_user"],
+        password=secrets["mongo_password"],
+        port=int(secrets["mongo_port"]),
+        server=secrets["mongo_server"],
+        db=secrets["mongo_db"],
+    )
+
+
 def add_nrt_profiles(in_dir):
     _log.info(f"adding nrt missions from {in_dir}")
     ncs = list(in_dir.rglob("*gridfiles/*.nc"))
@@ -69,13 +79,7 @@ if __name__ == "__main__":
     if args.kind not in ["nrt", "complete"]:
         _log.error("kind must be nrt or complete")
         raise ValueError("kind must be nrt or complete")
-    initialise_database(
-        user=secrets["mongo_user"],
-        password=secrets["mongo_password"],
-        port=int(secrets["mongo_port"]),
-        server=secrets["mongo_server"],
-        db=secrets["mongo_db"],
-    )
+    init_db()
     dir_path = Path(args.directory)
     if not dir_path.exists():
         _log.error(f"directory {dir_path} not found")
