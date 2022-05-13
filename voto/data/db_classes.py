@@ -43,6 +43,7 @@ class GliderMission(mongoengine.Document):
     lon_min = mongoengine.FloatField()
     lon_max = mongoengine.FloatField()
     sea_name = mongoengine.StringField()
+    basin = mongoengine.StringField()
     wmo_id = mongoengine.IntField()
     is_complete = mongoengine.BooleanField(default=False)
     last_modified = mongoengine.DateTimeField(default=datetime.now())
