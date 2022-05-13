@@ -37,3 +37,24 @@ def test_glider_page():
         r: Response = platform_views.glider_page(63)
     assert r.status_code == 200
     assert b"glider" in r.data
+
+
+def test_stats_page():
+    with flask_app.test_request_context(path="stats"):
+        r: Response = home_views.stats_view()
+    assert r.status_code == 200
+    assert b"Statistics" in r.data
+
+
+def test_monitor():
+    with flask_app.test_request_context(path="monitor"):
+        r: Response = home_views.monitor_view()
+    assert r.status_code == 200
+    assert b"Battery" in r.data
+
+
+def test_pipline():
+    with flask_app.test_request_context(path="pipeline"):
+        r: Response = home_views.pipeline_view()
+    assert r.status_code == 200
+    assert b"Pipeline" in r.data
