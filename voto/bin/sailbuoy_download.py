@@ -9,7 +9,6 @@ from pathlib import Path
 
 folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 sys.path.insert(0, folder)
-sys.path.insert(0, "/data/executables/chromedriver")
 _log = logging.getLogger(__name__)
 with open(folder + "/mongo_secrets.json") as json_file:
     secrets = json.load(json_file)
@@ -19,8 +18,9 @@ data_dir = Path("platform_data/sailbuoy")
 def download_sailbuoy(sb_id):
     options = webdriver.ChromeOptions()
     options.add_argument("--headless")
-    options.binary_location = "/snap/bin/chromium"
+    options.binary_location = "/usr/bin/chromium-browser"
     driver = webdriver.Chrome(options=options)
+    _log.info("configured driver")
     driver.get("https://ids.sailbuoy.no")  # load webpage
     driver.find_element("id", "UserName").send_keys(secrets["sb_user"])
     driver.find_element("id", "Password").send_keys(secrets["sb_password"])
@@ -29,17 +29,20 @@ def download_sailbuoy(sb_id):
     )  # find the submit button
     element.click()  # click the submit button
     time.sleep(2)  # give the page time to load
+    _log.info("logged in ")
     # make the cookies accessible for the session
     session = requests.Session()
     cookies = driver.get_cookies()
     for cookie in cookies:
         session.cookies.set(cookie["name"], cookie["value"])
 
+    _log.info("start downloads")
     download_link1 = f"https://ids.sailbuoy.no/GenCustomData/_DownloadAllAsCSV?instrName={sb_id}D"  # Payload
     download_link2 = f"https://ids.sailbuoy.no/GenCustomData/_DownloadAllAsCSV?instrName={sb_id}A"  # Autopilot
     response1 = session.get(download_link1)
     response2 = session.get(download_link2)
     # at this point, the downloadable csv files are stored in the response object
+    _log.info("write data to file")
     if not data_dir.exists():
         data_dir.mkdir(parents=True)
     with open(data_dir / f"{sb_id}_nav.csv", "w") as file:
