@@ -9,6 +9,7 @@ from pathlib import Path
 
 folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 sys.path.insert(0, folder)
+sys.path.insert(0, "/data/executables/chromedriver")
 _log = logging.getLogger(__name__)
 with open(folder + "/mongo_secrets.json") as json_file:
     secrets = json.load(json_file)
