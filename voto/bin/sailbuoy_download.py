@@ -1,5 +1,6 @@
 import requests
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 import time
 import json
 import logging
@@ -16,10 +17,14 @@ data_dir = Path("platform_data/sailbuoy")
 
 
 def download_sailbuoy(sb_id):
-    options = webdriver.ChromeOptions()
-    options.add_argument("--headless")
-    options.binary_location = "/usr/bin/chromium-browser"
-    driver = webdriver.Chrome(options=options)
+    _log.info("start sailbuoy download process")
+    chrome_options = Options()
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    driver = webdriver.Chrome(
+        executable_path="/usr/bin/chromedriver", options=chrome_options
+    )
     _log.info("configured driver")
     driver.get("https://ids.sailbuoy.no")  # load webpage
     driver.find_element("id", "UserName").send_keys(secrets["sb_user"])
