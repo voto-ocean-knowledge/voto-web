@@ -11,9 +11,9 @@ from pathlib import Path
 folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 sys.path.insert(0, folder)
 _log = logging.getLogger(__name__)
-with open(folder + "/mongo_secrets.json") as json_file:
+with open(f"{folder}/mongo_secrets.json") as json_file:
     secrets = json.load(json_file)
-data_dir = Path("platform_data/sailbuoy")
+data_dir = Path("data/sailbuoy/raw")
 
 
 def download_sailbuoy(sb_id):
