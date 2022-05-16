@@ -13,7 +13,7 @@ sys.path.insert(0, folder)
 _log = logging.getLogger(__name__)
 with open(f"{folder}/mongo_secrets.json") as json_file:
     secrets = json.load(json_file)
-data_dir = Path("data/sailbuoy/raw")
+data_dir = Path("/data/sailbuoy/raw")
 
 
 def download_sailbuoy(sb_id):
