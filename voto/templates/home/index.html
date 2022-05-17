@@ -30,9 +30,20 @@
         var gliderLines = JSON.parse('{{ glider_lines| tojson | safe}}');
         var gliders = JSON.parse('{{ gliders| tojson | safe}}');
 
+        // sailbuoys
+        var sailbuoyLines = JSON.parse('{{ sailbuoy_lines| tojson | safe}}');
+        var sailbuoys = JSON.parse('{{ sailbuoys| tojson | safe}}');
+
        // statics
        	let seaexplorerIcon = L.icon({
 		iconUrl: '/static/img/icons/seaex.png',
+		iconSize:     [60, 40], // size of the icon
+		iconAnchor:   [30, 40], // point of the icon which will correspond to marker's location
+		popupAnchor:  [3, -40] // point from which the popup should open relative to the iconAnchor
+	    });
+
+       	let sailbuoyIcon = L.icon({
+		iconUrl: '/static/img/icons/sailbuoy.png',
 		iconSize:     [60, 40], // size of the icon
 		iconAnchor:   [30, 40], // point of the icon which will correspond to marker's location
 		popupAnchor:  [3, -40] // point from which the popup should open relative to the iconAnchor
@@ -64,13 +75,16 @@
             OSM: OpenStreetMap_Mapnik
         };
 
-        // add gliders to map
+        // add gliders and sailbuoys to map
+        L.geoJSON(sailbuoyLines, {color:'#f8bf08',
+                lineStringToLayer: function (feature, latlng) {
+                    return L.line(latlng, );},
+                onEachFeature: popupText}).addTo(map);
 
-        function style(feature) {
-            return {
-                weight: 1,
-                color: 'yellow'};}
-
+	    let sailbuoyLayer = L.geoJSON(sailbuoys, {
+		    pointToLayer: function (feature, latlng) {
+			return L.marker(latlng, {icon: sailbuoyIcon});},
+		    onEachFeature: popupText}).addTo(map);
 
         L.geoJSON(gliderLines, {color:'#fffb08',
                 lineStringToLayer: function (feature, latlng) {
@@ -81,6 +95,7 @@
 		    pointToLayer: function (feature, latlng) {
 			return L.marker(latlng, {icon: seaexplorerIcon});},
 		    onEachFeature: popupText}).addTo(map);
+
 
         // add controls to map
         controlPanel = L.control.layers(basemaps);

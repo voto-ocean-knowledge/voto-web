@@ -116,6 +116,8 @@ class SailbuoyMission(mongoengine.Document):
     variables = mongoengine.ListField()
     project = mongoengine.StringField()
     project_url = mongoengine.StringField()
+    lon = mongoengine.ListField()
+    lat = mongoengine.ListField()
 
     meta = {
         "db_alias": "core",

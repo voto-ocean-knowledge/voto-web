@@ -24,7 +24,7 @@ def all_nrt_sailbuoys(full_dir):
     for nav, pld in zip(navs, plds):
         if nav.name[:6] != pld.name[:6]:
             raise ValueError(
-                f"nav and pld filesnames do not mathch {nav.name} {pld.name}"
+                f"nav and pld filenames do not match {nav.name} {pld.name}"
             )
         split_nrt_sailbuoy(nav, pld, int(nav.name[2:6]))
 
@@ -78,7 +78,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Add glider missions to the database")
     parser.add_argument("kind", type=str, help="Kind of input, must be nrt or complete")
     parser.add_argument(
-        "directory", type=str, help="Absolute path to the directory of processd files"
+        "directory", type=str, help="Absolute path to the directory of processed files"
     )
     logging.basicConfig(
         filename=f"{secrets['log_dir']}/voto_add_data.log",

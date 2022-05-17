@@ -1,4 +1,4 @@
-from voto.data.db_classes import GliderMission
+from voto.data.db_classes import GliderMission, SailbuoyMission
 from voto.services.mission_service import profiles_from_mission
 from voto.services.platform_service import select_glider
 
@@ -53,3 +53,46 @@ def glidermission_to_json(glider, mission):
         ],
     }
     return dive_dict, line_dict, last_dive_dict
+
+
+def sailbuoy_to_json(sailbuoy, mission):
+    mission = SailbuoyMission.objects(sailbuoy=sailbuoy, mission=mission).first()
+    coords = []
+    for lon, lat in zip(mission.lon, mission.lat):
+        coords.append([lon, lat])
+
+    popup = (
+        f"<a href='/fleet/SB{mission.sailbuoy}'>SB{sailbuoy}</a><br>"
+        f"<a href='/SB{mission.sailbuoy}/M{mission.mission}'> Mission {mission.mission}</a>"
+        f"<br>GPS fix {len(mission.lat)}<br> {str(mission.end)[:16]}"
+    )
+    dive_item = {
+        "geometry": {"type": "Point", "coordinates": [lon, lat]},
+        "type": "Feature",
+        "properties": {
+            "popupContent": popup,
+            "gliderOrder": 0,
+            "gliderNum": sailbuoy,
+            "diveLink": "",
+            "diveNum": len(mission.lat),
+        },
+        "id": 0,
+    }
+
+    last_dive_dict = {"type": "FeatureCollection", "features": [dive_item]}
+    line_dict = {
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "geometry": {"type": "LineString", "coordinates": coords},
+                "type": "Feature",
+                "properties": {
+                    "popupContent": f"SB{sailbuoy}<br><a href='/SB{sailbuoy}/M{mission.mission}'>"
+                    f" Mission {mission.mission}</a>",
+                    "gliderOrder": 0,
+                },
+                "id": 0,
+            }
+        ],
+    }
+    return line_dict, last_dive_dict

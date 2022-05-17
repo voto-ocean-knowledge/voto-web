@@ -15,6 +15,7 @@ blueprint = flask.Blueprint("home", __name__, template_folder="templates")
 def index():
     vm = IndexViewModel()
     vm.check_missions()
+    vm.check_sailbuoys()
     return vm.to_dict()
 
 

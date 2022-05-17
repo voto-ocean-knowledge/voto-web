@@ -284,6 +284,8 @@ def add_sailbuoymission(ds, mission_complete=False):
     mission.lat_min = attrs["geospatial_lat_min"]
     mission.lat_max = attrs["geospatial_lat_max"]
     mission.wmo_id = attrs["wmo_id"]
+    mission.lon = list(ds.longitude.values)
+    mission.lat = list(ds.latitude.values)
 
     times = ds.time.values
     mission.start = datetime.datetime.utcfromtimestamp(times[0].tolist() / 1e9)
@@ -313,3 +315,15 @@ def add_sailbuoymission(ds, mission_complete=False):
         f"Add mission SB{mission.sailbuoy} M{mission.mission} (complete: {mission_complete})"
     )
     return mission
+
+
+def recent_sailbuoymissions(timespan=datetime.timedelta(days=3)):
+    missions = SailbuoyMission.objects()
+    recent_sailbuoys = []
+    recent_missions = []
+    for mission in missions:
+        since_last_dive = datetime.datetime.now() - mission.end
+        if since_last_dive < timespan:
+            recent_sailbuoys.append(mission.sailbuoy)
+            recent_missions.append(mission.mission)
+    return recent_sailbuoys, recent_missions
