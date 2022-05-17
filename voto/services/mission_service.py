@@ -2,7 +2,13 @@ import datetime
 import numpy as np
 import pandas as pd
 import logging
-from voto.data.db_classes import Profile, GliderMission, Stat, PipeLineMission
+from voto.data.db_classes import (
+    Profile,
+    GliderMission,
+    Stat,
+    PipeLineMission,
+    SailbuoyMission,
+)
 from voto.services.utility_functions import seconds_to_pretty
 
 _log = logging.getLogger(__name__)
@@ -229,8 +235,81 @@ def total_mission_distance(profiles):
     return distance
 
 
+def sailbuoy_distance(lons, lats):
+    distance = 0
+    prev_lon, prev_lat = lons[0], lats[0]
+    for lon, lat in zip(lons, lats):
+        dlon = lon - prev_lon
+        dlat = lat - prev_lat
+        distance += distance_m(dlon, dlat, lat)
+    return distance
+
+
 def pipeline_stats(yml_only=True):
     pipes = PipeLineMission.objects(yml=yml_only)
     for pipe in pipes:
         pipe.glider_fill = str(pipe.glider).zfill(3)
     return pipes
+
+
+def add_sailbuoymission(ds, mission_complete=False):
+    """
+    ds: dataset of sailbuoy data
+    mission_complete: True if using a completed mission df, False if nrt (default)
+    """
+    mission = SailbuoyMission()
+    attrs = ds.attrs
+    # delete the mission if it already exists
+    old_mission = SailbuoyMission.objects(
+        sailbuoy=int(attrs["sailbuoy_serial"]), mission=int(attrs["deployment_id"])
+    ).first()
+    # if mission haas already been completed, do not replace with nrt data
+    if old_mission:
+        if not mission_complete and old_mission.is_complete:
+            _log.warning(
+                f"attempted overwrite of mission SB{old_mission.sailbuoy} m{old_mission.mission} "
+                f"with nrt data. Blocked"
+            )
+            return old_mission
+    if old_mission:
+        _log.info(
+            f"Delete profiles from mission SEA{old_mission.sailbuoy} M{old_mission.mission}"
+        )
+        _log.info(f"Delete mission SB{old_mission.sailbuoy} M{old_mission.mission}")
+        old_mission.delete()
+    mission.mission = int(attrs["deployment_id"])
+    mission.sailbuoy = int(attrs["sailbuoy_serial"])
+    mission.lon_min = attrs["geospatial_lon_min"]
+    mission.lon_max = attrs["geospatial_lon_max"]
+    mission.lat_min = attrs["geospatial_lat_min"]
+    mission.lat_max = attrs["geospatial_lat_max"]
+    mission.wmo_id = attrs["wmo_id"]
+
+    times = ds.time.values
+    mission.start = datetime.datetime.utcfromtimestamp(times[0].tolist() / 1e9)
+    mission.end = datetime.datetime.utcfromtimestamp(times[-1].tolist() / 1e9)
+    mission.sea_name = attrs["sea_name"]
+    if "basin" in attrs.keys():
+        mission.basin = attrs["basin"]
+    else:
+        mission.basin = " "
+
+    mission.project = attrs["project"]
+    mission.project_url = attrs["project_url"]
+    present_vars = list(desire_vars.intersection(list(ds)))
+    pretty_vars = []
+    for var in present_vars:
+        if var in replace.keys():
+            pretty_vars.append(replace[var])
+        else:
+            pretty_vars.append(var)
+    mission.variables = pretty_vars
+
+    mission.total_distance_m = sailbuoy_distance(ds.Long.values, ds.Lat.values)
+    if mission_complete:
+        mission.is_complete = True
+    mission.save()
+    _log.info(
+        f"Add mission SB{mission.sailbuoy} M{mission.mission} (complete: {mission_complete})"
+    )
+    return mission

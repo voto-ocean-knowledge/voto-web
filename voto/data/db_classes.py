@@ -96,3 +96,29 @@ class PipeLineMission(mongoengine.Document):
         "collection": "pipelinestatus",
         "indexes": ["mission", "glider"],
     }
+
+
+class SailbuoyMission(mongoengine.Document):
+    mission = mongoengine.IntField(required=True)
+    sailbuoy = mongoengine.IntField(required=True)
+    start = mongoengine.DateTimeField(default=datetime.now())
+    end = mongoengine.DateTimeField(default=datetime.now())
+    lat_min = mongoengine.FloatField()
+    lat_max = mongoengine.FloatField()
+    lon_min = mongoengine.FloatField()
+    lon_max = mongoengine.FloatField()
+    sea_name = mongoengine.StringField()
+    basin = mongoengine.StringField()
+    wmo_id = mongoengine.IntField()
+    is_complete = mongoengine.BooleanField(default=False)
+    last_modified = mongoengine.DateTimeField(default=datetime.now())
+    total_distance_m = mongoengine.FloatField(default=0)
+    variables = mongoengine.ListField()
+    project = mongoengine.StringField()
+    project_url = mongoengine.StringField()
+
+    meta = {
+        "db_alias": "core",
+        "collection": "sailbuoymissions",
+        "indexes": ["mission", "sailbuoy", "start", "end"],
+    }

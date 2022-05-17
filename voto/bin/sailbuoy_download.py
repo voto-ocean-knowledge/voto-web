@@ -52,8 +52,10 @@ def download_sailbuoy(sb_id):
         data_dir.mkdir(parents=True)
     with open(data_dir / f"{sb_id}_nav.csv", "w") as file:
         file.write(str(response1.text))
+        _log.info(f"wrote {sb_id}_nav.csv")
     with open(data_dir / f"{sb_id}_pld.csv", "w") as file:
         file.write(str(response2.text))
+        _log.info(f"wrote {sb_id}_pld.csv")
 
 
 if __name__ == "__main__":
@@ -66,3 +68,4 @@ if __name__ == "__main__":
     )
     download_sailbuoy("SB2016")
     download_sailbuoy("SB2120")
+    _log.info("Finished download of sailbuoy data\n")
