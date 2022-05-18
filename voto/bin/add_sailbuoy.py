@@ -13,7 +13,7 @@ sys.path.insert(0, folder)
 from add_profiles import init_db, secrets
 from voto.services.mission_service import add_sailbuoymission
 from voto.services.geo_functions import get_seas
-from static_plots import sailbuoy_nrt_plots
+from static_plots import sailbuoy_nrt_plots, make_map
 
 
 def all_nrt_sailbuoys(full_dir):
@@ -28,6 +28,7 @@ def all_nrt_sailbuoys(full_dir):
                 f"nav and pld filenames do not match {nav.name} {pld.name}"
             )
         split_nrt_sailbuoy(nav, pld, int(nav.name[2:6]))
+    _log.info("Finished processing nrt sailbuoy data")
 
 
 def split_nrt_sailbuoy(
@@ -86,8 +87,9 @@ def add_nrt_sailbuoy(df_in, sb, mission):
     if not data_dir.exists():
         data_dir.mkdir(parents=True)
     ds.to_netcdf(f"/data/sailbuoy/nrt_proc/SB{sb}_M{mission}.nc")
-    _log.info(f"plotting sailbuoy data from SB{sb} mission {mission} ")
+    _log.info(f"plotting sailbuoy data from SB{sb} mission {mission}")
     sailbuoy_nrt_plots(ds)
+    make_map(ds)
     _log.info(f"Completed add SB{sb} mission {mission}")
 
 

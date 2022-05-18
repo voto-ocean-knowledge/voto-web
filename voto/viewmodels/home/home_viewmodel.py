@@ -52,8 +52,12 @@ class IndexViewModel(ViewModelBase):
             sailbuoy_lines_json.append(line_json)
             sailbuoys_json.append(glider_dict)
             self.__setattr__(
-                f"combi_plot_{self.last_glider_i + i}",
+                f"combi_plot_{self.last_glider_i + 1 + i}",
                 f"/static/img/glider/sailbouy/nrt/SB{sailbuoy}_M{mission}.png",
+            )
+            self.__setattr__(
+                f"map_{self.last_glider_i + 1 + i}",
+                f"/static/img/glider/sailbouy/nrt/SB{sailbuoy}_M{mission}_map.png",
             )
         self.sailbuoy_lines = sailbuoy_lines_json
         self.sailbuoys = sailbuoys_json
