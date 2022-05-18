@@ -13,6 +13,7 @@ sys.path.insert(0, folder)
 from add_profiles import init_db, secrets
 from voto.services.mission_service import add_sailbuoymission
 from voto.services.geo_functions import get_seas
+from static_plots import sailbuoy_nrt_plots
 
 
 def all_nrt_sailbuoys(full_dir):
@@ -72,6 +73,13 @@ def add_nrt_sailbuoy(df_in, sb, mission):
     }
     ds.attrs = attrs
     add_sailbuoymission(ds)
+    data_dir = Path("/data/sailbuoy/nrt_proc")
+    if not data_dir.exists():
+        data_dir.mkdir(parents=True)
+    ds.to_netcdf(f"/data/sailbuoy/nrt_proc/SB{sb}_M{mission}.nc")
+    _log.info(f"plotting sailbuoy data from SB{sb} mission {mission} ")
+    sailbuoy_nrt_plots(ds)
+    _log.info(f"Completed add SB{sb} mission {mission}")
 
 
 if __name__ == "__main__":
