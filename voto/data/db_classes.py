@@ -98,6 +98,18 @@ class PipeLineMission(mongoengine.Document):
     }
 
 
+class Sailbuoy(mongoengine.Document):
+    sailbuoy = mongoengine.IntField(required=True)
+    missions = mongoengine.ListField(default=[])
+    total_seconds = mongoengine.IntField(default=0)
+    total_dist = mongoengine.FloatField(default=0.0)
+    meta = {
+        "db_alias": "core",
+        "collection": "sailbuoys",
+        "indexes": ["sailbuoy"],
+    }
+
+
 class SailbuoyMission(mongoengine.Document):
     mission = mongoengine.IntField(required=True)
     sailbuoy = mongoengine.IntField(required=True)

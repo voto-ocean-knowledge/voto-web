@@ -20,13 +20,34 @@
             </thead>
             <tbody>
             {% for g in gliders %}
-
                 <tr>
                 <td>SEA{{g.glider_fill}} {{g.name}}</td>
                 <td>{{g.pretty_time}}</td>
                 <td>{{g.total_profiles}}</td>
                 <td><a href="fleet/SEA{{ g.glider }}" class="btn btn-primary" role="button">To glider</a></td>
             {%  endfor %}
+            </tbody>
+        </table>
+
+        <h2>Sailbuoys</h2>
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">Sailbuoy</th>
+                <th scope="col">Total sea time</th>
+                <th scope="col">Total miles sailed</th>
+                <th scope="col">Link</th>
+                <th scope="col"></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for g in sailbuoys%}
+            <tr>
+                <td>SB{{g.sailbuoy}}</td>
+                <td>{{g.pretty_time}}</td>
+                <td>{{g.miles}}</td>
+                <td><a href="fleet/SB{{g.sailbuoy}}" class="btn btn-primary" role="button">To sailbuoy</a></td>
+                {%  endfor %}
             </tbody>
         </table>
     </div>

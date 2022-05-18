@@ -7,3 +7,8 @@ def seconds_to_pretty(seconds):
     else:
         time_str = f"{days} days"
     return time_str
+
+
+def m_to_naut_miles(m):
+    miles = int(m * 0.00053996)
+    return "{:,}".format(miles)

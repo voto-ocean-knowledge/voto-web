@@ -7,11 +7,11 @@ import argparse
 import sys
 
 _log = logging.getLogger(__name__)
-
 folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 sys.path.insert(0, folder)
 from add_profiles import init_db, secrets
 from voto.services.mission_service import add_sailbuoymission
+from voto.services.platform_service import update_sailbuoy
 from voto.services.geo_functions import get_seas
 from static_plots import sailbuoy_nrt_plots, make_map
 
@@ -82,7 +82,9 @@ def add_nrt_sailbuoy(df_in, sb, mission):
         "project_url": "https://voiceoftheocean.org/samba-smart-autonomous-monitoring-of-the-baltic-sea/",
     }
     ds.attrs = attrs
-    add_sailbuoymission(ds)
+    _log.info(f"adding SB{sb} mission {mission} to database")
+    mission = add_sailbuoymission(ds)
+    update_sailbuoy(mission)
     data_dir = Path("/data/sailbuoy/nrt_proc")
     if not data_dir.exists():
         data_dir.mkdir(parents=True)

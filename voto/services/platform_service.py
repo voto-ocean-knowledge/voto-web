@@ -1,4 +1,4 @@
-from voto.data.db_classes import Glider, GliderMission
+from voto.data.db_classes import Glider, GliderMission, Sailbuoy, SailbuoyMission
 import json
 import os
 import sys
@@ -71,3 +71,43 @@ def update_glider(mission):
 def select_glider(glider):
     glider_obj = Glider.objects(glider=glider).first()
     return glider_obj
+
+
+def sailbuoy_calc_totals(sailbuoy):
+    """
+    Calculate total stats for glider. This should be called whenever a mission for a glider is updated
+    """
+    if not sailbuoy.missions:
+        return sailbuoy
+    total_seconds = 0
+    total_distance_m = 0
+    for mission_num in sailbuoy.missions:
+        mission = SailbuoyMission.objects(
+            sailbuoy=sailbuoy.sailbuoy, mission=mission_num
+        ).first()
+        total_seconds += (mission.end - mission.start).total_seconds()
+        total_distance_m += mission.total_distance_m
+    sailbuoy.total_seconds = total_seconds
+    sailbuoy.total_dist = total_distance_m
+    sailbuoy.save()
+    return sailbuoy
+
+
+def update_sailbuoy(mission):
+    """
+    mission: sailbuoy mission object
+    """
+    sailbuoy = Sailbuoy.objects(sailbuoy=mission.sailbuoy).first()
+    if sailbuoy:
+        Sailbuoy.objects(sailbuoy=mission.sailbuoy).update(
+            add_to_set__missions=mission.mission
+        )
+        _log.info(f"Add mission {mission.mission} to SB{mission.sailbuoy}")
+        sailbuoy = sailbuoy_calc_totals(sailbuoy)
+        return sailbuoy
+    sailbuoy = Sailbuoy()
+    sailbuoy.sailbuoy = mission.sailbuoy
+    sailbuoy.missions = [mission.mission]
+    sailbuoy = sailbuoy_calc_totals(sailbuoy)
+    _log.info(f"Add sailbuoy SEA{mission.sailbuoy}")
+    return sailbuoy

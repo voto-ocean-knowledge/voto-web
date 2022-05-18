@@ -272,9 +272,6 @@ def add_sailbuoymission(ds, mission_complete=False):
             )
             return old_mission
     if old_mission:
-        _log.info(
-            f"Delete profiles from mission SEA{old_mission.sailbuoy} M{old_mission.mission}"
-        )
         _log.info(f"Delete mission SB{old_mission.sailbuoy} M{old_mission.mission}")
         old_mission.delete()
     mission.mission = int(attrs["deployment_id"])
@@ -307,7 +304,9 @@ def add_sailbuoymission(ds, mission_complete=False):
             pretty_vars.append(var)
     mission.variables = pretty_vars
 
-    mission.total_distance_m = sailbuoy_distance(ds.Long.values, ds.Lat.values)
+    mission.total_distance_m = sailbuoy_distance(
+        ds.Long.values[::10], ds.Lat.values[::10]
+    )
     if mission_complete:
         mission.is_complete = True
     mission.save()

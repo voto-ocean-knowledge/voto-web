@@ -3,6 +3,7 @@ from voto.infrastructure.view_modifiers import response
 from voto.viewmodels.platform.platform_viewmodel import (
     PlatformListViewModel,
     GliderViewModel,
+    SailbuoyViewModel,
 )
 
 blueprint = flask.Blueprint("platforms", __name__, template_folder="templates")
@@ -19,5 +20,13 @@ def platform_list():
 @response(template_file="platform/glider.html")
 def glider_page(glider: int):
     vm = GliderViewModel(glider)
+    vm.validate()
+    return vm.to_dict()
+
+
+@blueprint.route("/fleet/SB<int:sailbuoy>")
+@response(template_file="platform/sailbuoy.html")
+def sailbuoy_page(sailbuoy: int):
+    vm = SailbuoyViewModel(sailbuoy)
     vm.validate()
     return vm.to_dict()

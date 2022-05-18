@@ -1,15 +1,20 @@
-from voto.data.db_classes import Glider, GliderMission
-from voto.services.utility_functions import seconds_to_pretty
+from voto.data.db_classes import Glider, GliderMission, Sailbuoy
+from voto.services.utility_functions import seconds_to_pretty, m_to_naut_miles
 from voto.viewmodels.shared.viewmodelbase import ViewModelBase
 
 
 class PlatformListViewModel(ViewModelBase):
     def __init__(self):
         gliders = Glider.objects().order_by("glider")
+        sailbuoys = Sailbuoy.objects().order_by("sailbuoy")
         for glider in gliders:
             glider.glider_fill = str(glider.glider).zfill(3)
             glider.pretty_time = seconds_to_pretty(glider.total_seconds)
+        for sailbuoy in sailbuoys:
+            sailbuoy.pretty_time = seconds_to_pretty(sailbuoy.total_seconds)
+            sailbuoy.miles = m_to_naut_miles(sailbuoy.total_dist)
         self.gliders = gliders
+        self.sailbuoys = sailbuoys
 
 
 class GliderViewModel(ViewModelBase):
@@ -32,3 +37,11 @@ class GliderViewModel(ViewModelBase):
             gm.duration_pretty = (gm.end - gm.start).days
             gm.variables_pretty = ", ".join(gm.variables)
         self.glidermissions = glider_missions
+
+
+class SailbuoyViewModel(ViewModelBase):
+    def __init__(self, sailbuoy_num):
+        self.sailbuoy_num = sailbuoy_num
+
+    def validate(self):
+        self.sailbuoy = Sailbuoy.objects(sailbuoy=self.sailbuoy_num).first()
