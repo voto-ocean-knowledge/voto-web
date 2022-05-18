@@ -2,6 +2,7 @@ import flask
 from voto.viewmodels.mission.mission_viewmodel import (
     MissionViewModel,
     GliderMissionViewModel,
+    SailbuoyMissionViewModel,
 )
 from voto.infrastructure.view_modifiers import response
 
@@ -28,8 +29,21 @@ def missions(glider: int, mission: int):
     """
     vm = GliderMissionViewModel(glider, mission)
     vm.validate()
-
     if vm.error:
         return flask.redirect("/")
+    return vm.to_dict()
 
+
+@blueprint.route("/SB<int:sailbuoy>/M<int:mission>")
+@response(template_file="mission/mission_sailbuoy.html")
+def mission_sailybuoy(sailbuoy: int, mission: int):
+    """
+    Mission page method,
+    :returns:
+    mission: selected mission information
+    """
+    vm = SailbuoyMissionViewModel(sailbuoy, mission)
+    vm.validate()
+    # if vm.error:
+    #   return flask.redirect("/")
     return vm.to_dict()

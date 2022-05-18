@@ -326,3 +326,8 @@ def recent_sailbuoymissions(timespan=datetime.timedelta(days=3)):
             recent_sailbuoys.append(mission.sailbuoy)
             recent_missions.append(mission.mission)
     return recent_sailbuoys, recent_missions
+
+
+def select_sailbuoymission(sailbuoy, mission):
+    mission_obj = SailbuoyMission.objects(sailbuoy=sailbuoy, mission=mission).first()
+    return mission_obj

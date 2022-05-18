@@ -52,7 +52,7 @@ sailbuoy_var_names = {
 
 
 def sailbuoy_nrt_plots(ds):
-    plots_dir = Path("/data/plots/sailbouy/nrt")
+    plots_dir = Path("/data/plots/sailbuoy/nrt")
     if not plots_dir.exists():
         plots_dir.mkdir(parents=True)
 
@@ -177,7 +177,7 @@ def make_map(dataset):
     gl.right_labels = None
     scale_bar(ax, location=(0.41, 0.05))
 
-    fn_root = f"/data/plots/sailbouy/nrt/SB{attrs['sailbuoy_serial']}_M{attrs['deployment_id']}"
+    fn_root = f"/data/plots/sailbuoy/nrt/SB{attrs['sailbuoy_serial']}_M{attrs['deployment_id']}"
     fn_ext = "png"
     filename_map = f"{fn_root}_map.{fn_ext}"
     _log.info(f"writing map to {filename_map}")

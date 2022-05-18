@@ -1,4 +1,4 @@
-from voto.data.db_classes import Glider, GliderMission, Sailbuoy
+from voto.data.db_classes import Glider, GliderMission, Sailbuoy, SailbuoyMission
 from voto.services.utility_functions import seconds_to_pretty, m_to_naut_miles
 from voto.viewmodels.shared.viewmodelbase import ViewModelBase
 
@@ -45,3 +45,10 @@ class SailbuoyViewModel(ViewModelBase):
 
     def validate(self):
         self.sailbuoy = Sailbuoy.objects(sailbuoy=self.sailbuoy_num).first()
+        self.total_missions = len(self.sailbuoy.missions)
+        self.pretty_time = seconds_to_pretty(self.sailbuoy.total_seconds)
+        sailbuoy_missions = SailbuoyMission.objects(sailbuoy=int(self.sailbuoy_num))
+        for gm in sailbuoy_missions:
+            gm.start_pretty = str(gm.start)[:10]
+            gm.duration_pretty = (gm.end - gm.start).days
+        self.sailbuoy_missions = sailbuoy_missions

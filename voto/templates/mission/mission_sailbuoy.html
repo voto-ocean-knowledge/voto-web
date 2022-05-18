@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+
+{% block additional_css %}
+    <title>SB{{sailbuoy}} Mission {{mission}}</title>
+{% endblock %}
+{% block main_content %}
+    <div class="container mission-summary">
+        <h2 class="mt-4">SB{{sailbuoy}} Mission {{mission}}</h2>
+        <p>This mission was in the <strong>{{sailbuoymission.basin}}</strong>.
+        <br> start: {{start_date}} <br> end: {{end_date}}</p>
+    </div>
+    <div class="row mb-2">
+      <div class="col-lg-6 themed-grid-col"><img class="img-fluid" src={{combi_plot}}><br></div>
+      <div class="col-lg-6 themed-grid-col"><img class="img-fluid" src={{map}}><br></div>
+    </div>
+{% endblock %}

@@ -2,10 +2,50 @@
 
 {% block additional_css %}
     <title>SB{{sailbuoy}}</title>
+<!-- CSS and javascript for datatables, requires jquery-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+<!-- Setup datatables-->
+<script>
+    $(document).ready( function () {
+        $('#missions_table').DataTable({
+        "paging": false,
+        "order": [[ 4, "desc" ]]
+        });
+    } );
+    </script>
 {% endblock %}
 {% block main_content %}
     <div class="container mission-summary">
-        <h2 class="mt-4">SB{{sailbuoy_num}}</h2>
+        <h2 class="mt-4">SB{{sailbuoy}}</h2>
+        <p>SB{{sailbuoy.sailbuoy}} has completed {{total_missions}} missions and spent {{pretty_time}} at sea.<br>
     </div>
+<div class="container sailbuoy-mission-list">
+    <h2>Missions</h2>
+    <table class="table table-hover" id="missions_table">
+        <thead>
+        <tr>
+            <th scope="col">Mission</th>
+            <th scope="col">Location</th>
+            <th scope="col">Project</th>
+            <th scope="col">Duration (days)</th>
+            <th scope="col">Start</th>
+            <th scope="col">Link</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for m in sailbuoy_missions %}
 
+        <tr>
+            <td>{{m.mission}}</td>
+            <td>{{m.sea_name}}</td>
+            <td><a href="{{ m.project_url}}"  class="link-primary">{{m.project}} </a></td>
+            <td>{{m.duration_pretty}}</td>
+            <td>{{m.start_pretty}}</td>
+            <td><a href="/SB{{ m.sailbuoy }}/M{{m.mission}}" class="btn btn-primary" role="button">M{{m.mission}}</a></td>
+            {%  endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}
