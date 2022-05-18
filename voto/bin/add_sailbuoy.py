@@ -45,7 +45,7 @@ def split_nrt_sailbuoy(
         on="Time",
         direction="nearest",
         tolerance=datetime.timedelta(minutes=30),
-        suffixes=("", "_nav"),
+        suffixes=("", "_pld"),
     )
     df_combi["time_diff"] = df_combi.Time.diff()
     start_i = 0

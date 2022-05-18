@@ -33,6 +33,9 @@ sailbuoy_variables = (
     "FT_Temp",
     "FT_WindSpeed",
     "FT_WindDir",
+    "AirmarAirTemp",
+    "AirmarWindDirection",
+    "AirmarWindSpeed",
 )
 
 sailbuoy_var_names = {
@@ -41,6 +44,9 @@ sailbuoy_var_names = {
     "FT_Temp": "Air temperature (C)",
     "FT_WindSpeed": "Wind speed (m/s)",
     "FT_WindDir": "Wind direction",
+    "AirmarAirTemp": "Air temperature (C)",
+    "AirmarWindDirection": "Wind speed (m/s)",
+    "AirmarWindSpeed": "Wind direction",
 }
 
 
