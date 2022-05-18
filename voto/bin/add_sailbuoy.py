@@ -38,17 +38,26 @@ def split_nrt_sailbuoy(
     min_mission_time=datetime.timedelta(days=3),
 ):
     df_nav = pd.read_csv(nav, sep="\t", parse_dates=["Time"])
-    df_nav["time_diff"] = df_nav.Time.diff()
+    df_pld = pd.read_csv(pld, sep="\t", parse_dates=["Time"])
+    df_combi = pd.merge_asof(
+        df_nav,
+        df_pld,
+        on="Time",
+        direction="nearest",
+        tolerance=datetime.timedelta(minutes=30),
+        suffixes=("", "_nav"),
+    )
+    df_combi["time_diff"] = df_combi.Time.diff()
     start_i = 0
     mission_num = 1
-    for i, dt in zip(df_nav.index, df_nav.time_diff):
+    for i, dt in zip(df_combi.index, df_combi.time_diff):
         if dt > max_nocomm_time:
-            df_mission = df_nav[start_i:i]
+            df_mission = df_combi[start_i:i]
             start_i = i
             if df_mission.Time.iloc[-1] - df_mission.Time.iloc[0] > min_mission_time:
                 add_nrt_sailbuoy(df_mission, sb_num, mission_num)
                 mission_num += 1
-    df_mission = df_nav[start_i:]
+    df_mission = df_combi[start_i:]
     if df_mission.Time.iloc[-1] - df_mission.Time.iloc[0] > min_mission_time:
         add_nrt_sailbuoy(df_mission, sb_num, mission_num)
 
