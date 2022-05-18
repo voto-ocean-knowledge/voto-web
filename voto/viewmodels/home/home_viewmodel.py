@@ -13,12 +13,15 @@ class IndexViewModel(ViewModelBase):
         self.glider_points = blank_json_dict
         self.glider_lines = blank_json_dict
         self.gliders = blank_json_dict
+        self.sailbuoy_lines = blank_json_dict
+        self.sailbuoys = blank_json_dict
         (
             self.profile_count,
             self.glider_count,
             self.total_time,
             self.total_dist,
         ) = mission_service.totals()
+        self.last_glider_i = 0
 
     def check_missions(self):
         gliders, missions = mission_service.recent_glidermissions()
@@ -36,6 +39,7 @@ class IndexViewModel(ViewModelBase):
                 f"map_{i}",
                 f"/static/img/glider/nrt/SEA{glider}/M{mission}/SEA{glider}_M{mission}_map.png",
             )
+            self.last_glider_i = i
         self.glider_lines = glider_lines_json
         self.gliders = gliders_json
 
@@ -47,6 +51,10 @@ class IndexViewModel(ViewModelBase):
             line_json, glider_dict = sailbuoy_to_json(sailbuoy, mission)
             sailbuoy_lines_json.append(line_json)
             sailbuoys_json.append(glider_dict)
+            self.__setattr__(
+                f"combi_plot_{self.last_glider_i + i}",
+                f"/static/img/glider/sailbouy/nrt/SB{sailbuoy}_M{mission}.png",
+            )
         self.sailbuoy_lines = sailbuoy_lines_json
         self.sailbuoys = sailbuoys_json
 
