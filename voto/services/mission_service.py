@@ -149,7 +149,28 @@ def totals():
     seconds = total_time.total_seconds()
     time_str = seconds_to_pretty(seconds)
     dist_km = int(total_dist / 1000)
-    return total_profiles, num_gliders, time_str, dist_km
+    missions = SailbuoyMission.objects()
+    sailbuoys = []
+    total_time = datetime.timedelta(seconds=0)
+    total_dist = 0
+    for mission in missions:
+        sailbuoys.append(mission.sailbuoy)
+        mission_time = mission.end - mission.start
+        total_time += mission_time
+        total_dist += mission.total_distance_m
+    num_sailbuoys = len(set(sailbuoys))
+    seconds = total_time.total_seconds()
+    time_str_sb = seconds_to_pretty(seconds)
+    dist_km_sb = int(total_dist / 1000)
+    return (
+        total_profiles,
+        num_gliders,
+        time_str,
+        dist_km,
+        num_sailbuoys,
+        time_str_sb,
+        dist_km_sb,
+    )
 
 
 def get_missions_df():
@@ -305,7 +326,7 @@ def add_sailbuoymission(ds, mission_complete=False):
     mission.variables = pretty_vars
 
     mission.total_distance_m = sailbuoy_distance(
-        ds.Long.values[::10], ds.Lat.values[::10]
+        ds.longitude.values[::50], ds.latitude.values[::50]
     )
     if mission_complete:
         mission.is_complete = True

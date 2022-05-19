@@ -20,6 +20,9 @@ class IndexViewModel(ViewModelBase):
             self.glider_count,
             self.total_time,
             self.total_dist,
+            self.sailbuoy_count,
+            self.total_time_sailbuoy,
+            self.total_dist_sailbuoy,
         ) = mission_service.totals()
         self.last_glider_i = 0
 
@@ -86,6 +89,9 @@ class StatsViewModel(ViewModelBase):
             self.glider_count,
             self.total_time,
             self.total_dist,
+            self.sailbuoy_count,
+            self.total_time_sailbuoy,
+            self.total_dist_sailbuoy,
         ) = mission_service.totals()
         self.stats = mission_service.get_stats("glider_uptime")
         stats_pretty = {}

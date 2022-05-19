@@ -11,7 +11,7 @@
     <!-- Link to providers CSS and javascript for leaflet provider extension-->
     <script src="http://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="static/js/leaflet-providers.js"></script>
-    <title>homepage</title>
+    <title>Observations &bull; VOTO</title>
 {% endblock %}
 
 {% block main_content %}
@@ -19,7 +19,8 @@
     <div class="container hero">
         <h2 class="mt-4">Ocean Knowledge live locations</h2>
         Our <strong>{{glider_count}}</strong> gliders have recorded <strong>{{ "{:,}".format(profile_count) }}</strong>
-        profiles and racked up <strong>{{total_time}}</strong> at sea covering <strong>{{total_dist}} km</strong>.
+        profiles and racked up <strong>{{total_time}}</strong> at sea covering <strong>{{"{:,}".format(total_dist)}} km</strong>.<br>
+        Our <strong>{{sailbuoy_count}}</strong> sailbuoys have spent <strong>{{total_time_sailbuoy}}</strong> at sea sailing <strong>{{"{:,}".format(total_dist_sailbuoy)}} km</strong>
     </div>
 
     <div id="map" style="height: 400px; "></div>
