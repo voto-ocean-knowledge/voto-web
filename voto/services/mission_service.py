@@ -179,7 +179,7 @@ def get_profiles_df():
     return df
 
 
-def recent_glidermissions(timespan=datetime.timedelta(days=3)):
+def recent_glidermissions(timespan=datetime.timedelta(hours=12)):
     missions = GliderMission.objects()
     recent_gliders = []
     recent_missions = []
@@ -316,7 +316,7 @@ def add_sailbuoymission(ds, mission_complete=False):
     return mission
 
 
-def recent_sailbuoymissions(timespan=datetime.timedelta(days=3)):
+def recent_sailbuoymissions(timespan=datetime.timedelta(hours=12)):
     missions = SailbuoyMission.objects()
     recent_sailbuoys = []
     recent_missions = []

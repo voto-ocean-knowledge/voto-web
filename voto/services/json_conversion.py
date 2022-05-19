@@ -19,19 +19,16 @@ def glidermission_to_json(glider, mission):
         popup = (
             f"<a href='/fleet/SEA{mission.glider}'>SEA{glider_fill} {name}</a><br>"
             f"<a href='/SEA{mission.glider}/M{mission.mission}'> Mission {profile.mission}</a>"
-            f"<br>profile {profile.number}<br> {str(profile.time)[:16]}"
+            f"<br>Profile {profile.number}<br> {str(profile.time)[:16]}"
         )
         dive_item = {
             "geometry": {"type": "Point", "coordinates": [profile.lon, profile.lat]},
             "type": "Feature",
             "properties": {
                 "popupContent": popup,
-                "gliderOrder": 0,
                 "gliderNum": profile.glider,
-                "diveLink": "",
                 "diveNum": str(profile.number),
             },
-            "id": i,
         }
         features.append(dive_item)
 
@@ -44,11 +41,9 @@ def glidermission_to_json(glider, mission):
                 "geometry": {"type": "LineString", "coordinates": coords},
                 "type": "Feature",
                 "properties": {
-                    "popupContent": f"SEA{glider_fill}<br><a href='/SEA{mission.glider}/M{mission.mission}'>"
-                    f" Mission {mission.mission}</a>",
-                    "gliderOrder": 0,
+                    "popupContent": f"<a href='/fleet/SEA{mission.glider}'>SEA{glider_fill} {name}</a><br>"
+                    f"<a href='/SEA{mission.glider}/M{mission.mission}'> Mission {profile.mission}</a>"
                 },
-                "id": 0,
             }
         ],
     }
@@ -71,12 +66,9 @@ def sailbuoy_to_json(sailbuoy, mission):
         "type": "Feature",
         "properties": {
             "popupContent": popup,
-            "gliderOrder": 0,
             "gliderNum": sailbuoy,
-            "diveLink": "",
             "diveNum": len(mission.lat),
         },
-        "id": 0,
     }
 
     last_dive_dict = {"type": "FeatureCollection", "features": [dive_item]}
@@ -87,11 +79,9 @@ def sailbuoy_to_json(sailbuoy, mission):
                 "geometry": {"type": "LineString", "coordinates": coords},
                 "type": "Feature",
                 "properties": {
-                    "popupContent": f"SB{sailbuoy}<br><a href='/SB{sailbuoy}/M{mission.mission}'>"
-                    f" Mission {mission.mission}</a>",
-                    "gliderOrder": 0,
+                    "popupContent": f"<a href='/fleet/SB{mission.sailbuoy}'>SB{sailbuoy}</a><br>"
+                    f"<a href='/SB{mission.sailbuoy}/M{mission.mission}'> Mission {mission.mission}</a>"
                 },
-                "id": 0,
             }
         ],
     }
