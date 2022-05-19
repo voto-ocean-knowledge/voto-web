@@ -31,12 +31,13 @@ def sort_by_priority_list(values, priority):
 sailbuoy_variables = (
     "RBRL_T",
     "RBRL_Sal",
-    "FT_Temp",
     "FT_WindSpeed",
     "FT_WindDir",
     "AirmarAirTemp",
     "AirmarWindSpeed",
     "AirmarWindDirection",
+    "Hs",
+    "Ts",
 )
 
 sailbuoy_var_names = {
@@ -48,6 +49,8 @@ sailbuoy_var_names = {
     "AirmarAirTemp": "Air temperature (C)",
     "AirmarWindDirection": "Wind direction",
     "AirmarWindSpeed": "Wind speed (m/s)",
+    "Hs": "Significant wave height (m)",
+    "Ts": "Significant wave period (s)",
 }
 
 
