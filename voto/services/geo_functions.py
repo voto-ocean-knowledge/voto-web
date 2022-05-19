@@ -4,9 +4,7 @@ from collections import Counter
 
 
 def get_seas(ds):
-    df_helcom = gp.read_file(
-        "/data/third_party/helcom_basins/HELCOM_subbasins_2022.shp"
-    )
+    df_helcom = gp.read_file("/data/third_party/helcom_plus_skag/helcom_plus_skag.shp")
     lon = ds.longitude
     lat = ds.latitude
     df_glider = pd.DataFrame({"lon": lon, "lat": lat})
@@ -16,7 +14,7 @@ def get_seas(ds):
     df_glider = df_glider.set_crs(epsg=4326)
     df_glider = df_glider.to_crs(df_helcom.crs)
     polygons_contains = gp.sjoin(df_helcom, df_glider, predicate="contains")
-    basin_points = polygons_contains.level_2.values
+    basin_points = polygons_contains.Name.values
     basin_counts = Counter(basin_points).most_common()
     if not basin_counts:
         return ""
