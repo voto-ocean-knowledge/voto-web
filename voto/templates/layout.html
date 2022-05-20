@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Kanit">
     <!-- CSS from our static folder-->
-    <link rel="stylesheet" href="/static/css/site.css"/>
+    <link rel="stylesheet" href="/static/css/site.css?version=3"/>
     {% block additional_css %}{% endblock %}
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <!-- Viewport to scale for mobile-->
@@ -42,10 +42,10 @@
               <a class="nav-link" href="/fleet">Fleet</a>
           </li>
           <li class="nav-item">
-              <a class="nav-link" href="/stats">Stats</a>
+              <a class="nav-link" href="/data">Data</a>
           </li>
           <li class="nav-item">
-              <a class="nav-link" href="/data">Data</a>
+              <a class="nav-link" href="/stats">Stats</a>
           </li>
           {% block extra_nav %}{% endblock %}
       </ul>
