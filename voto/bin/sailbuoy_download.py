@@ -67,5 +67,8 @@ if __name__ == "__main__":
         datefmt="%Y-%m-%d %H:%M:%S",
     )
     download_sailbuoy("SB2016")
+    download_sailbuoy("SB2017")
     download_sailbuoy("SB2120")
-    _log.info("Finished download of sailbuoy data\n")
+    download_sailbuoy("SB2121")
+
+_log.info("Finished download of sailbuoy data\n")
