@@ -5,6 +5,7 @@ from voto.viewmodels.home.home_viewmodel import (
     StatsViewModel,
     PipelineViewModel,
     MonitorViewModel,
+    DataViewModel,
 )
 
 blueprint = flask.Blueprint("home", __name__, template_folder="templates")
@@ -16,6 +17,13 @@ def index():
     vm = IndexViewModel()
     vm.check_missions()
     vm.check_sailbuoys()
+    return vm.to_dict()
+
+
+@blueprint.route("/data")
+@response(template_file="home/data.html")
+def data_view():
+    vm = DataViewModel()
     return vm.to_dict()
 
 

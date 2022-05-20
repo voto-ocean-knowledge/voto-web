@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block additional_css %}
+    <!-- JS and CSS for leaflet maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+        integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+        crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+        integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+        crossorigin=""></script>
+    <!-- Link to providers CSS and javascript for leaflet provider extension-->
+    <script src="http://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="static/js/leaflet-providers.js"></script>
+    <title>Observations &bull; VOTO</title>
+{% endblock %}
+
+{% block main_content %}
+
+    <div class="container hero">
+        <h2 class="mt-4">Data processing</h2>
+        All data displayed on this website are processed to L1. These data have been converted from engineering units to science units, but no post processing corrections have been applied.
+        <h2 class="mt-4">Data distribution</h2>
+        All data displayed on this site will be made available via an ERDDAP server in late 2022. <br>
+
+        Please direct all queries to Data Scientist Callum Rollo <a href = "mailto: callum.rollo@voiceoftheocean.org"  class="link">callum.rollo@voiceoftheocean.org</a> and Head of Science Louise Biddle <a href = "mailto: louise.biddle@voiceoftheocean.org"  class="link">louise.biddle@voiceoftheocean.org</a>
+    </div>
+
+
+{% endblock %}

@@ -107,3 +107,9 @@ class PipelineViewModel(ViewModelBase):
     def __init__(self):
         super().__init__()
         self.pipeline = mission_service.pipeline_stats()
+
+
+class DataViewModel(ViewModelBase):
+    def __init__(self):
+        super().__init__()
+        self.data = None
