@@ -19,7 +19,7 @@
 {% block main_content %}
 
 
-    <div class="container glider-list">
+    <div class="mt-4 container glider-list">
 
         <h2>Missions</h2>
         <table class="table table-hover" id="missions_table">
@@ -41,7 +41,7 @@
                 <tr>
                 <td><a href="/fleet/SEA{{ m.glider }}" class="link-primary">SEA{{m.glider_fill}}</a></td>
                 <td>{{m.mission}}</td>
-                <td>{{m.sea_name}} {{m.basin}}</td>
+                <td>{{m.sea_name}}{{m.basin}}</td>
                 <td><a href="{{ m.project_url}}"  class="link-primary">{{m.project}} </a></td>
                 <td>{{m.duration_pretty}}</td>
                 <td>{{m.start_pretty}}</td>

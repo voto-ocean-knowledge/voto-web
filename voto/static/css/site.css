@@ -40,6 +40,8 @@ h2 {
 /* Spacing */
 footer {
     margin-top: 60px;
+    padding: 1.5em;
+    line-height:1.5;
     text-align: center;
     background-color: #001489;
     color: #ffffff;

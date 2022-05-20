@@ -36,6 +36,8 @@ class GliderViewModel(ViewModelBase):
             gm.start_pretty = str(gm.start)[:10]
             gm.duration_pretty = (gm.end - gm.start).days
             gm.variables_pretty = ", ".join(gm.variables)
+            if gm.basin is None:
+                gm.basin = " "
         self.glidermissions = glider_missions
 
 
