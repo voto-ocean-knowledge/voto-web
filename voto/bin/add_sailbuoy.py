@@ -83,8 +83,8 @@ def add_nrt_sailbuoy(df_in, sb, mission):
     }
     ds.attrs = attrs
     _log.info(f"adding SB{sb} mission {mission} to database")
-    mission = add_sailbuoymission(ds)
-    update_sailbuoy(mission)
+    mission_obj = add_sailbuoymission(ds)
+    update_sailbuoy(mission_obj)
     data_dir = Path("/data/sailbuoy/nrt_proc")
     if not data_dir.exists():
         data_dir.mkdir(parents=True)
