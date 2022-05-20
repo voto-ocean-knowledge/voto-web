@@ -45,3 +45,32 @@ footer {
     color: #ffffff;
 
 }
+
+/* Glider about section*/
+
+.about{
+    margin: 1em 0;
+    padding: 2em;
+    position: relative;
+   }
+   .about img{
+    height: 100%;
+       width: 100%;
+       border-radius: 50%
+   }
+   .about span{
+    display: block;
+    position: absolute;
+    left: 150px;
+   }
+   .about .desc{
+    padding: 1em;
+    /* margin: 0 6em; */
+    border-left:4px solid #001489;
+   }
+   .about .desc h3{
+    color: #001489;
+   }
+   .about .desc p{
+    line-height:1.5;
+   }

@@ -17,13 +17,25 @@
     </script>
 {% endblock %}
 {% block main_content %}
-    <div class="container mission-summary">
-        <h2 class="mt-4">SEA{{glider_fill}} {{glider.name}}</h2>
+
+<div class ="about" >
+<div class="row">
+  <div class="col-lg-4 col-md-4 col-sm-12">
+      <img src="/static/img/glider/photos/SEA{{glider_fill}}.jpg" class="img-fluid ">
+  </div>
+  <div class="col-lg-8 col-md-8 col-sm-12 desc">
+
+        <h3 class="mt-4">SEA{{glider_fill}} {{glider.name}}</h3>
         <p>{{glider.name}} has completed {{total_missions}} missions and spent {{pretty_time}} at sea.<br>
             {{glider.name}} has recorded {{"{:,}".format(glider.total_profiles)}} vertical profiles, covering a total vertical distance of {{ "{:,}".format(glider.total_depth) }} m.
             This is equivalent to diving to the deepest part of the ocean and back {{marianas}} times.<br>
             If {{glider.name}}'s wings were capable of operating in a vacuum, it could have flown to the International Space Station and back {{iss}} times.
-    </div>
+    </p>
+   </div>
+  </div>
+</div>
+
+
 <div class="container glider-list">
 
     <h2>Missions</h2>
