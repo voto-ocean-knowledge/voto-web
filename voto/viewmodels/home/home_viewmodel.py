@@ -79,6 +79,13 @@ class MonitorViewModel(ViewModelBase):
                 f"battery_prediction_{i}",
                 f"/static/img/glider/nrt/SEA{glider}/M{mission}/battery_prediction.png",
             )
+            self.last_glider_i = i
+        sailbuoys, missions = mission_service.recent_sailbuoymissions()
+        for i, (sailbuoy, mission) in enumerate(zip(sailbuoys, missions)):
+            self.__setattr__(
+                f"battery_{self.last_glider_i + 1 + i}",
+                f"/static/img/glider/sailbuoy/nrt/monitor_SB{sailbuoy}_M{mission}.png",
+            )
 
 
 class StatsViewModel(ViewModelBase):

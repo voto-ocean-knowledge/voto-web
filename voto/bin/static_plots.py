@@ -1,6 +1,7 @@
 import cartopy
 import numpy as np
 import matplotlib.pyplot as plt
+import datetime
 import matplotlib.dates as mdates
 from pathlib import Path
 from collections import defaultdict
@@ -85,6 +86,54 @@ def sailbuoy_nrt_plots(ds):
         plt.setp(ax.get_xticklabels(), rotation=0, ha="center")
     plt.tight_layout()
     filename = plots_dir / f"SB{ds.sailbuoy_serial}_M{ds.deployment_id}.png"
+    _log.info(f"writing figure to {filename}")
+    fig.savefig(filename, format="png", transparent=True)
+
+    # Start monitoring plots
+
+    df = ds.to_dataframe()
+    attrs = ds.attrs
+    df.index = df.Time
+    df.drop(["Time", "time", "time_diff"], axis=1, inplace=True)
+    df_roll = df.rolling(window=datetime.timedelta(hours=3)).mean()
+    fig, axs = plt.subplots(3, 1, figsize=(12, 12))
+    fig.suptitle(f"SB{attrs['sailbuoy_serial']} mission {attrs['deployment_id']}")
+    axs = axs.ravel()
+    ax = axs[0]
+    ax.plot(df_roll.index, df_roll.V, label="nav")
+    ax.plot(df_roll.index, df_roll.V_pld, label="payload")
+    ax.set_title("Voltage 3 hour rolling mean")
+    ax.legend()
+
+    ax = axs[1]
+    vars_cmd = [
+        "Commands",
+        "Commands_pld",
+    ]
+    for var in vars_cmd:
+        ax.plot(df.index, df[var], label=var)
+    ax.legend()
+
+    ax = axs[2]
+    vars_leak = [
+        "Leak",
+        "BigLeak",
+        "Warning",
+    ]
+    for var in vars_leak:
+        ax.plot(df.index, df[var], label=var)
+    ax.legend()
+    ax.set(ylim=(-0.1, 1.1))
+
+    for i, ax in enumerate(axs):
+        ax.xaxis.set_major_locator(mdates.MonthLocator())
+        ax.xaxis.set_minor_locator(mdates.DayLocator(days))
+        ax.xaxis.set_major_formatter(mdates.DateFormatter("\n%b %Y"))
+        ax.xaxis.set_minor_formatter(mdates.DateFormatter("%d"))
+        ax.tick_params(axis="x", which="both", length=4)
+        plt.setp(ax.get_xticklabels(), rotation=0, ha="center")
+    plt.tight_layout()
+    filename = plots_dir / f"monitor_SB{ds.sailbuoy_serial}_M{ds.deployment_id}.png"
     _log.info(f"writing figure to {filename}")
     fig.savefig(filename, format="png", transparent=True)
 
