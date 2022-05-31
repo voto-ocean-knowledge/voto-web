@@ -1,4 +1,5 @@
 import datetime
+import subprocess
 from pathlib import Path
 import pandas as pd
 import logging
@@ -15,8 +16,10 @@ from voto.services.platform_service import update_sailbuoy
 from voto.services.geo_functions import get_seas
 from static_plots import sailbuoy_nrt_plots, make_map
 
+leak_mails = ["callum.rollo@voiceoftheocean.org"]
 
-def all_nrt_sailbuoys(full_dir):
+
+def all_nrt_sailbuoys(full_dir, all_missions=False):
     _log.info(f"adding complete missions from {full_dir}")
     navs = list(full_dir.glob("*nav.csv"))
     plds = list(full_dir.glob("*pld.csv"))
@@ -27,7 +30,7 @@ def all_nrt_sailbuoys(full_dir):
             raise ValueError(
                 f"nav and pld filenames do not match {nav.name} {pld.name}"
             )
-        split_nrt_sailbuoy(nav, pld, int(nav.name[2:6]))
+        split_nrt_sailbuoy(nav, pld, int(nav.name[2:6]), all_missions)
     _log.info("Finished processing nrt sailbuoy data")
 
 
@@ -35,6 +38,7 @@ def split_nrt_sailbuoy(
     nav,
     pld,
     sb_num,
+    all_missions,
     max_nocomm_time=datetime.timedelta(hours=6),
     min_mission_time=datetime.timedelta(days=3),
 ):
@@ -56,10 +60,15 @@ def split_nrt_sailbuoy(
             df_mission = df_combi[start_i:i]
             start_i = i
             if df_mission.Time.iloc[-1] - df_mission.Time.iloc[0] > min_mission_time:
-                add_nrt_sailbuoy(df_mission, sb_num, mission_num)
+                if all_missions:
+                    add_nrt_sailbuoy(df_mission, sb_num, mission_num)
                 mission_num += 1
     df_mission = df_combi[start_i:]
-    if df_mission.Time.iloc[-1] - df_mission.Time.iloc[0] > min_mission_time:
+    long_mission = df_mission.Time.iloc[-1] - df_mission.Time.iloc[0] > min_mission_time
+    live_mission = datetime.datetime.now() - df_mission.Time.iloc[
+        0
+    ] < datetime.timedelta(hours=1)
+    if long_mission and all_missions or live_mission:
         add_nrt_sailbuoy(df_mission, sb_num, mission_num)
 
 
@@ -92,12 +101,34 @@ def add_nrt_sailbuoy(df_in, sb, mission):
     _log.info(f"plotting sailbuoy data from SB{sb} mission {mission}")
     sailbuoy_nrt_plots(ds)
     make_map(ds)
+    if df_in.Leak.any() or df_in.BigLeak.any():
+        leak_alert_email(ds)
     _log.info(f"Completed add SB{sb} mission {mission}")
+
+
+def leak_alert_email(ds_mission):
+    sb_num = ds_mission.attrs.sailbuoy_serial
+    msg = f"Leak detected in Sailbuoy {sb_num}"
+    mailer(msg, leak_mails)
+
+
+def mailer(message, recipients):
+    for recipient in recipients:
+        subprocess.check_call(
+            [
+                "/usr/bin/bash",
+                "/home/pipeline/utility_scripts/send.sh",
+                message,
+                recipient,
+            ]
+        )
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Add glider missions to the database")
-    parser.add_argument("kind", type=str, help="Kind of input, must be nrt or complete")
+    parser.add_argument(
+        "kind", type=str, help="Kind of input, must be nrt, nrt_all or complete"
+    )
     parser.add_argument(
         "directory", type=str, help="Absolute path to the directory of processed files"
     )
@@ -109,8 +140,8 @@ if __name__ == "__main__":
         datefmt="%Y-%m-%d %H:%M:%S",
     )
     args = parser.parse_args()
-    if args.kind not in ["nrt", "complete"]:
-        _log.error("kind must be nrt or complete")
+    if args.kind not in ["nrt", "nrt_all", "complete"]:
+        _log.error("kind must be nrt, nrt_all or complete")
         raise ValueError("kind must be nrt or complete")
     init_db()
     dir_path = Path(args.directory)
@@ -119,5 +150,7 @@ if __name__ == "__main__":
         raise ValueError(f"directory {dir_path} not found")
     if args.kind == "nrt":
         all_nrt_sailbuoys(dir_path)
+    elif args.kind == "nrt_all":
+        all_nrt_sailbuoys(dir_path, all_missions=True)
     else:
         pass
