@@ -39,7 +39,7 @@ def split_nrt_sailbuoy(
     pld,
     sb_num,
     all_missions,
-    max_nocomm_time=datetime.timedelta(hours=6),
+    max_nocomm_time=datetime.timedelta(hours=3),
     min_mission_time=datetime.timedelta(days=3),
 ):
     df_nav = pd.read_csv(nav, sep="\t", parse_dates=["Time"])
@@ -106,7 +106,7 @@ def add_nrt_sailbuoy(df_in, sb, mission):
 
 
 def leak_alert_email(ds_mission):
-    sb_num = ds_mission.attrs.sailbuoy_serial
+    sb_num = ds_mission.attrs["sailbuoy_serial"]
     msg = f"Leak detected in Sailbuoy {sb_num}"
     mailer(msg, leak_mails)
 
@@ -118,6 +118,7 @@ def mailer(message, recipients):
                 "/usr/bin/bash",
                 "/home/pipeline/utility_scripts/send.sh",
                 message,
+                "leak-alert-sailbuoy",
                 recipient,
             ]
         )
