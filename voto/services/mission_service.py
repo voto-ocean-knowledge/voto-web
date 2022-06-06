@@ -182,6 +182,7 @@ def get_missions_df():
             "start",
             "end",
             "sea_name",
+            "basin",
             "total_distance_m",
             "total_depth",
         )

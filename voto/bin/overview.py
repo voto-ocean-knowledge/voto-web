@@ -43,15 +43,22 @@ def gantt_plot(df):
     ).dt.components["hours"] / 24
     df["duration_days"] = df.end_day_num - df.start_day_num
     df = df.sort_values(by=["glider", "mission"])
-    colors = []
-    for sea in df.sea_name:
+    df["color"] = "C0"
+    for i, row in df.iterrows():
+        # First check sea name
+        sea = row["sea_name"]
         if "Baltic" in sea:
-            colors.append("C1")
+            df.loc[i, "color"] = "C1"
         elif "Skag" in sea or "Kat" in sea:
-            colors.append("C0")
-        else:
-            print(f"sea {sea} not recognised")
-    df["color"] = colors
+            df.loc[i, "color"] = "C0"
+        # If basin name exists, this takes precedence
+        basin = row["basin"]
+        if "Gotland" in basin:
+            df.loc[i, "color"] = "C2"
+        elif "Bornholm" in basin:
+            df.loc[i, "color"] = "C1"
+        elif "Skag" in basin or "Kat" in basin:
+            df.loc[i, "color"] = "C0"
 
     glider_str = []
     for num in df.glider:
@@ -71,7 +78,7 @@ def gantt_plot(df):
     ax.set_xticks(xtick_minor, minor=True)
     plt.xticks(rotation=45)
     ax.set(xlim=(20, (datetime.datetime.now() - start_date).days))
-    c_dict = {"Skagerrak": "C0", "Baltic": "C1"}
+    c_dict = {"Skagerrak/Kattegat": "C0", "Bornholm Basin": "C1", "Gotland Basin": "C2"}
     legend_elements = [Patch(facecolor=c_dict[i], label=i) for i in c_dict]
     plt.legend(handles=legend_elements)
     fig.savefig(f"{secrets['plots_dir']}/gantt_all_ops", bbox_inches="tight")
