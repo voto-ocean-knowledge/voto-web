@@ -4,14 +4,14 @@
     <title>Stats</title>
 {% endblock %}
 {% block main_content %}
-    <div class="container hero">
+    <div class="container-xl hero">
         <h1>Vital Statistics</h1>
         <p></p>Our <strong>{{glider_count}}</strong> gliders have recorded <strong>{{ "{:,}".format(profile_count) }}</strong>
         profiles and racked up <strong>{{total_time}}</strong> at sea covering <strong>{{total_dist}} km</strong>.<br>
         Our <strong>{{sailbuoy_count}}</strong> sailbuoys have spent <strong>{{total_time_sailbuoy}}</strong> at sea sailing <strong>{{"{:,}".format(total_dist_sailbuoy)}} km</strong></p>
 
     </div>
-    <div class="container mission-summary">
+    <div class="container-xl mission-summary">
         <p>Since the beginning of March 2021 we have had at least one glider in the water <strong>{{stats_pretty["glider_deployed"]}} %</strong> of the time.<br>
            We have had at least one glider in the Skagerrak/Kattegat basin  <strong>{{stats_pretty["glider_in_skaggerak"]}} %</strong> of the time.
             and in the Baltic basin during <strong>{{stats_pretty["glider_in_baltic"]}} %</strong>.<br>

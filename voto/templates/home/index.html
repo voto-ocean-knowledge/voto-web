@@ -16,7 +16,7 @@
 
 {% block main_content %}
 
-    <div class="container hero">
+    <div class="container-xl hero">
         <h1 class="mt-4">VOTO: Ocean Knowledge </h1>
         <p>
         Our <strong>{{glider_count}}</strong> gliders have recorded <strong>{{ "{:,}".format(profile_count) }}</strong>
@@ -106,7 +106,7 @@
         controlPanel.addTo(map);
 
     </script>
-    <div class="container current-missions">
+    <div class="container-xl current-missions">
         <h2 class="mt-4">Near real time data</h2>
       <div class="row mb-2">
         <div class="col-lg-6 themed-grid-col"><img class="img-fluid" src={{map_0}}><br><img class="img-fluid" src={{combi_plot_0}}><br></div>
