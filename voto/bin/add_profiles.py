@@ -40,8 +40,13 @@ def add_nrt_profiles(in_dir):
             except ValueError:
                 continue
         max_profile = 2 * max(dive_nums)
+        timeseries = list(Path("/".join(file.parts[:-2]) + "/timeseries").glob("*.nc"))[
+            0
+        ]
+        ds_ts = xr.open_dataset(str(timeseries)[1:])
+        data_points = len(ds_ts.time)
         ds = xr.open_dataset(file)
-        mission = add_glidermission(ds, total_profiles=max_profile)
+        mission = add_glidermission(ds, data_points, total_profiles=max_profile)
         update_glider(mission)
     _log.info("nrt mission add complete")
 
@@ -56,8 +61,13 @@ def add_complete_profiles(full_dir):
             valid_ncs.append(path)
     _log.info(f"found {len(valid_ncs)} files that are not subs")
     for file in valid_ncs:
+        timeseries = list(Path("/".join(file.parts[:-2]) + "/timeseries").glob("*.nc"))[
+            0
+        ]
+        ds_ts = xr.open_dataset(str(timeseries)[1:])
+        data_points = len(ds_ts.time)
         ds = xr.open_dataset(file)
-        mission = add_glidermission(ds, mission_complete=True)
+        mission = add_glidermission(ds, data_points, mission_complete=True)
         update_glider(mission)
     _log.info("complete mission add complete")
 
@@ -66,7 +76,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Add glider missions to the database")
     parser.add_argument("kind", type=str, help="Kind of input, must be nrt or complete")
     parser.add_argument(
-        "directory", type=str, help="Absolute path to the directory of processd files"
+        "directory", type=str, help="Absolute path to the directory of processed files"
     )
     logging.basicConfig(
         filename=f"{secrets['log_dir']}/voto_add_data.log",

@@ -29,7 +29,7 @@ replace = {
 }
 
 
-def add_glidermission(ds, total_profiles=None, mission_complete=False):
+def add_glidermission(ds, data_points, total_profiles=None, mission_complete=False):
     """
     ds: dataset loaded from gridded netcdf output by pyglider
     num_profiles: optionally specify total number of dives
@@ -116,6 +116,7 @@ def add_glidermission(ds, total_profiles=None, mission_complete=False):
     mission.profile_ids = profile_ids
     profiles = profiles_from_glidermission(mission.glider, mission.mission)
     mission.total_distance_m = total_mission_distance(profiles)
+    mission.total_data_points = data_points
     if total_profiles:
         mission.total_profiles = total_profiles
         # hack to approximate total depth from subset of dives
@@ -138,6 +139,7 @@ def totals():
     gliders = []
     total_time = datetime.timedelta(seconds=0)
     total_dist = 0
+    total_points = 0
     for mission in missions:
         profiles = mission.total_profiles
         gliders.append(mission.glider)
@@ -145,6 +147,7 @@ def totals():
         mission_time = mission.end - mission.start
         total_time += mission_time
         total_dist += mission.total_distance_m
+        total_points += mission.total_data_points
     num_gliders = len(set(gliders))
     seconds = total_time.total_seconds()
     time_str = seconds_to_pretty(seconds)
@@ -167,6 +170,7 @@ def totals():
         num_gliders,
         time_str,
         dist_km,
+        total_points,
         num_sailbuoys,
         time_str_sb,
         dist_km_sb,

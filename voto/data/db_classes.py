@@ -50,6 +50,7 @@ class GliderMission(mongoengine.Document):
     total_profiles = mongoengine.IntField(default=0)
     total_depth = mongoengine.IntField(default=0)
     total_distance_m = mongoengine.FloatField(default=0)
+    total_data_points = mongoengine.IntField(default=0)
     variables = mongoengine.ListField()
     project = mongoengine.StringField()
     project_url = mongoengine.StringField()
