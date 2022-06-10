@@ -123,7 +123,7 @@ def sailbuoy_nrt_plots(ds):
 
     ax = axs[3]
     track_diff = np.abs(df["Heading"] - df["WaypointDirection"])
-    track_diff[track_diff > 180] = track_diff[track_diff > 180] - 180
+    track_diff[track_diff > 180] = 360 - track_diff[track_diff > 180]
     ax.plot(df.index, track_diff)
     ax.set_title("|heading - track|")
 
@@ -133,10 +133,17 @@ def sailbuoy_nrt_plots(ds):
 
     ax.xaxis.set_major_formatter(mdates.DateFormatter("\n%b %Y"))
     ax.xaxis.set_minor_formatter(mdates.DateFormatter("%d"))
-    ax.tick_params(axis="x", which="both", length=4)
+    ax.tick_params(axis="x", which="both", length=10)
     plt.setp(ax.get_xticklabels(), rotation=0, ha="center")
     plt.tight_layout()
     filename = plots_dir / f"monitor_SB{ds.sailbuoy_serial}_M{ds.deployment_id}.png"
+    _log.info(f"writing figure to {filename}")
+    fig.savefig(filename, format="png", transparent=True)
+    last = df.index.max()
+    ax.set(xlim=[last - datetime.timedelta(days=7), last + datetime.timedelta(hours=6)])
+    filename = (
+        plots_dir / f"monitor_SB{ds.sailbuoy_serial}_M{ds.deployment_id}_short.png"
+    )
     _log.info(f"writing figure to {filename}")
     fig.savefig(filename, format="png", transparent=True)
 

@@ -85,6 +85,10 @@ class MonitorViewModel(ViewModelBase):
         for i, (sailbuoy, mission) in enumerate(zip(sailbuoys, missions)):
             self.__setattr__(
                 f"battery_{self.last_glider_i + 1 + i}",
+                f"/static/img/glider/sailbuoy/nrt/monitor_SB{sailbuoy}_M{mission}_short.png",
+            )
+            self.__setattr__(
+                f"battery_prediction_{self.last_glider_i + 1 + i}",
                 f"/static/img/glider/sailbuoy/nrt/monitor_SB{sailbuoy}_M{mission}.png",
             )
 
