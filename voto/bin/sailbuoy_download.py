@@ -42,8 +42,8 @@ def download_sailbuoy(sb_id):
         session.cookies.set(cookie["name"], cookie["value"])
 
     _log.info("start downloads")
-    download_link1 = f"https://ids.sailbuoy.no/GenCustomData/_DownloadAllAsCSV?instrName={sb_id}D"  # Payload
-    download_link2 = f"https://ids.sailbuoy.no/GenCustomData/_DownloadAllAsCSV?instrName={sb_id}A"  # Autopilot
+    download_link1 = f"https://ids.sailbuoy.no/GenCustomData/_DownloadAllAsCSV?instrName={sb_id}A"  # Autopilot
+    download_link2 = f"https://ids.sailbuoy.no/GenCustomData/_DownloadAllAsCSV?instrName={sb_id}D"  # Payload
     response1 = session.get(download_link1)
     response2 = session.get(download_link2)
     # at this point, the downloadable csv files are stored in the response object
