@@ -95,6 +95,9 @@ def sailbuoy_nrt_plots(ds):
     attrs = ds.attrs
     df.index = df.Time
     df.drop(["Time", "time", "time_diff"], axis=1, inplace=True)
+    track_diff = np.abs(df["Heading"] - df["WaypointDirection"])
+    track_diff[track_diff > 180] = 360 - track_diff[track_diff > 180]
+    df["track_diff"] = track_diff
     df_roll = df.rolling(window=datetime.timedelta(hours=3)).mean()
     fig, axs = plt.subplots(4, 1, figsize=(12, 16), sharex="col")
     fig.suptitle(f"SB{attrs['sailbuoy_serial']} mission {attrs['deployment_id']}")
@@ -122,9 +125,12 @@ def sailbuoy_nrt_plots(ds):
     ax.set(ylim=(-0.1, 1.1))
 
     ax = axs[3]
-    track_diff = np.abs(df["Heading"] - df["WaypointDirection"])
-    track_diff[track_diff > 180] = 360 - track_diff[track_diff > 180]
-    ax.plot(df.index, track_diff)
+    ax.plot(df.index, df.track_diff, label="Instant")
+    ax.plot(
+        df_roll.index, df_roll.track_diff, linewidth=3, alpha=0.6, label="3 hour mean"
+    )
+    ax.axhline(50, color="red")
+    ax.legend()
     ax.set_title("|heading - track|")
 
     for i, ax in enumerate(axs):
