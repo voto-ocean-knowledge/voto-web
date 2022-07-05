@@ -237,7 +237,7 @@ def delete_profiles_glidermission(glider, mission):
 
 
 def get_stats(name):
-    stats = Stat.objects(name=name).only("value").first()
+    stats = Stat.objects(name=name).order_by("-date").only("value").first()
     return stats.value
 
 

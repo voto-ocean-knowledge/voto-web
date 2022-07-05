@@ -93,10 +93,26 @@ def uptime(df_up, hours):
 
 
 def glider_uptime(df):
+    df["basin_def"] = "Baltic"
+    for i, row in df.iterrows():
+        # First check sea name
+        sea = row["sea_name"]
+        if "Baltic" in sea:
+            df.loc[i, "basin_def"] = "Baltic"
+        elif "Skag" in sea or "Kat" in sea:
+            df.loc[i, "basin_def"] = "Skagerrak"
+        # If basin name exists, this takes precedence
+        basin = row["basin"]
+        if "Gotland" in basin:
+            df.loc[i, "basin_def"] = "Baltic"
+        elif "Bornholm" in basin:
+            df.loc[i, "basin_def"] = "Baltic"
+        elif "Skag" in basin or "Kat" in basin:
+            df.loc[i, "basin_def"] = "Skagerrak"
     hours = pd.date_range(datetime.date(2021, 3, 1), end=df.end.max(), freq="h")
     up_total = uptime(df, hours)
-    up_baltic = uptime(df[df.sea_name == "Baltic"], hours)
-    up_skag = uptime(df[df.sea_name != "Baltic"], hours)
+    up_baltic = uptime(df[df.basin_def == "Baltic"], hours)
+    up_skag = uptime(df[df.basin_def == "Skagerrak"], hours)
 
     gliderin = np.empty((len(hours)), dtype=int)
     gliderin[:] = 0

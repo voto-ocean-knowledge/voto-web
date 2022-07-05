@@ -67,6 +67,7 @@ class GliderMission(mongoengine.Document):
 class Stat(mongoengine.Document):
     name = mongoengine.StringField(required=True)
     value = mongoengine.DictField(required=True)
+    date = mongoengine.DateTimeField(default=datetime.now())
     meta = {
         "db_alias": "core",
         "collection": "gliderstats",
