@@ -37,7 +37,7 @@ class IndexViewModel(ViewModelBase):
             gliders_json.append(glider_dict)
             self.__setattr__(
                 f"combi_plot_{i}",
-                f"/static/img/glider/nrt/SEA{glider}/M{mission}/SEA{glider}_M{mission}.png",
+                f"/static/img/glider/nrt/SEA{glider}/M{mission}/SEA{glider}_M{mission}_gt.png",
             )
             self.__setattr__(
                 f"map_{i}",
@@ -82,7 +82,7 @@ class MonitorViewModel(ViewModelBase):
             )
             self.__setattr__(
                 f"glidertools_{i}",
-                f"/static/img/glider/nrt/SEA{glider}/M{mission}/SEA{glider}_M{mission}_gt.png",
+                f"/static/img/glider/nrt/SEA{glider}/M{mission}/SEA{glider}_M{mission}.png",
             )
             self.last_glider_i = i
         sailbuoys, missions = mission_service.recent_sailbuoymissions()
