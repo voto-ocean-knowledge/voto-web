@@ -10,7 +10,8 @@
         <br> start: {{start_date}} <br> end: {{end_date}}</p>
     </div>
     <div class="row mb-2">
-      <div class="col-lg-6 themed-grid-col"><img class="img-fluid" src={{combi_plot}}><br></div>
-      <div class="col-lg-6 themed-grid-col"><img class="img-fluid" src={{map}}><br></div>
+        <div class="col-lg-6 themed-grid-col"><div class="container-xl"><h2>Gridded product</h2></div><img class="img-fluid" src={{combi_plot}}><br></div>
+        <div class="col-lg-6 themed-grid-col"><img class="img-fluid" src={{map}}><br></div>
+        <div class="col-lg-6 themed-grid-col"><div class="container-xl"><h2>NRT scatter</h2></div><img class="img-fluid" src={{scatter_plot}}><br></div>
     </div>
 {% endblock %}

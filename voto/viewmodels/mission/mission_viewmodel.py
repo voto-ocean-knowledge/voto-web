@@ -59,6 +59,10 @@ class GliderMissionViewModel(ViewModelBase):
             f"/static/img/glider/{img_type}/SEA{self.glider}/"
             f"M{self.mission}/SEA{self.glider}_M{self.mission}_map.png "
         )
+        self.scatter_plot = (
+            f"/static/img/glider/nrt/SEA{self.glider}/M{self.mission}"
+            f"/SEA{self.glider}_M{self.mission}.png"
+        )
 
 
 class SailbuoyMissionViewModel(ViewModelBase):
