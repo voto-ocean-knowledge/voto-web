@@ -19,6 +19,8 @@ def most_recent_mtime(paths):
     mtime = 0
     for path in paths:
         mtime = max(mtime, path.lstat().st_mtime)
+    # fudge add 1.1 seconds to make some datetimes display properly
+    mtime += 1.1111111111
     return datetime.fromtimestamp(mtime)
 
 
