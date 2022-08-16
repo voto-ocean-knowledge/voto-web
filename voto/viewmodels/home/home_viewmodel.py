@@ -43,6 +43,10 @@ class IndexViewModel(ViewModelBase):
                 f"map_{i}",
                 f"/static/img/glider/nrt/SEA{glider}/M{mission}/SEA{glider}_M{mission}_map.png",
             )
+            self.__setattr__(
+                f"mission_page_{i}",
+                f"/SEA{glider}/M{mission}",
+            )
             self.last_glider_i = i
         self.glider_lines = glider_lines_json
         self.gliders = gliders_json
