@@ -18,7 +18,7 @@ with open(folder + "/mongo_secrets.json") as json_file:
 def most_recent_mtime(paths):
     mtime = 0
     for path in paths:
-        mtime = max(mtime, path.lstat().st_atime)
+        mtime = max(mtime, path.lstat().st_mtime)
     return datetime.fromtimestamp(mtime)
 
 
@@ -32,7 +32,7 @@ def check_yml():
         mission = parts[1][1:]
         item.glider = glider
         item.mission = mission
-        item.yml_time = datetime.fromtimestamp(yml_path.lstat().st_atime)
+        item.yml_time = datetime.fromtimestamp(yml_path.lstat().st_mtime)
         # delete item if it already exists
         old_item = PipeLineMission.objects(glider=glider, mission=mission).first()
         if old_item:
