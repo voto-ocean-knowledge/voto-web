@@ -48,9 +48,21 @@ class GliderMissionViewModel(ViewModelBase):
         if self.glidermission.is_complete:
             img_type = "complete_mission"
             postfix = ""
+            self.erddap_link = (
+                f'<a href="https://erddap.observations.voiceoftheocean.org/erddap/tabledap/'
+                f'delayed_SEA{self.glider_fill}_M{self.mission}.html">'
+                f"https://erddap.observations.voiceoftheocean.org/erddap/tabledap/"
+                f"delayed_SEA{self.glider_fill}_M{self.mission}.html</a>"
+            )
         else:
             img_type = "nrt"
             postfix = "_gt"
+            self.erddap_link = (
+                f'<a href="https://erddap.observations.voiceoftheocean.org/erddap/tabledap/'
+                f'nrt_SEA{self.glider_fill}_M{self.mission}.html">'
+                f"https://erddap.observations.voiceoftheocean.org/erddap/"
+                f"tabledap/nrt_SEA{self.glider_fill}_M{self.mission}.html</a>"
+            )
         self.combi_plot = (
             f"/static/img/glider/{img_type}/SEA{self.glider}/M{self.mission}"
             f"/SEA{self.glider}_M{self.mission}{postfix}.png"
