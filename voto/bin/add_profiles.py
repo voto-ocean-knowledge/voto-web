@@ -27,6 +27,13 @@ def init_db():
     )
 
 
+def glider_name_lookup(ds):
+    try:
+        return ds.attrs["glider_name"]
+    except KeyError:
+        return "Unknown"
+
+
 def add_nrt_profiles(in_dir):
     _log.info(f"adding nrt missions from {in_dir}")
     ncs = list(in_dir.rglob("*gridfiles/*.nc"))
@@ -47,7 +54,8 @@ def add_nrt_profiles(in_dir):
         data_points = len(ds_ts.time)
         ds = xr.open_dataset(file)
         mission = add_glidermission(ds, data_points, total_profiles=max_profile)
-        update_glider(mission)
+        glider_name = glider_name_lookup(ds)
+        update_glider(mission, glider_name)
     _log.info("nrt mission add complete")
 
 
@@ -68,7 +76,8 @@ def add_complete_profiles(full_dir):
         data_points = len(ds_ts.time)
         ds = xr.open_dataset(file)
         mission = add_glidermission(ds, data_points, mission_complete=True)
-        update_glider(mission)
+        glider_name = glider_name_lookup(ds)
+        update_glider(mission, glider_name)
     _log.info("complete mission add complete")
 
 

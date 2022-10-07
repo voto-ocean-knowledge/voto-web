@@ -1,5 +1,4 @@
 from voto.data.db_classes import Glider, GliderMission, Sailbuoy, SailbuoyMission
-import json
 import os
 import sys
 import datetime
@@ -9,16 +8,6 @@ _log = logging.getLogger(__name__)
 
 folder = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, folder)
-with open(f"{folder}/glider_names.json") as json_file:
-    names_dict = json.load(json_file)
-
-
-def glider_name_lookup(number):
-    try:
-        name = names_dict[str(number)]
-        return name
-    except KeyError:
-        return "UNKNOWN"
 
 
 def glider_calc_totals(glider):
@@ -47,7 +36,7 @@ def glider_calc_totals(glider):
     return glider
 
 
-def update_glider(mission):
+def update_glider(mission, name):
     """
     mission: glider mission object
     """
@@ -61,7 +50,7 @@ def update_glider(mission):
         return glider
     glider = Glider()
     glider.glider = mission.glider
-    glider.name = glider_name_lookup(mission.glider)
+    glider.name = name
     glider.missions = [mission.mission]
     glider = glider_calc_totals(glider)
     _log.info(f"Add glider SEA{mission.glider}")
