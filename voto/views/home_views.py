@@ -46,3 +46,10 @@ def pipeline_view():
 def monitor_view():
     vm = MonitorViewModel()
     return vm.to_dict()
+
+
+@blueprint.route("/battery")
+@response(template_file="home/battery.html")
+def battery_view():
+    vm = MonitorViewModel()
+    return vm.to_dict()

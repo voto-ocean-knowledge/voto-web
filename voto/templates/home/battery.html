@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block additional_css %}
+    <title>Monitor</title>
+{% endblock %}
+
+{% block main_content %}
+
+    <div class="container-xl monitor-missions">
+        <h2 class="mt-4">Battery data</h2>
+      <div class="row mb-2">
+        <div class="col-lg-6 themed-grid-col border"><img class="img-fluid" src={{battery_0}}><br><img class="img-fluid" src={{battery_prediction_0}}></div>
+        <div class="col-lg-6 themed-grid-col border"><img class="img-fluid" src={{battery_1}}><br><img class="img-fluid" src={{battery_prediction_1}}></div>
+        <div class="col-lg-6 themed-grid-col border"><img class="img-fluid" src={{battery_2}}><br><img class="img-fluid" src={{battery_prediction_2}}></div>
+        <div class="col-lg-6 themed-grid-col border"><img class="img-fluid" src={{battery_3}}><br><img class="img-fluid" src={{battery_prediction_3}}></div>
+        <div class="col-lg-6 themed-grid-col border"><img class="img-fluid" src={{battery_4}}><br><img class="img-fluid" src={{battery_prediction_4}}></div>
+        <div class="col-lg-6 themed-grid-col border"><img class="img-fluid" src={{battery_5}}><br><img class="img-fluid" src={{battery_prediction_5}}></div>
+        </div>
+    </div>
+
+{% endblock %}
