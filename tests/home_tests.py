@@ -72,7 +72,7 @@ def test_monitor():
     with flask_app.test_request_context(path="monitor"):
         r: Response = home_views.monitor_view()
     assert r.status_code == 200
-    assert b"Battery" in r.data
+    assert b"monitor" in r.data
 
 
 def test_pipline():
