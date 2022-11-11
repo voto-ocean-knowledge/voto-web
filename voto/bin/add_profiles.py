@@ -39,7 +39,7 @@ def add_nrt_profiles(in_dir):
     ncs = list(in_dir.rglob("*gridfiles/*.nc"))
     _log.info(f"found {len(ncs)} files")
     for file in ncs:
-        rawncs = list(Path("/".join(file.parts[:-2]) + "/rawnc").glob("*.nc"))
+        rawncs = list(Path("/".join(file.parts[:-2]) + "/rawnc").glob("*.*"))
         dive_nums = []
         for dive in rawncs:
             try:
