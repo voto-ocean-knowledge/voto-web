@@ -83,25 +83,6 @@ def check_yml():
         item.save()
 
 
-def check_files():
-    glidermissions = Path("/data/data_raw/nrt").glob("**/")
-    for mission in glidermissions:
-        if mission.name == "C-Csv":
-            parts = mission.parts
-            glider = int(parts[-3][-3:])
-            mission = int(parts[-2])
-            old_item = PipeLineMission.objects(glider=glider, mission=mission).first()
-            if not old_item:
-                item = PipeLineMission(glider=glider, mission=mission, yml=False)
-                item.save()
-                _log.info(f"SEA{glider} M{mission} has nrt files with no yml")
-            elif not old_item.yml:
-                old_item.delete()
-                item = PipeLineMission(glider=glider, mission=mission, yml=False)
-                item.save()
-                _log.info(f"SEA{glider} M{mission} has nrt files with no yml. Updated")
-
-
 if __name__ == "__main__":
     logging.basicConfig(
         filename=f"{secrets['log_dir']}/voto_pipeline.log",
@@ -118,4 +99,3 @@ if __name__ == "__main__":
         db=secrets["mongo_db"],
     )
     check_yml()
-    check_files()
