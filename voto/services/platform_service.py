@@ -25,6 +25,13 @@ def glider_calc_totals(glider):
         mission = GliderMission.objects(
             glider=glider.glider, mission=mission_num
         ).first()
+        if not mission:
+            _log.warning(
+                f"SEA{glider.glider} M{mission_num} not found in glider. Removing"
+            )
+            glider.missions.remove(mission_num)
+            continue
+
         total_profiles += mission.total_profiles
         total_seconds += (mission.end - mission.start).total_seconds()
         total_depth += mission.total_depth
