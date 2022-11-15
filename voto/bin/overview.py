@@ -209,11 +209,11 @@ if __name__ == "__main__":
         db=secrets["mongo_db"],
     )
     mission_df = get_missions_df()
-    # gantt_plot(mission_df)
     glider_uptime(mission_df)
-    profiles_df = get_profiles_df()
-    # coverage(profiles_df)
-    generate_stats()
     years = np.arange(2021, datetime.date.today().year + 1)
     for sel_year in years:
         glider_uptime(mission_df, year=sel_year)
+    gantt_plot(mission_df)
+    profiles_df = get_profiles_df()
+    coverage(profiles_df)
+    generate_stats()
