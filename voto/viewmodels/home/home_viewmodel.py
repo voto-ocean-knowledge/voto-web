@@ -1,3 +1,5 @@
+import numpy as np
+import datetime
 from voto.services.json_conversion import (
     glidermission_to_json,
     blank_json_dict,
@@ -113,11 +115,27 @@ class StatsViewModel(ViewModelBase):
         self.stats = mission_service.get_stats("glider_uptime")
         stats_pretty = {}
         for name, val in self.stats.items():
+            if type(val) is str:
+                stats_pretty[name] = val
+                continue
             if val < 1:
                 val = val * 100
-
             stats_pretty[name] = str(val.__round__(1))
         self.stats_pretty = stats_pretty
+        years = np.arange(2021, datetime.date.today().year + 1)
+        yearly_stats = []
+        for sel_year in years:
+            stat = mission_service.get_stats("glider_uptime", year=sel_year)
+            stats_pretty = {}
+            for name, val in stat.items():
+                if type(val) is str:
+                    stats_pretty[name] = val
+                    continue
+                if val < 1:
+                    val = val * 100
+                stats_pretty[name] = str(val.__round__(1))
+            yearly_stats.append(stats_pretty)
+        self.yearly_stats = yearly_stats
 
 
 class PipelineViewModel(ViewModelBase):

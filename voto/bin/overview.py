@@ -16,7 +16,12 @@ import cartopy
 
 folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 sys.path.insert(0, folder)
-from voto.services.mission_service import get_missions_df, get_profiles_df
+from voto.services.mission_service import (
+    get_missions_df,
+    get_profiles_df,
+    totals,
+    get_stats,
+)
 from voto.data.db_session import initialise_database
 from voto.data.db_classes import Stat
 
@@ -92,24 +97,15 @@ def uptime(df_up, hours):
     return active
 
 
-def glider_uptime(df):
-    df["basin_def"] = "Baltic"
-    for i, row in df.iterrows():
-        # First check sea name
-        sea = row["sea_name"]
-        if "Baltic" in sea:
-            df.loc[i, "basin_def"] = "Baltic"
-        elif "Skag" in sea or "Kat" in sea:
-            df.loc[i, "basin_def"] = "Skagerrak"
-        # If basin name exists, this takes precedence
-        basin = row["basin"]
-        if "Gotland" in basin:
-            df.loc[i, "basin_def"] = "Baltic"
-        elif "Bornholm" in basin:
-            df.loc[i, "basin_def"] = "Baltic"
-        elif "Skag" in basin or "Kat" in basin:
-            df.loc[i, "basin_def"] = "Skagerrak"
-    hours = pd.date_range(datetime.date(2021, 3, 1), end=df.end.max(), freq="h")
+def glider_uptime(df, year=0):
+    total_stats = totals(year=year)
+    start = pd.Timestamp(datetime.date(2021, 3, 1))
+    end = df.end.max()
+    if year:
+        start = max(start, pd.Timestamp(datetime.date(year, 1, 1)))
+        end = min(end, pd.Timestamp(datetime.date(year + 1, 1, 1)))
+
+    hours = pd.date_range(start, end=end, freq="h")
     up_total = uptime(df, hours)
     up_baltic = uptime(df[df.basin_def == "Baltic"], hours)
     up_skag = uptime(df[df.basin_def == "Skagerrak"], hours)
@@ -135,7 +131,19 @@ def glider_uptime(df):
     up_dict = {}
     for name, value in zip(up_stats.index, up_stats.values):
         up_dict[name] = value
-    stat = Stat(name="glider_uptime", value=up_dict)
+    up_dict_add = {
+        "total_profiles": total_stats[0],
+        "glider_unique": total_stats[1],
+        "glider_time": total_stats[2],
+        "glider_km": total_stats[3],
+        "glider_samples": total_stats[4],
+        "sailbuoy_unique": total_stats[5],
+        "sailbuoy_time": total_stats[6],
+        "sailbuoy_km": total_stats[7],
+        "year": float(year),
+    }
+    up_dict_combi = {**up_dict, **up_dict_add}
+    stat = Stat(name="glider_uptime", stat_year=year, value=up_dict_combi)
     stat.save()
 
 
@@ -201,8 +209,11 @@ if __name__ == "__main__":
         db=secrets["mongo_db"],
     )
     mission_df = get_missions_df()
-    gantt_plot(mission_df)
+    # gantt_plot(mission_df)
     glider_uptime(mission_df)
     profiles_df = get_profiles_df()
-    coverage(profiles_df)
+    # coverage(profiles_df)
     generate_stats()
+    years = np.arange(2021, datetime.date.today().year + 1)
+    for sel_year in years:
+        glider_uptime(mission_df, year=sel_year)

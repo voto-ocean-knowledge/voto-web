@@ -25,6 +25,35 @@
             <div class="col-lg-6 themed-grid-col"><img class="img-fluid" src="/static/img/glider/coverage.png"><br></div>
         </div>
         <br>
+
+    <h2>Stats by year</h2>
+    <table class="table table-hover" id="missions_table">
+        <thead>
+        <tr>
+            <th scope="col">Year</th>
+            <th scope="col">Glider Deployed</th>
+            <th scope="col">Glider in Baltic</th>
+            <th scope="col">Glider in Skagerrak/Kattegat</th>
+            <th scope="col">Total glider time</th>
+            <th scope="col">Total profiles</th>
+            <th scope="col">Mean gliders in water</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for m in yearly_stats %}
+
+        <tr>
+            <td>{{m["year"][:4]}}</td>
+            <td>{{m["glider_deployed"]}} %</td>
+            <td>{{m["glider_in_baltic"]}} %</td>
+            <td>{{m["glider_in_skaggerak"]}} %</td>
+            <td>{{m["glider_time"]}}</td>
+            <td>{{m['total_profiles']}}</td>
+            <td>{{m["num_glider_in_both"]}}</td>
+            {%  endfor %}
+        </tbody>
+    </table>
+
         <h2>Download mission metadata</h2>
         csv files containing mission and profile metadata from all missions conducted.<br>
         <a href="/static/img/glider/missions.csv" download="missions.csv" class="btn btn-primary">Download missions</a>

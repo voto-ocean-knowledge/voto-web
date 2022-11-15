@@ -68,6 +68,7 @@ class Stat(mongoengine.Document):
     name = mongoengine.StringField(required=True)
     value = mongoengine.DictField(required=True)
     date = mongoengine.DateTimeField(default=datetime.now())
+    stat_year = mongoengine.IntField(default=0)
     meta = {
         "db_alias": "core",
         "collection": "gliderstats",

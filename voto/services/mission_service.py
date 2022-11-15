@@ -134,7 +134,7 @@ def add_glidermission(ds, data_points, total_profiles=None, mission_complete=Fal
     return mission
 
 
-def totals():
+def totals(year=None):
     missions = GliderMission.objects()
     total_profiles = 0
     gliders = []
@@ -142,6 +142,16 @@ def totals():
     total_dist = 0
     total_points = 0
     for mission in missions:
+        good_year = True
+        if year:
+            if (
+                not pd.Timestamp(datetime.date(year + 1, 1, 1))
+                > mission.start
+                > pd.Timestamp(datetime.date(year, 1, 1))
+            ):
+                good_year = False
+        if not good_year:
+            continue
         profiles = mission.total_profiles
         gliders.append(mission.glider)
         total_profiles += profiles
@@ -158,6 +168,16 @@ def totals():
     total_time = datetime.timedelta(seconds=0)
     total_dist = 0
     for mission in missions:
+        good_year = True
+        if year:
+            if (
+                not pd.Timestamp(datetime.date(year + 1, 1, 1))
+                > mission.start
+                > pd.Timestamp(datetime.date(year, 1, 1))
+            ):
+                good_year = False
+        if not good_year:
+            continue
         sailbuoys.append(mission.sailbuoy)
         mission_time = mission.end - mission.start
         total_time += mission_time
@@ -197,6 +217,24 @@ def get_missions_df():
     df["duration"] = df.end - df.start
     df["days"] = df.duration.dt.days
     df["km_per_day"] = df.total_distance_m / (1000 * df.days)
+    df["basin_def"] = "Baltic"
+    for i, row in df.iterrows():
+        # First check sea name
+        sea = row["sea_name"]
+        if "Baltic" in sea:
+            df.loc[i, "basin_def"] = "Baltic"
+        elif "Skag" in sea or "Kat" in sea:
+            df.loc[i, "basin_def"] = "Skagerrak"
+        # If basin name exists, this takes precedence
+        basin = row["basin"]
+        if type(basin) is not str:
+            continue
+        if "Gotland" in basin:
+            df.loc[i, "basin_def"] = "Baltic"
+        elif "Bornholm" in basin:
+            df.loc[i, "basin_def"] = "Baltic"
+        elif "Skag" in basin or "Kat" in basin:
+            df.loc[i, "basin_def"] = "Skagerrak"
     return df
 
 
@@ -237,8 +275,10 @@ def delete_profiles_glidermission(glider, mission):
     profiles.delete()
 
 
-def get_stats(name):
-    stats = Stat.objects(name=name).order_by("-date").only("value").first()
+def get_stats(name, year=0):
+    stats = (
+        Stat.objects(name=name, stat_year=year).order_by("-date").only("value").first()
+    )
     return stats.value
 
 
