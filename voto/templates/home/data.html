@@ -18,9 +18,13 @@
 
     <div class="container-xl hero">
         <h2 class="mt-4">Data processing</h2>
-        <b>No quality control applied to data at present.</b><br>Data displayed on this site have been converted from engineering units to science units, but no post-processing corrections have been applied.<br>
+        <b>
 
-        We use  <a href = "https://github.com/c-proof/pyglider">pyglider</a> to process our data.
+        <p>We use  <a href = "https://github.com/c-proof/pyglider">pyglider</a> to process our data.</p>
+
+        <p>We use the <a href = "https://github.com/ioos/ioos_qc">IOOS QARTOD</a> toolbox to quality control our data. This toolbox applies flags on a per-variable basis.
+        Flags are stored in a separate variable with the suffix <strong>_qc</strong>. Flags are not applied by default. Each flag variable includes metadata describing
+        the parameters used for quality control, contributing variables and the version of the QARTOD toolbox used to generate the flags.</p>
         <h2 class="mt-4">Data download</h2>
         <p>
         All our data are freely available from our ERDDAP server <a href = "https://erddap.observations.voiceoftheocean.org/erddap/index.html">erddap.observations.voiceoftheocean.org/erddap </a>
