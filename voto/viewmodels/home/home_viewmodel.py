@@ -118,7 +118,7 @@ class StatsViewModel(ViewModelBase):
             if type(val) is str:
                 stats_pretty[name] = val
                 continue
-            if val < 1:
+            if val <= 1:
                 val = val * 100
             stats_pretty[name] = str(val.__round__(1))
         self.stats_pretty = stats_pretty
