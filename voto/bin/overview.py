@@ -58,7 +58,7 @@ def gantt_plot(df):
             df.loc[i, "color"] = "C0"
         # If basin name exists, this takes precedence
         basin = row["basin"]
-        if "Gotland" in basin:
+        if "Gotland" in basin or "Northern Baltic Proper" in basin:
             df.loc[i, "color"] = "C2"
         elif "Bornholm" in basin:
             df.loc[i, "color"] = "C1"
