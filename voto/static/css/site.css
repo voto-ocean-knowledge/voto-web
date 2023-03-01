@@ -80,3 +80,12 @@ footer {
 .hero p{
     line-height:1.5;
 }
+
+/* forms*/
+
+form.account-form {
+    margin-left: 20px;
+    margin-right: auto;
+    max-width: 800px;
+    padding: 10px;
+}
