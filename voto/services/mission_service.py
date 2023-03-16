@@ -134,7 +134,7 @@ def add_glidermission(ds, data_points, total_profiles=None, mission_complete=Fal
     return mission
 
 
-def totals(year=None):
+def totals(year=None, baltic_only=True):
     missions = GliderMission.objects()
     total_profiles = 0
     gliders = []
@@ -142,6 +142,9 @@ def totals(year=None):
     total_dist = 0
     total_points = 0
     for mission in missions:
+        basin = mission.basin
+        if baltic_only and not basin:
+            continue
         good_year = True
         if year:
             if (
@@ -244,11 +247,14 @@ def get_profiles_df():
     return df
 
 
-def recent_glidermissions(timespan=datetime.timedelta(hours=12)):
+def recent_glidermissions(timespan=datetime.timedelta(hours=12), baltic_only=True):
     missions = GliderMission.objects()
     recent_gliders = []
     recent_missions = []
     for mission in missions:
+        basin = mission.basin
+        if baltic_only and not basin:
+            continue
         since_last_dive = datetime.datetime.now() - mission.end
         if since_last_dive < timespan:
             recent_gliders.append(mission.glider)

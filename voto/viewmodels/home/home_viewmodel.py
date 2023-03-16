@@ -72,7 +72,7 @@ class IndexViewModel(ViewModelBase):
 class MonitorViewModel(ViewModelBase):
     def __init__(self):
         super().__init__()
-        gliders, missions = mission_service.recent_glidermissions()
+        gliders, missions = mission_service.recent_glidermissions(baltic_only=False)
         for i, (glider, mission) in enumerate(zip(gliders, missions)):
             self.__setattr__(
                 f"battery_{i}",
