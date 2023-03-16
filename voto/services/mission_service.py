@@ -201,7 +201,7 @@ def totals(year=None, baltic_only=True):
     )
 
 
-def get_missions_df():
+def get_missions_df(baltic_only=True):
     missions = (
         GliderMission.objects()
         .only(
@@ -217,6 +217,8 @@ def get_missions_df():
         .as_pymongo()
     )
     df = pd.DataFrame(list(missions))
+    if baltic_only:
+        df = df[df.basin != ""]
     df["duration"] = df.end - df.start
     df["days"] = df.duration.dt.days
     df["km_per_day"] = df.total_distance_m / (1000 * df.days)
@@ -241,9 +243,10 @@ def get_missions_df():
     return df
 
 
-def get_profiles_df():
+def get_profiles_df(baltic_only=True):
     profiles = Profile.objects().as_pymongo()
     df = pd.DataFrame(list(profiles))
+    df = df[df.lat > 50]
     return df
 
 
