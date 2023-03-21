@@ -1,5 +1,6 @@
 import numpy as np
 import datetime
+from voto.services.feeds_service import get_news, news_xml
 from voto.services.json_conversion import (
     glidermission_to_json,
     blank_json_dict,
@@ -148,3 +149,12 @@ class DataViewModel(ViewModelBase):
     def __init__(self):
         super().__init__()
         self.data = None
+
+
+class FeedViewModel(ViewModelBase):
+    def __init__(self):
+        super().__init__()
+        self.news = get_news()
+
+    def render_xml(self):
+        self.xml = news_xml(self.news)

@@ -11,6 +11,5 @@ class AddEmailViewModel(ViewModelBase):
         if not self.email:
             self.error = "Please complete all fields"
         emails = list_emails()
-        print(emails)
         if self.email in emails:
             self.error = f"email {self.email} already registered"
