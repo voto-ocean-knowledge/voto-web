@@ -41,12 +41,11 @@ def configure():
 
 
 def register_blueprints():
-    from voto.views import home_views, mission_views, platform_views, form_views
+    from voto.views import home_views, mission_views, platform_views
 
     app.register_blueprint(home_views.blueprint)
     app.register_blueprint(mission_views.blueprint)
     app.register_blueprint(platform_views.blueprint)
-    app.register_blueprint(form_views.blueprint)
 
 
 if __name__ == "__main__":
