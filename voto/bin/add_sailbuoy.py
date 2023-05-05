@@ -1,6 +1,7 @@
 import datetime
 import subprocess
 from pathlib import Path
+import numpy as np
 import pandas as pd
 import logging
 import os
@@ -34,6 +35,17 @@ def all_nrt_sailbuoys(full_dir, all_missions=False):
     _log.info("Finished processing nrt sailbuoy data")
 
 
+def remove_test_missions(df):
+    in_gbg = np.logical_and(
+        np.logical_and(df.Lat > 57.6, df.Lat < 57.8),
+        np.logical_and(df.Long > 11.7, df.Long < 102.1),
+    )
+    df = df[~in_gbg]
+    seconds = df.time_diff.astype(int) / 1e9
+    df = df[df.Velocity < 5]
+    return df
+
+
 def split_nrt_sailbuoy(
     nav,
     pld,
@@ -53,6 +65,7 @@ def split_nrt_sailbuoy(
         suffixes=("", "_pld"),
     )
     df_combi["time_diff"] = df_combi.Time.diff()
+    df_combi = remove_test_missions(df_combi)
     start_i = 0
     mission_num = 1
     for i, dt in zip(df_combi.index, df_combi.time_diff):
