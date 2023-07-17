@@ -167,10 +167,10 @@ def coverage(df):
     profile_grid[profile_grid < 5] = np.nan
     profile_grid = profile_grid.T
 
-    fig = plt.figure(figsize=(4, 6))
+    fig = plt.figure(figsize=(8, 6))
     ax = plt.axes(projection=ccrs.UTM(zone=33))
     ax.gridlines()
-    ax.set_extent([9, 20, 54, 59], crs=ccrs.PlateCarree())
+    ax.set_extent([9, 21, 54, 59], crs=ccrs.PlateCarree())
     ax.add_feature(coasts_10m)
     pcol = ax.pcolor(
         x_grid,
@@ -179,7 +179,7 @@ def coverage(df):
         norm=LogNorm(vmin=1, vmax=profile_grid[~np.isnan(profile_grid)].max()),
         cmap="Blues",
     )
-    fig.colorbar(ax=ax, mappable=pcol, shrink=0.5)
+    fig.colorbar(ax=ax, mappable=pcol, shrink=0.78)
     ax.set_title("Profiles per 10 km square")
     fig.savefig(f"{secrets['plots_dir']}/coverage", bbox_inches="tight")
 
