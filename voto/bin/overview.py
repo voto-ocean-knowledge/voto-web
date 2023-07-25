@@ -201,6 +201,7 @@ if __name__ == "__main__":
         level=logging.INFO,
         datefmt="%Y-%m-%d %H:%M:%S",
     )
+    _log.info("start computing stats")
     initialise_database(
         user=secrets["mongo_user"],
         password=secrets["mongo_password"],
@@ -217,3 +218,4 @@ if __name__ == "__main__":
     profiles_df = get_profiles_df()
     coverage(profiles_df)
     generate_stats()
+    _log.info("Finished computing stats")
