@@ -3,6 +3,7 @@ import sys
 import logging
 import json
 from flask import Flask
+from flask_bootstrap import Bootstrap
 
 _log = logging.getLogger(__name__)
 
@@ -15,6 +16,10 @@ with open(folder + "/mongo_secrets.json") as json_file:
     secrets = json.load(json_file)
 
 app = Flask(__name__)
+app.config.from_mapping(
+    SECRET_KEY=b"hellonl123n89sdf0-8u3q4hl32kjras-912h3ljnsasdfa3w81;"
+)
+Bootstrap(app)
 
 
 def main():
@@ -41,11 +46,12 @@ def configure():
 
 
 def register_blueprints():
-    from voto.views import home_views, mission_views, platform_views
+    from voto.views import home_views, mission_views, platform_views, form_views
 
     app.register_blueprint(home_views.blueprint)
     app.register_blueprint(mission_views.blueprint)
     app.register_blueprint(platform_views.blueprint)
+    app.register_blueprint(form_views.blueprint)
 
 
 if __name__ == "__main__":

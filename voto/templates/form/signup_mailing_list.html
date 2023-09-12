@@ -1,20 +1,11 @@
 {% extends "layout.html" %}
-
+{% import "bootstrap/wtf.html" as wtf %}
 {% block main_content %}
-        <div class="form-container">
-        <form action="" method="POST" class="account-form">
-            <h1>Sign up for VOTO data mailing list</h1>
-            <p>This is a low volume mailing list for updates about the data hosted on our ERDDAP.</p>
-            <p><input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Enter email" name="email" maxlength="80" value="{{email}}" required></p>
-            <p><button type="submit" class="btn btn-danger">Add email</button></p>
-            <div style="clear: both;"></div>
-
-            {% if message %}
-                <div class="success-message">{{ message }}</div>
-            {% endif %}
-            {% if error %}
-                <div class="error-message">{{ error }}</div>
-            {% endif %}
-        </form>
-    </div>
+<div class="container">
+  <h3>Search for sites</h3 >
+  <hr>
+    {{ wtf.quick_form(form) }}
+  <hr>
+  {{extra_html | safe}}
+</div>
 {% endblock %}
