@@ -107,8 +107,9 @@ def glider_uptime(df, year=0):
 
     hours = pd.date_range(start, end=end, freq="h")
     up_total = uptime(df, hours)
-    up_baltic = uptime(df[df.basin_def == "Baltic"], hours)
     up_skag = uptime(df[df.basin_def == "Skagerrak"], hours)
+    up_bornholm = uptime(df[df.basin_def == "Bornholm"], hours)
+    up_gotland = uptime(df[df.basin_def == "Gotland"], hours)
 
     gliderin = np.empty((len(hours)), dtype=int)
     gliderin[:] = 0
@@ -119,14 +120,14 @@ def glider_uptime(df, year=0):
         {
             "hours": hours,
             "glider_deployed": up_total,
-            "glider_in_baltic": up_baltic,
             "glider_in_skaggerak": up_skag,
+            "glider_in_bornholm": up_bornholm,
+            "glider_in_gotland": up_gotland,
             "num_glider_in_both": gliderin,
         }
     )
     df_uptime.index = df_uptime.hours
     df_uptime.drop(["hours"], axis=1, inplace=True)
-    df_uptime["both"] = df_uptime.glider_in_baltic * df_uptime.glider_in_skaggerak
     up_stats = df_uptime.sum() / len(df_uptime)
     up_dict = {}
     for name, value in zip(up_stats.index, up_stats.values):
@@ -147,12 +148,8 @@ def glider_uptime(df, year=0):
     stat.save()
 
 
-def coverage(df):
-    coasts_10m = cartopy.feature.NaturalEarthFeature(
-        name="land", category="physical", scale="50m", edgecolor="0.5", facecolor="0.8"
-    )
+def gridder(df):
     trans_to_m = Transformer.from_crs("EPSG:4326", "+proj=utm +zone=33", always_xy=True)
-    trans_to_m.transform(df.lon.min() - 1, df.lat.min() - 1)
     df["x"], df["y"] = trans_to_m.transform(df.lon, df.lat)
     step = 10 * 1000  # 10 km gridsize
     x_grid = np.arange(df.x.min() - step, df.x.max() + 2 * step, step)
@@ -166,20 +163,41 @@ def coverage(df):
             profile_grid[i, j] = len(df_in)
     profile_grid[profile_grid < 5] = np.nan
     profile_grid = profile_grid.T
+    return x_grid, y_grid, profile_grid
 
+
+def coverage(df, missions):
+    missions["glider_mission"] = missions.glider * 1000 + missions.mission
+    df["glider_mission"] = df.glider * 1000 + df.mission
+    df["basin_def"] = " "
+    for basin in missions.basin_def.unique():
+        glider_missions = missions[missions.basin_def == basin].glider_mission
+        for gm in glider_missions:
+            df.loc[df.glider_mission == gm, "basin_def"] = basin
+
+    coasts_10m = cartopy.feature.NaturalEarthFeature(
+        name="land", category="physical", scale="50m", edgecolor="0.5", facecolor="0.8"
+    )
     fig = plt.figure(figsize=(8, 6))
     ax = plt.axes(projection=ccrs.UTM(zone=33))
     ax.gridlines()
     ax.set_extent([9, 21, 54, 59], crs=ccrs.PlateCarree())
     ax.add_feature(coasts_10m)
-    pcol = ax.pcolor(
-        x_grid,
-        y_grid,
-        profile_grid,
-        norm=LogNorm(vmin=1, vmax=profile_grid[~np.isnan(profile_grid)].max()),
-        cmap="Blues",
-    )
-    fig.colorbar(ax=ax, mappable=pcol, shrink=0.78)
+
+    x_grid, y_grid, profile_grid = gridder(df)
+    vmax = profile_grid[~np.isnan(profile_grid)].max()
+
+    for basin, color in zip(
+        ["Skagerrak", "Bornholm", "Gotland"][::-1], ["Blues", "Oranges", "Greens"][::-1]
+    ):
+        df_sub = df.loc[df.basin_def == basin, :].copy()
+        x_grid, y_grid, profile_grid = gridder(df_sub)
+
+        pcol = ax.pcolor(
+            x_grid, y_grid, profile_grid, norm=LogNorm(vmin=1, vmax=vmax), cmap=color
+        )
+
+        fig.colorbar(ax=ax, mappable=pcol, shrink=0.58, aspect=30, pad=0.01)
     ax.set_title("Profiles per 10 km square")
     fig.savefig(f"{secrets['plots_dir']}/coverage", bbox_inches="tight")
 
@@ -216,6 +234,6 @@ if __name__ == "__main__":
         glider_uptime(mission_df, year=sel_year)
     gantt_plot(mission_df)
     profiles_df = get_profiles_df()
-    coverage(profiles_df)
+    coverage(profiles_df, mission_df)
     generate_stats()
     _log.info("Finished computing stats")

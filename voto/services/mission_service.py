@@ -222,22 +222,16 @@ def get_missions_df(baltic_only=True):
     df["duration"] = df.end - df.start
     df["days"] = df.duration.dt.days
     df["km_per_day"] = df.total_distance_m / (1000 * df.days)
-    df["basin_def"] = "Baltic"
+    df["basin_def"] = "unknown"
     for i, row in df.iterrows():
-        # First check sea name
-        sea = row["sea_name"]
-        if "Baltic" in sea:
-            df.loc[i, "basin_def"] = "Baltic"
-        elif "Skag" in sea or "Kat" in sea:
-            df.loc[i, "basin_def"] = "Skagerrak"
-        # If basin name exists, this takes precedence
         basin = row["basin"]
         if type(basin) is not str:
+            print(row)
             continue
-        if "Gotland" in basin:
-            df.loc[i, "basin_def"] = "Baltic"
+        if "Gotland" in basin or basin == "Northern Baltic Proper":
+            df.loc[i, "basin_def"] = "Gotland"
         elif "Bornholm" in basin:
-            df.loc[i, "basin_def"] = "Baltic"
+            df.loc[i, "basin_def"] = "Bornholm"
         elif "Skag" in basin or "Kat" in basin:
             df.loc[i, "basin_def"] = "Skagerrak"
     return df
