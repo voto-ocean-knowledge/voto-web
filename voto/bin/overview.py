@@ -180,16 +180,17 @@ def coverage(df, missions):
     )
     fig = plt.figure(figsize=(8, 6))
     ax = plt.axes(projection=ccrs.UTM(zone=33))
-    ax.gridlines()
     ax.set_extent([9, 21, 54, 59], crs=ccrs.PlateCarree())
     ax.add_feature(coasts_10m)
 
     x_grid, y_grid, profile_grid = gridder(df)
     vmax = profile_grid[~np.isnan(profile_grid)].max()
-
-    for basin, color in zip(
-        ["Skagerrak", "Bornholm", "Gotland"][::-1], ["Blues", "Oranges", "Greens"][::-1]
-    ):
+    basins = ["Skagerrak", "Bornholm", "Gotland"]
+    colors = ["Blues", "Oranges", "Greens"]
+    num_basins = len(basins)
+    for step in range(num_basins):
+        basin = basins[step]
+        color = colors[step]
         df_sub = df.loc[df.basin_def == basin, :].copy()
         x_grid, y_grid, profile_grid = gridder(df_sub)
 
@@ -197,7 +198,17 @@ def coverage(df, missions):
             x_grid, y_grid, profile_grid, norm=LogNorm(vmin=1, vmax=vmax), cmap=color
         )
 
-        fig.colorbar(ax=ax, mappable=pcol, shrink=0.58, aspect=30, pad=0.01)
+        cbar_ax = fig.add_axes([0.15 + 0.04 * step, 0.15, 0.01, 0.3])
+        plt.colorbar(cax=cbar_ax, mappable=pcol)
+        ax.scatter(1, 1, color=color[:-1], label=basin)
+        if step < num_basins - 1:
+            cbar_ax.yaxis.tick_right()
+            cbar_ax.yaxis.set_tick_params(labelright=False)
+    gl = ax.gridlines(
+        draw_labels=True, linewidth=2, color="gray", alpha=0.5, linestyle="--"
+    )
+    gl.top_labels = None
+    gl.right_labels = None
     ax.set_title("Profiles per 10 km square")
     fig.savefig(f"{secrets['plots_dir']}/coverage", bbox_inches="tight")
 
