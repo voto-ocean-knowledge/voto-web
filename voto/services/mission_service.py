@@ -244,7 +244,7 @@ def get_profiles_df(baltic_only=True):
     return df
 
 
-def recent_glidermissions(timespan=datetime.timedelta(hours=12), baltic_only=True):
+def recent_glidermissions(timespan=datetime.timedelta(hours=24), baltic_only=True):
     missions = GliderMission.objects()
     recent_gliders = []
     recent_missions = []
