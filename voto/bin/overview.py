@@ -117,6 +117,7 @@ def glider_uptime(df, year=0):
     up_skag = uptime(df[df.basin_def == "Skagerrak"], hours)
     up_bornholm = uptime(df[df.basin_def == "Bornholm"], hours)
     up_gotland = uptime(df[df.basin_def == "Gotland"], hours)
+    up_aland = uptime(df[df.basin_def == "Åland"], hours)
 
     gliderin = np.empty((len(hours)), dtype=int)
     gliderin[:] = 0
@@ -130,6 +131,7 @@ def glider_uptime(df, year=0):
             "glider_in_skaggerak": up_skag,
             "glider_in_bornholm": up_bornholm,
             "glider_in_gotland": up_gotland,
+            "glider_in_aland": up_aland,
             "num_glider_in_both": gliderin,
         }
     )
