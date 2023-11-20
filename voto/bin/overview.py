@@ -62,6 +62,8 @@ def gantt_plot(df):
             df.loc[i, "color"] = "C2"
         elif "Bornholm" in basin:
             df.loc[i, "color"] = "C1"
+        elif "Åland" in basin:
+            df.loc[i, "color"] = "C3"
         elif "Skag" in basin or "Kat" in basin:
             df.loc[i, "color"] = "C0"
 
@@ -83,7 +85,12 @@ def gantt_plot(df):
     ax.set_xticks(xtick_minor, minor=True)
     plt.xticks(rotation=45)
     ax.set(xlim=(20, (datetime.datetime.now() - start_date).days))
-    c_dict = {"Skagerrak/Kattegat": "C0", "Bornholm Basin": "C1", "Gotland Basin": "C2"}
+    c_dict = {
+        "Skagerrak/Kattegat": "C0",
+        "Bornholm Basin": "C1",
+        "Gotland Basin": "C2",
+        "Åland Sea": "C3",
+    }
     legend_elements = [Patch(facecolor=c_dict[i], label=i) for i in c_dict]
     plt.legend(handles=legend_elements)
     fig.savefig(f"{secrets['plots_dir']}/gantt_all_ops", bbox_inches="tight")
@@ -180,13 +187,13 @@ def coverage(df, missions):
     )
     fig = plt.figure(figsize=(8, 6))
     ax = plt.axes(projection=ccrs.UTM(zone=33))
-    ax.set_extent([9, 21, 54, 59], crs=ccrs.PlateCarree())
+    ax.set_extent([9, 21, 54, 61], crs=ccrs.PlateCarree())
     ax.add_feature(coasts_10m)
 
     x_grid, y_grid, profile_grid = gridder(df)
     vmax = profile_grid[~np.isnan(profile_grid)].max()
-    basins = ["Skagerrak", "Bornholm", "Gotland"]
-    colors = ["Blues", "Oranges", "Greens"]
+    basins = ["Skagerrak", "Bornholm", "Gotland", "Åland"]
+    colors = ["Blues", "Oranges", "Greens", "Reds"]
     num_basins = len(basins)
     for step in range(num_basins):
         basin = basins[step]
@@ -197,8 +204,7 @@ def coverage(df, missions):
         pcol = ax.pcolor(
             x_grid, y_grid, profile_grid, norm=LogNorm(vmin=1, vmax=vmax), cmap=color
         )
-
-        cbar_ax = fig.add_axes([0.15 + 0.04 * step, 0.15, 0.01, 0.3])
+        cbar_ax = fig.add_axes([0.25 + 0.04 * step, 0.15, 0.01, 0.3])
         plt.colorbar(cax=cbar_ax, mappable=pcol)
         ax.scatter(1, 1, color=color[:-1], label=basin)
         if step < num_basins - 1:

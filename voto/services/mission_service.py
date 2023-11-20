@@ -234,6 +234,8 @@ def get_missions_df(baltic_only=True):
             df.loc[i, "basin_def"] = "Bornholm"
         elif "Skag" in basin or "Kat" in basin:
             df.loc[i, "basin_def"] = "Skagerrak"
+        elif "Åland" in basin:
+            df.loc[i, "basin_def"] = "Åland"
     return df
 
 
