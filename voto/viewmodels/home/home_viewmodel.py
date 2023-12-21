@@ -1,5 +1,6 @@
 import numpy as np
 import datetime
+from pathlib import Path
 from voto.services.feeds_service import get_news, news_xml
 from voto.services.json_conversion import (
     glidermission_to_json,
@@ -98,6 +99,25 @@ class MonitorViewModel(ViewModelBase):
                 f"battery_prediction_{self.last_glider_i + 1 + i}",
                 f"/static/img/glider/sailbuoy/nrt/monitor_SB{sailbuoy}_M{mission}.png",
             )
+
+
+class CalibrateViewModel(ViewModelBase):
+    def __init__(self):
+        super().__init__()
+        mission_paths = list(
+            Path("/app/voto/voto/static/img/glider/nrt/").rglob("SEA*/M*")
+        )
+        display = ""
+        for path in mission_paths:
+            base = str(path).split("voto/voto")[-1]
+            path_parts = base.split("/")
+            nice_name = f"SEA0{path_parts[-2][-2:]} M{path_parts[-1][1:]}"
+            ctds = list(path.glob("ctd*png"))
+            if len(ctds) == 0:
+                continue
+            display += f'<div class="col-lg-6 themed-grid-col border"><h4>{nice_name} deployment</h4><img class="img-fluid" src="{base}/ctd_deployment.png"></div>'
+            display += f'<div class="col-lg-6 themed-grid-col border"><h4>{nice_name} recovery</h4><img class="img-fluid" src="{base}/ctd_recovery.png"></div>'
+        self.display = display
 
 
 class StatsViewModel(ViewModelBase):

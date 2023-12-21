@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+
+{% block additional_css %}
+    <title>Calibrate</title>
+{% endblock %}
+
+{% block main_content %}
+    <div class="row mb-2">
+        <div class="col-lg-6 themed-grid-col"><div class="container-xl"><h2>Glider missions with missing CTDs</h2></div><img class="img-fluid" src="/static/img/glider/ctds_gant.png"><br></div>
+    </div>
+      <div class="row mb-2">
+          <h2>All glider missions with calibration CTDs</h2>
+            {{display | safe}}
+    </div>
+
+{% endblock %}

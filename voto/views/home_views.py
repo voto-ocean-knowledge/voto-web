@@ -7,6 +7,7 @@ from voto.viewmodels.home.home_viewmodel import (
     MonitorViewModel,
     DataViewModel,
     FeedViewModel,
+    CalibrateViewModel,
 )
 
 blueprint = flask.Blueprint("home", __name__, template_folder="templates")
@@ -46,6 +47,13 @@ def pipeline_view():
 @response(template_file="home/monitor.html")
 def monitor_view():
     vm = MonitorViewModel()
+    return vm.to_dict()
+
+
+@blueprint.route("/calibrate")
+@response(template_file="home/calibrate.html")
+def calibrate_view():
+    vm = CalibrateViewModel()
     return vm.to_dict()
 
 
