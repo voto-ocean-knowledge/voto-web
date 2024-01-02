@@ -62,6 +62,8 @@ def gantt_plot(df):
             df.loc[i, "color"] = "C2"
         elif "Bornholm" in basin:
             df.loc[i, "color"] = "C1"
+        elif "Åland" in basin:
+            df.loc[i, "color"] = "C3"
         elif "Skag" in basin or "Kat" in basin:
             df.loc[i, "color"] = "C0"
 
@@ -83,7 +85,12 @@ def gantt_plot(df):
     ax.set_xticks(xtick_minor, minor=True)
     plt.xticks(rotation=45)
     ax.set(xlim=(20, (datetime.datetime.now() - start_date).days))
-    c_dict = {"Skagerrak/Kattegat": "C0", "Bornholm Basin": "C1", "Gotland Basin": "C2"}
+    c_dict = {
+        "Skagerrak/Kattegat": "C0",
+        "Bornholm Basin": "C1",
+        "Gotland Basin": "C2",
+        "Åland Sea": "C3",
+    }
     legend_elements = [Patch(facecolor=c_dict[i], label=i) for i in c_dict]
     plt.legend(handles=legend_elements)
     fig.savefig(f"{secrets['plots_dir']}/gantt_all_ops", bbox_inches="tight")
@@ -107,8 +114,10 @@ def glider_uptime(df, year=0):
 
     hours = pd.date_range(start, end=end, freq="h")
     up_total = uptime(df, hours)
-    up_baltic = uptime(df[df.basin_def == "Baltic"], hours)
     up_skag = uptime(df[df.basin_def == "Skagerrak"], hours)
+    up_bornholm = uptime(df[df.basin_def == "Bornholm"], hours)
+    up_gotland = uptime(df[df.basin_def == "Gotland"], hours)
+    up_aland = uptime(df[df.basin_def == "Åland"], hours)
 
     gliderin = np.empty((len(hours)), dtype=int)
     gliderin[:] = 0
@@ -119,14 +128,15 @@ def glider_uptime(df, year=0):
         {
             "hours": hours,
             "glider_deployed": up_total,
-            "glider_in_baltic": up_baltic,
             "glider_in_skaggerak": up_skag,
+            "glider_in_bornholm": up_bornholm,
+            "glider_in_gotland": up_gotland,
+            "glider_in_aland": up_aland,
             "num_glider_in_both": gliderin,
         }
     )
     df_uptime.index = df_uptime.hours
     df_uptime.drop(["hours"], axis=1, inplace=True)
-    df_uptime["both"] = df_uptime.glider_in_baltic * df_uptime.glider_in_skaggerak
     up_stats = df_uptime.sum() / len(df_uptime)
     up_dict = {}
     for name, value in zip(up_stats.index, up_stats.values):
@@ -147,12 +157,8 @@ def glider_uptime(df, year=0):
     stat.save()
 
 
-def coverage(df):
-    coasts_10m = cartopy.feature.NaturalEarthFeature(
-        name="land", category="physical", scale="50m", edgecolor="0.5", facecolor="0.8"
-    )
+def gridder(df):
     trans_to_m = Transformer.from_crs("EPSG:4326", "+proj=utm +zone=33", always_xy=True)
-    trans_to_m.transform(df.lon.min() - 1, df.lat.min() - 1)
     df["x"], df["y"] = trans_to_m.transform(df.lon, df.lat)
     step = 10 * 1000  # 10 km gridsize
     x_grid = np.arange(df.x.min() - step, df.x.max() + 2 * step, step)
@@ -166,20 +172,51 @@ def coverage(df):
             profile_grid[i, j] = len(df_in)
     profile_grid[profile_grid < 5] = np.nan
     profile_grid = profile_grid.T
+    return x_grid, y_grid, profile_grid
 
-    fig = plt.figure(figsize=(4, 6))
-    ax = plt.axes(projection=ccrs.UTM(zone=33))
-    ax.gridlines()
-    ax.set_extent([9, 20, 54, 59], crs=ccrs.PlateCarree())
-    ax.add_feature(coasts_10m)
-    pcol = ax.pcolor(
-        x_grid,
-        y_grid,
-        profile_grid,
-        norm=LogNorm(vmin=1, vmax=profile_grid[~np.isnan(profile_grid)].max()),
-        cmap="Blues",
+
+def coverage(df, missions):
+    missions["glider_mission"] = missions.glider * 1000 + missions.mission
+    df["glider_mission"] = df.glider * 1000 + df.mission
+    df["basin_def"] = " "
+    for basin in missions.basin_def.unique():
+        glider_missions = missions[missions.basin_def == basin].glider_mission
+        for gm in glider_missions:
+            df.loc[df.glider_mission == gm, "basin_def"] = basin
+
+    coasts_10m = cartopy.feature.NaturalEarthFeature(
+        name="land", category="physical", scale="50m", edgecolor="0.5", facecolor="0.8"
     )
-    fig.colorbar(ax=ax, mappable=pcol, shrink=0.5)
+    fig = plt.figure(figsize=(8, 6))
+    ax = plt.axes(projection=ccrs.UTM(zone=33))
+    ax.set_extent([9, 21, 54, 61], crs=ccrs.PlateCarree())
+    ax.add_feature(coasts_10m)
+
+    x_grid, y_grid, profile_grid = gridder(df)
+    vmax = profile_grid[~np.isnan(profile_grid)].max()
+    basins = ["Skagerrak", "Bornholm", "Gotland", "Åland"]
+    colors = ["Blues", "Oranges", "Greens", "Reds"]
+    num_basins = len(basins)
+    for step in range(num_basins):
+        basin = basins[step]
+        color = colors[step]
+        df_sub = df.loc[df.basin_def == basin, :].copy()
+        x_grid, y_grid, profile_grid = gridder(df_sub)
+
+        pcol = ax.pcolor(
+            x_grid, y_grid, profile_grid, norm=LogNorm(vmin=1, vmax=vmax), cmap=color
+        )
+        cbar_ax = fig.add_axes([0.25 + 0.04 * step, 0.15, 0.01, 0.3])
+        plt.colorbar(cax=cbar_ax, mappable=pcol)
+        ax.scatter(1, 1, color=color[:-1], label=basin)
+        if step < num_basins - 1:
+            cbar_ax.yaxis.tick_right()
+            cbar_ax.yaxis.set_tick_params(labelright=False)
+    gl = ax.gridlines(
+        draw_labels=True, linewidth=2, color="gray", alpha=0.5, linestyle="--"
+    )
+    gl.top_labels = None
+    gl.right_labels = None
     ax.set_title("Profiles per 10 km square")
     fig.savefig(f"{secrets['plots_dir']}/coverage", bbox_inches="tight")
 
@@ -201,6 +238,7 @@ if __name__ == "__main__":
         level=logging.INFO,
         datefmt="%Y-%m-%d %H:%M:%S",
     )
+    _log.info("start computing stats")
     initialise_database(
         user=secrets["mongo_user"],
         password=secrets["mongo_password"],
@@ -215,5 +253,6 @@ if __name__ == "__main__":
         glider_uptime(mission_df, year=sel_year)
     gantt_plot(mission_df)
     profiles_df = get_profiles_df()
-    coverage(profiles_df)
+    coverage(profiles_df, mission_df)
     generate_stats()
+    _log.info("Finished computing stats")

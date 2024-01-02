@@ -6,6 +6,8 @@ from voto.viewmodels.home.home_viewmodel import (
     PipelineViewModel,
     MonitorViewModel,
     DataViewModel,
+    FeedViewModel,
+    CalibrateViewModel,
 )
 
 blueprint = flask.Blueprint("home", __name__, template_folder="templates")
@@ -48,8 +50,43 @@ def monitor_view():
     return vm.to_dict()
 
 
+@blueprint.route("/calibrate")
+@response(template_file="home/calibrate.html")
+def calibrate_view():
+    vm = CalibrateViewModel()
+    return vm.to_dict()
+
+
 @blueprint.route("/battery")
 @response(template_file="home/battery.html")
 def battery_view():
     vm = MonitorViewModel()
     return vm.to_dict()
+
+
+@blueprint.route("/data/updates")
+@response(template_file="home/updates.html")
+def news_view():
+    vm = FeedViewModel()
+    return vm.to_dict()
+
+
+@blueprint.route("/feed.xml")
+def rss():
+    from flask import make_response
+
+    vm = FeedViewModel()
+    vm.render_xml()
+    response = make_response(vm.xml)
+    response.headers.set("Content-Type", "application/rss+xml")
+    return response
+
+
+@blueprint.route("/fee<string:text>")
+def redirect_feed(text: str):
+    return flask.redirect(flask.url_for("home.rss"))
+
+
+@blueprint.route("/rs<string:text>")
+def redirect_rss(text: str):
+    return flask.redirect(flask.url_for("home.rss"))

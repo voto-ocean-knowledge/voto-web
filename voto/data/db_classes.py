@@ -139,3 +139,13 @@ class SailbuoyMission(mongoengine.Document):
         "collection": "sailbuoymissions",
         "indexes": ["mission", "sailbuoy", "start", "end"],
     }
+
+
+class EmailList(mongoengine.Document):
+    email = mongoengine.StringField(required=True)
+    date_added = mongoengine.DateTimeField(default=datetime.now())
+    blocked = mongoengine.BooleanField(default=False)
+    meta = {
+        "db_alias": "core",
+        "collection": "mailinglist",
+    }

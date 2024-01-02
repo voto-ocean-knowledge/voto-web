@@ -134,7 +134,7 @@ def add_glidermission(ds, data_points, total_profiles=None, mission_complete=Fal
     return mission
 
 
-def totals(year=None):
+def totals(year=None, baltic_only=True):
     missions = GliderMission.objects()
     total_profiles = 0
     gliders = []
@@ -142,6 +142,9 @@ def totals(year=None):
     total_dist = 0
     total_points = 0
     for mission in missions:
+        basin = mission.basin
+        if baltic_only and not basin:
+            continue
         good_year = True
         if year:
             if (
@@ -198,7 +201,7 @@ def totals(year=None):
     )
 
 
-def get_missions_df():
+def get_missions_df(baltic_only=True):
     missions = (
         GliderMission.objects()
         .only(
@@ -214,41 +217,43 @@ def get_missions_df():
         .as_pymongo()
     )
     df = pd.DataFrame(list(missions))
+    if baltic_only:
+        df = df[df.basin != ""]
     df["duration"] = df.end - df.start
     df["days"] = df.duration.dt.days
     df["km_per_day"] = df.total_distance_m / (1000 * df.days)
-    df["basin_def"] = "Baltic"
+    df["basin_def"] = "unknown"
     for i, row in df.iterrows():
-        # First check sea name
-        sea = row["sea_name"]
-        if "Baltic" in sea:
-            df.loc[i, "basin_def"] = "Baltic"
-        elif "Skag" in sea or "Kat" in sea:
-            df.loc[i, "basin_def"] = "Skagerrak"
-        # If basin name exists, this takes precedence
         basin = row["basin"]
         if type(basin) is not str:
+            print(row)
             continue
-        if "Gotland" in basin:
-            df.loc[i, "basin_def"] = "Baltic"
+        if "Gotland" in basin or basin == "Northern Baltic Proper":
+            df.loc[i, "basin_def"] = "Gotland"
         elif "Bornholm" in basin:
-            df.loc[i, "basin_def"] = "Baltic"
+            df.loc[i, "basin_def"] = "Bornholm"
         elif "Skag" in basin or "Kat" in basin:
             df.loc[i, "basin_def"] = "Skagerrak"
+        elif "Åland" in basin:
+            df.loc[i, "basin_def"] = "Åland"
     return df
 
 
-def get_profiles_df():
+def get_profiles_df(baltic_only=True):
     profiles = Profile.objects().as_pymongo()
     df = pd.DataFrame(list(profiles))
+    df = df[df.lat > 50]
     return df
 
 
-def recent_glidermissions(timespan=datetime.timedelta(hours=12)):
+def recent_glidermissions(timespan=datetime.timedelta(hours=24), baltic_only=True):
     missions = GliderMission.objects()
     recent_gliders = []
     recent_missions = []
     for mission in missions:
+        basin = mission.basin
+        if baltic_only and not basin:
+            continue
         since_last_dive = datetime.datetime.now() - mission.end
         if since_last_dive < timespan:
             recent_gliders.append(mission.glider)

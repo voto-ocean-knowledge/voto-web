@@ -1,5 +1,7 @@
 import numpy as np
 import datetime
+from pathlib import Path
+from voto.services.feeds_service import get_news, news_xml
 from voto.services.json_conversion import (
     glidermission_to_json,
     blank_json_dict,
@@ -27,7 +29,7 @@ class IndexViewModel(ViewModelBase):
             self.total_time_sailbuoy,
             self.total_dist_sailbuoy,
         ) = mission_service.totals()
-        self.last_glider_i = 0
+        self.plots_display = ""
 
     def check_missions(self):
         gliders, missions = mission_service.recent_glidermissions()
@@ -37,15 +39,12 @@ class IndexViewModel(ViewModelBase):
             point_json, line_json, glider_dict = glidermission_to_json(glider, mission)
             glider_lines_json.append(line_json)
             gliders_json.append(glider_dict)
-            self.__setattr__(
-                f"combi_plot_{i}",
-                f"/static/img/glider/nrt/SEA{glider}/M{mission}/SEA{glider}_M{mission}_gt.png",
-            )
-            self.__setattr__(
-                f"map_{i}",
-                f"/static/img/glider/nrt/SEA{glider}/M{mission}/SEA{glider}_M{mission}_map.png",
-            )
-            self.last_glider_i = i
+            plot = f"/static/img/glider/nrt/SEA{glider}/M{mission}/SEA{glider}_M{mission}_gt.png"
+            map = f"/static/img/glider/nrt/SEA{glider}/M{mission}/SEA{glider}_M{mission}_map.png"
+            content = f'<img class="img-fluid" src={map}><br><img class="img-fluid" src={plot}><br>'
+            link = f'<div class="col-lg-6 themed-grid-col"><a href="/SEA{glider}/M{mission}">{content}</a></div>'
+            self.plots_display += link
+
         self.glider_lines = glider_lines_json
         self.gliders = gliders_json
 
@@ -57,14 +56,11 @@ class IndexViewModel(ViewModelBase):
             line_json, glider_dict = sailbuoy_to_json(sailbuoy, mission)
             sailbuoy_lines_json.append(line_json)
             sailbuoys_json.append(glider_dict)
-            self.__setattr__(
-                f"combi_plot_{self.last_glider_i + 1 + i}",
-                f"/static/img/glider/sailbuoy/nrt/SB{sailbuoy}_M{mission}.png",
-            )
-            self.__setattr__(
-                f"map_{self.last_glider_i + 1 + i}",
-                f"/static/img/glider/sailbuoy/nrt/SB{sailbuoy}_M{mission}_map.png",
-            )
+            plot = f"/static/img/glider/sailbuoy/nrt/SB{sailbuoy}_M{mission}.png"
+            map = f"/static/img/glider/sailbuoy/nrt/SB{sailbuoy}_M{mission}_map.png"
+            content = f'<img class="img-fluid" src={map}><br><img class="img-fluid" src={plot}><br>'
+            link = f'<div class="col-lg-6 themed-grid-col"><a href="/fleet/SB{sailbuoy}">{content}</a></div>'
+            self.plots_display += link
         self.sailbuoy_lines = sailbuoy_lines_json
         self.sailbuoys = sailbuoys_json
 
@@ -72,7 +68,7 @@ class IndexViewModel(ViewModelBase):
 class MonitorViewModel(ViewModelBase):
     def __init__(self):
         super().__init__()
-        gliders, missions = mission_service.recent_glidermissions()
+        gliders, missions = mission_service.recent_glidermissions(baltic_only=False)
         for i, (glider, mission) in enumerate(zip(gliders, missions)):
             self.__setattr__(
                 f"battery_{i}",
@@ -97,6 +93,25 @@ class MonitorViewModel(ViewModelBase):
                 f"battery_prediction_{self.last_glider_i + 1 + i}",
                 f"/static/img/glider/sailbuoy/nrt/monitor_SB{sailbuoy}_M{mission}.png",
             )
+
+
+class CalibrateViewModel(ViewModelBase):
+    def __init__(self):
+        super().__init__()
+        mission_paths = list(
+            Path("/app/voto/voto/static/img/glider/nrt/").rglob("SEA*/M*")
+        )
+        display = ""
+        for path in mission_paths:
+            base = str(path).split("voto/voto")[-1]
+            path_parts = base.split("/")
+            nice_name = f"SEA0{path_parts[-2][-2:]} M{path_parts[-1][1:]}"
+            ctds = list(path.glob("ctd*png"))
+            if len(ctds) == 0:
+                continue
+            display += f'<div class="col-lg-6 themed-grid-col border"><h4>{nice_name} deployment</h4><img class="img-fluid" src="{base}/ctd_deployment.png"></div>'
+            display += f'<div class="col-lg-6 themed-grid-col border"><h4>{nice_name} recovery</h4><img class="img-fluid" src="{base}/ctd_recovery.png"></div>'
+        self.display = display
 
 
 class StatsViewModel(ViewModelBase):
@@ -148,3 +163,12 @@ class DataViewModel(ViewModelBase):
     def __init__(self):
         super().__init__()
         self.data = None
+
+
+class FeedViewModel(ViewModelBase):
+    def __init__(self):
+        super().__init__()
+        self.news = get_news()
+
+    def render_xml(self):
+        self.xml = news_xml(self.news)

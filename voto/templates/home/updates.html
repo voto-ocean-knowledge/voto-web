@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+
+{% block additional_css %}
+
+    <title>Updates</title>
+{% endblock %}
+
+{% block main_content %}
+
+    <div class="container-xl hero">
+        <h1 class="mt-4">Data processing updates</h1>
+        <p><a href="/feed.xml">RSS feed</a></p>
+        {% for a in news%}
+            <h3>{{a.title}}</h3>
+            <p>
+            {{a.content | safe}}
+            </p>
+        {%  endfor %}
+        <hr>
+        Please direct all queries about data or the ERDDAP server to Data Scientist Callum Rollo <a href = "mailto: callum.rollo@voiceoftheocean.org"  class="link">callum.rollo@voiceoftheocean.org</a> and Head of Science Louise Biddle <a href = "mailto: louise.biddle@voiceoftheocean.org"  class="link">louise.biddle@voiceoftheocean.org</a>
+    </div>
+
+
+{% endblock %}
