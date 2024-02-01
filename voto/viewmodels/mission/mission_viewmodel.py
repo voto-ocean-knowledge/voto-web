@@ -1,5 +1,5 @@
 import datetime
-
+from pathlib import Path
 from voto.data.db_classes import GliderMission
 from voto.viewmodels.shared.viewmodelbase import ViewModelBase
 from voto.services import mission_service
@@ -25,6 +25,7 @@ class GliderMissionViewModel(ViewModelBase):
         self.mission = mission
         self.glider = glider
         self.glider_fill = str(glider).zfill(3)
+        self.extra_plots_html = ""
 
     def validate(self):
         # Check that the supplied mission and glider exist in the database
@@ -69,10 +70,24 @@ class GliderMissionViewModel(ViewModelBase):
             f"/static/img/glider/{img_type}/SEA{self.glider}/"
             f"M{self.mission}/SEA{self.glider}_M{self.mission}_map.png "
         )
-        self.scatter_plot = (
-            f"/static/img/glider/nrt/SEA{self.glider}/M{self.mission}"
-            f"/SEA{self.glider}_M{self.mission}.png"
+        extra_plot_html = ""
+        plots_dir = Path(
+            f"/app/voto/voto/static/img/glider/nrt/SEA{self.glider}/M{self.mission}/"
         )
+        rel_dir = f"/static/img/glider/nrt/SEA{self.glider}/M{self.mission}/"
+        extra_plots = {
+            "Command console plots": f"SEA{self.glider}_M{self.mission}_cmd_log.png",
+            "Deployment CTD cast": f"ctd_deployment.png",
+            "Recovery CTD cast": f"ctd_recovery.png",
+            "nrt scatter": f"/SEA{self.glider}_M{self.mission}.png",
+        }
+        for name, fn in extra_plots.items():
+            if not (plots_dir / fn).exists():
+                continue
+            relative_path = rel_dir + fn
+            extra_plot_html += f'<div class="col-lg-12 themed-grid-col"><div class="container-xl"><h2>{name}</h2></div><img class="img-fluid" src={relative_path}><br></div>\n'
+        if extra_plot_html:
+            self.extra_plots_html = f'<div class="row mb-2">\n{extra_plot_html}\n</div>'
 
 
 class SailbuoyMissionViewModel(ViewModelBase):

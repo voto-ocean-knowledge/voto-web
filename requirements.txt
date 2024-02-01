@@ -5,3 +5,6 @@ netcdf4
 xarray
 pandas
 matplotlib
+feedgen
+uwsgi
+pyyaml

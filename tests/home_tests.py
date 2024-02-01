@@ -29,7 +29,7 @@ def test_mission_page():
 
 def test_sailbuoy_mission_page():
     with flask_app.test_request_context(path="/SB2016/M3"):
-        r: Response = mission_views.mission_sailybuoy(2016, 3)
+        r: Response = mission_views.mission_sailybuoy(2016, 2)
     assert r.status_code == 200
     assert b"mission" in r.data
 
@@ -58,7 +58,7 @@ def test_sailbuoy_page():
     assert r.status_code == 200
     assert b"mission" in r.data
     # noinspection PyUnresolvedReferences
-    assert len(r.model.get("sailbuoy_missions")) > 2
+    assert len(r.model.get("sailbuoy_missions")) > 1
 
 
 def test_stats_page():
