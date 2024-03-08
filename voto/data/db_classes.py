@@ -62,6 +62,7 @@ class GliderMission(mongoengine.Document):
         "collection": "glidermissions",
         "indexes": ["mission", "glider", "profile_ids", "start", "end"],
     }
+    comment = mongoengine.StringField()
 
 
 class Stat(mongoengine.Document):
