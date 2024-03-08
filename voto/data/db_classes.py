@@ -56,13 +56,13 @@ class GliderMission(mongoengine.Document):
     project_url = mongoengine.StringField()
     profiles = mongoengine.ListField()
     profile_ids = mongoengine.ListField(mongoengine.ObjectIdField())
+    comment = mongoengine.StringField()
 
     meta = {
         "db_alias": "core",
         "collection": "glidermissions",
         "indexes": ["mission", "glider", "profile_ids", "start", "end"],
     }
-    comment = mongoengine.StringField()
 
 
 class Stat(mongoengine.Document):

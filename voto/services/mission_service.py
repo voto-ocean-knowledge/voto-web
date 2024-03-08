@@ -65,7 +65,9 @@ def add_glidermission(ds, data_points, total_profiles=None, mission_complete=Fal
     mission.lat_max = attrs["geospatial_lat_max"]
     mission.wmo_id = attrs["wmo_id"]
     if "comment" in attrs.keys():
-        mission.comment = attrs["comment"]
+        comment = str(attrs["comment"])
+        if len(comment) > 6:
+            mission.comment = comment
 
     profiles = ds.profile.values.astype(str)
     lons = ds.longitude.values
