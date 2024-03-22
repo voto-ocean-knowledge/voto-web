@@ -119,7 +119,10 @@ def add_nrt_sailbuoy(df_in, sb, mission):
 
 def send_alert_email(ds, t_step= 15):
     sb_num = df_in.attrs["sailbuoy_serial"]
-    msg=[]
+    msg = str()
+    msg_l = str()
+    msg_w = str()
+    msg_t = str()
     if ds.Leak[-t_step:].any() or ds.BigLeak[-t_step:].any():
         msg_l = f"Leak detected in Sailbuoy {sb_num}"
     if len(np.unique(ds.Leak[-t_step:]))==1 or len(np.unique(ds.BigLeak.Leak[-t_step:])) == 1:
