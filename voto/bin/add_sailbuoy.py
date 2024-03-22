@@ -117,22 +117,21 @@ def add_nrt_sailbuoy(df_in, sb, mission):
     send_alert_email(ds)
     _log.info(f"Completed add SB{sb} mission {mission}")
 
-def send_alert_email(df_in):
+def send_alert_email(ds, t_step= 15):
     sb_num = df_in.attrs["sailbuoy_serial"]
     msg=[]
-    subset_data = df_in[-15:]
-    if df_in.Leak[-15:].any() or df_in.BigLeak.Leak[-15:].any():
+    if ds.Leak[-t_step:].any() or ds.BigLeak[-t_step:].any():
         msg_l = f"Leak detected in Sailbuoy {sb_num}"
-    if len(df_in.Leak[-15:].unique())==1 or len(df_in.BigLeak.Leak[-15:].unique()) == 1:
+    if len(np.unique(ds.Leak[-t_step:]))==1 or len(np.unique(ds.BigLeak.Leak[-t_step:])) == 1:
         msg_l = str()
-    if df_in.Warning[-15:].any():
+    if ds.Warning[-t_step:].any():
         msg_w = f"There is a warning for Sailbuoy {sb_num}"
-    if len(df_in.Warning[-15:].unique())==1:
+    if len(np.unique(ds.Warning[-t_step:]))==1:
         msg_w = str()
-    if not df_in.WithinTrackRadius[-15:].any():
+    if not ds.WithinTrackRadius[-t_step:].any():
         msg_t = f"The Sailbuoy {sb_num} is off track"
-    if len(df_in.WithinTrackRadius[-15:].unique())==1:
-        msg_w = str()
+    if len(np.unique(ds.WithinTrackRadius[-t_step:]))==1:
+        msg_t = str()
     msg = "\n".join([msg_l, msg_w,msg_t])
     if len(msg) > 2:
         mailer(msg, leak_mails)
