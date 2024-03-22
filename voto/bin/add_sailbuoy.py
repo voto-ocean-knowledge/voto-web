@@ -17,7 +17,7 @@ from voto.services.platform_service import update_sailbuoy
 from voto.services.geo_functions import get_seas
 from static_plots import sailbuoy_nrt_plots, make_map
 
-leak_mails = ["callum.rollo@voiceoftheocean.org"]
+leak_mails = ["callum.rollo@voiceoftheocean.org", "alarms-aaaak6sn7vydeww34wcbshfqdq@voice-of-the-ocean.slack.com" ]
 
 
 def all_nrt_sailbuoys(full_dir, all_missions=False):
@@ -114,17 +114,31 @@ def add_nrt_sailbuoy(df_in, sb, mission):
     _log.info(f"plotting sailbuoy data from SB{sb} mission {mission}")
     sailbuoy_nrt_plots(ds)
     make_map(ds)
-    if df_in.Leak.any() or df_in.BigLeak.any():
-        leak_alert_email(ds)
+    send_alert_email(ds, t_step= 15)
     _log.info(f"Completed add SB{sb} mission {mission}")
 
-
-def leak_alert_email(ds_mission):
-    sb_num = ds_mission.attrs["sailbuoy_serial"]
-    msg = f"Leak detected in Sailbuoy {sb_num}"
-    mailer(msg, leak_mails)
-
-
+def send_alert_email(ds, t_step= 15):
+    sb_num = df_in.attrs["sailbuoy_serial"]
+    msg = str()
+    msg_l = str()
+    msg_w = str()
+    msg_t = str()
+    if ds.Leak[-t_step:].any() or ds.BigLeak[-t_step:].any():
+        msg_l = f"Leak detected in Sailbuoy {sb_num}"
+    if len(np.unique(ds.Leak[-t_step:]))==1 or len(np.unique(ds.BigLeak.Leak[-t_step:])) == 1:
+        msg_l = str()
+    if ds.Warning[-t_step:].any():
+        msg_w = f"There is a warning for Sailbuoy {sb_num}"
+    if len(np.unique(ds.Warning[-t_step:]))==1:
+        msg_w = str()
+    if not ds.WithinTrackRadius[-t_step:].any():
+        msg_t = f"The Sailbuoy {sb_num} is off track"
+    if len(np.unique(ds.WithinTrackRadius[-t_step:]))==1:
+        msg_t = str()
+    msg = "\n".join([msg_l, msg_w,msg_t])
+    if len(msg) > 2:
+        mailer(msg, leak_mails)
+        
 def mailer(message, recipients):
     for recipient in recipients:
         subprocess.check_call(
