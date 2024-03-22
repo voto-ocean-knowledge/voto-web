@@ -135,6 +135,8 @@ def send_alert_email(ds, t_step= 15):
         msg_t = f"The Sailbuoy {sb_num} is off track"
     if len(np.unique(ds.WithinTrackRadius[-t_step:]))==1:
         msg_t = str()
+    if ds.WithinTrackRadius[-1:]))==1:
+        msg_t = str()
     msg = "\n".join([msg_l, msg_w,msg_t])
     if len(msg) > 2:
         mailer(msg, leak_mails)
