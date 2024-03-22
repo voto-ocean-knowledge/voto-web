@@ -114,7 +114,7 @@ def add_nrt_sailbuoy(df_in, sb, mission):
     _log.info(f"plotting sailbuoy data from SB{sb} mission {mission}")
     sailbuoy_nrt_plots(ds)
     make_map(ds)
-    send_alert_email(ds)
+    send_alert_email(ds, t_step= 15)
     _log.info(f"Completed add SB{sb} mission {mission}")
 
 def send_alert_email(ds, t_step= 15):
