@@ -56,6 +56,7 @@ class GliderMission(mongoengine.Document):
     project_url = mongoengine.StringField()
     profiles = mongoengine.ListField()
     profile_ids = mongoengine.ListField(mongoengine.ObjectIdField())
+    comment = mongoengine.StringField()
 
     meta = {
         "db_alias": "core",

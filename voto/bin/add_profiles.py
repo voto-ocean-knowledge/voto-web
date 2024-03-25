@@ -18,6 +18,9 @@ with open(folder + "/mongo_secrets.json") as json_file:
 
 
 def init_db():
+    if "mongo_user" not in secrets.keys():
+        initialise_database(user=None, password=None)
+        return
     initialise_database(
         user=secrets["mongo_user"],
         password=secrets["mongo_password"],
