@@ -118,11 +118,15 @@ def sailbuoy_nrt_plots(ds):
     ax.legend()
 
     ax = axs[2]
-    vars_leak = ["Leak", "BigLeak", "Warning", "WithinTrackRadius"]
-    for var in vars_leak:
-        ax.plot(df.index, df[var], label=var)
-    ax.legend()
-    ax.set(ylim=(-0.1, 1.1))
+    vars_leak = ["Leak", "BigLeak", "Warning"]
+    i = 0
+    for i, var in enumerate(vars_leak):
+        ax.scatter(df.index, df[var] + i / 10, label=var, s=20)
+    ax.legend(loc=2)
+    ax.axhline(0.5, color="red")
+    ax.set(ylim=(-0.1, 1.1 + i / 10))
+    ax.set_yticks([0, 1.1])
+    ax.set_yticklabels(["good", "bad"])
 
     ax = axs[3]
     ax.plot(df_roll.index, df_roll.Heading, label="Heading")
@@ -150,7 +154,10 @@ def sailbuoy_nrt_plots(ds):
     _log.info(f"writing figure to {filename}")
     fig.savefig(filename, format="png", transparent=True)
     last = df.index.max()
-    ax.set(xlim=[last - datetime.timedelta(days=7), last + datetime.timedelta(hours=6)])
+    if df.index.max() - df.index.min() > datetime.timedelta(days=7):
+        ax.set(
+            xlim=[last - datetime.timedelta(days=7), last + datetime.timedelta(hours=6)]
+        )
     filename = (
         plots_dir / f"monitor_SB{ds.sailbuoy_serial}_M{ds.deployment_id}_short.png"
     )
