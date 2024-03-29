@@ -58,9 +58,9 @@ def calibrate_view():
 
 
 @blueprint.route("/battery")
-@response(template_file="home/battery.html")
+@response(template_file="home/monitor.html")
 def battery_view():
-    vm = MonitorViewModel()
+    vm = MonitorViewModel(all_plots=False)
     return vm.to_dict()
 
 

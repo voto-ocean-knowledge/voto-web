@@ -66,33 +66,32 @@ class IndexViewModel(ViewModelBase):
 
 
 class MonitorViewModel(ViewModelBase):
-    def __init__(self):
+    def __init__(self, all_plots=True):
         super().__init__()
+        self.plots_display = ""
         gliders, missions = mission_service.recent_glidermissions(baltic_only=False)
-        for i, (glider, mission) in enumerate(zip(gliders, missions)):
-            self.__setattr__(
-                f"battery_{i}",
-                f"/static/img/glider/nrt/SEA{glider}/M{mission}/battery.png",
+        for glider, mission in zip(gliders, missions):
+            battery = f"/static/img/glider/nrt/SEA{glider}/M{mission}/battery.png"
+            battery_prediction = (
+                f"/static/img/glider/nrt/SEA{glider}/M{mission}/battery_prediction.png"
             )
-            self.__setattr__(
-                f"battery_prediction_{i}",
-                f"/static/img/glider/nrt/SEA{glider}/M{mission}/battery_prediction.png",
-            )
-            self.__setattr__(
-                f"glidertools_{i}",
-                f"/static/img/glider/nrt/SEA{glider}/M{mission}/SEA{glider}_M{mission}.png",
-            )
-            self.last_glider_i = i
+            plot = f"/static/img/glider/nrt/SEA{glider}/M{mission}/SEA{glider}_M{mission}.png"
+            content = f'<img class="img-fluid" src={battery}><br><img class="img-fluid" src={battery_prediction}><br>'
+            if all_plots:
+                content += f'<img class="img-fluid" src={plot}><br>'
+            link = f'<div class="col-lg-6 themed-grid-col"><a href="/SEA{glider}/M{mission}">{content}</a></div>'
+            self.plots_display += link
         sailbuoys, missions = mission_service.recent_sailbuoymissions()
-        for i, (sailbuoy, mission) in enumerate(zip(sailbuoys, missions)):
-            self.__setattr__(
-                f"battery_{self.last_glider_i + 1 + i}",
-                f"/static/img/glider/sailbuoy/nrt/monitor_SB{sailbuoy}_M{mission}_short.png",
+        for sailbuoy, mission in zip(sailbuoys, missions):
+            battery = f"/static/img/glider/sailbuoy/nrt/monitor_SB{sailbuoy}_M{mission}_short.png"
+            plot = (
+                f"/static/img/glider/sailbuoy/nrt/monitor_SB{sailbuoy}_M{mission}.png"
             )
-            self.__setattr__(
-                f"battery_prediction_{self.last_glider_i + 1 + i}",
-                f"/static/img/glider/sailbuoy/nrt/monitor_SB{sailbuoy}_M{mission}.png",
-            )
+            content = f'<img class="img-fluid" src={battery}><br>'
+            if all_plots:
+                content += f'<img class="img-fluid" src={plot}><br>'
+            link = f'<div class="col-lg-6 themed-grid-col"><a href="/SB{sailbuoy}/M{mission}">{content}</a></div>'
+            self.plots_display += link
 
 
 class CalibrateViewModel(ViewModelBase):
