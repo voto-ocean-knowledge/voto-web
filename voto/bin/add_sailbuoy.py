@@ -107,6 +107,8 @@ def add_nrt_sailbuoy(df_in, sb, mission):
         "project_url": "https://voiceoftheocean.org/samba-smart-autonomous-monitoring-of-the-baltic-sea/",
     }
     ds.attrs = attrs
+    send_alert_email(ds, t_step=15)
+    return
     _log.info(f"adding SB{sb} mission {mission} to database")
     mission_obj = add_sailbuoymission(ds)
     update_sailbuoy(mission_obj)
@@ -123,6 +125,11 @@ def add_nrt_sailbuoy(df_in, sb, mission):
 
 def send_alert_email(ds, t_step=15):
     sb_num = ds.attrs["sailbuoy_serial"]
+    mission = ds.attrs["deployment_id"]
+    if np.datetime64("now") - ds.Time.values.max() > np.timedelta64(12, "h"):
+        _log.info(f"old news from SB{sb_num} M{mission}. No warning emails")
+        return
+    _log.info(f"process alerts for SB{sb_num} M{mission}")
     msg_l = str()
     msg_w = str()
     msg_t = str()
@@ -133,6 +140,13 @@ def send_alert_email(ds, t_step=15):
         or len(np.unique(ds.BigLeak.Leak[-t_step:])) == 1
     ):
         msg_l = str()
+    if msg_l:
+        mailer("leak-detect-sailbuoy", msg_l, leak_mails)
+
+    # Only alarm on warnings / off track after mission has run for 12 hours
+    if (ds.Time.values.max() - ds.Time.values.min()) / np.timedelta64(1, "h") < 12:
+        _log.info(f"SB{sb_num} M{mission} has just been deployed. Only leak emails")
+        return
     if ds.Warning[-t_step:].any():
         msg_w = f"There is a warning for Sailbuoy {sb_num}"
     if len(np.unique(ds.Warning[-t_step:])) == 1:
@@ -143,30 +157,30 @@ def send_alert_email(ds, t_step=15):
         msg_t = str()
     if ds.WithinTrackRadius[-1:] == 1:
         msg_t = str()
-    msg = "\n".join([msg_l, msg_w, msg_t])
-    if len(msg) > 2:
-        mailer(msg, leak_mails)
+    if msg_w:
+        mailer("warning-sailbuoy", msg_w, leak_mails)
+    if msg_t:
+        mailer("off-track-sailbuoy", msg_t, leak_mails)
 
 
-def mailer(message, recipients):
+def mailer(title, message, recipients):
+    _log.warning(f"sending mail: {message}")
     for recipient in recipients:
         subprocess.check_call(
             [
                 "/usr/bin/bash",
                 "/home/pipeline/utility_scripts/send.sh",
                 message,
-                "leak-alert-sailbuoy",
+                title,
                 recipient,
             ]
         )
 
 
-def tester():
-    all_nrt_sailbuoys(Path("/home/callum/Downloads/hi"), all_missions=False)
-
-
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Add glider missions to the database")
+    parser = argparse.ArgumentParser(
+        description="Add sailbuoy missions to the database"
+    )
     parser.add_argument(
         "kind", type=str, help="Kind of input, must be nrt, nrt_all or complete"
     )
@@ -174,7 +188,7 @@ if __name__ == "__main__":
         "directory", type=str, help="Absolute path to the directory of processed files"
     )
     logging.basicConfig(
-        filename=f"{secrets['log_dir']}/voto_add_data.log",
+        filename=f"{secrets['log_dir']}/sailbuoy.log",
         filemode="a",
         format="%(asctime)s %(levelname)-8s %(message)s",
         level=logging.INFO,
