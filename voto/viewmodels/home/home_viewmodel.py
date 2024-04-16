@@ -59,7 +59,7 @@ class IndexViewModel(ViewModelBase):
             plot = f"/static/img/glider/sailbuoy/nrt/SB{sailbuoy}_M{mission}.png"
             map = f"/static/img/glider/sailbuoy/nrt/SB{sailbuoy}_M{mission}_map.png"
             content = f'<img class="img-fluid" src={map}><br><img class="img-fluid" src={plot}><br>'
-            link = f'<div class="col-lg-6 themed-grid-col"><a href="/fleet/SB{sailbuoy}">{content}</a></div>'
+            link = f'<div class="col-lg-6 themed-grid-col"><a href="/SB{sailbuoy}/M{mission}">{content}</a></div>'
             self.plots_display += link
         self.sailbuoy_lines = sailbuoy_lines_json
         self.sailbuoys = sailbuoys_json

@@ -50,8 +50,6 @@ def remove_test_missions(df):
         np.logical_and(df.Long > 11.7, df.Long < 12.1),
     )
     df = df[~in_gbg]
-    # seconds = df.time_diff.astype(int) / 1e9
-    df = df[df.Velocity < 5]
     df = df.sort_values("Time")
     df.index = np.arange(len(df))
     return df
@@ -68,6 +66,8 @@ def split_nrt_sailbuoy(
 ):
     df_nav = pd.read_csv(nav, sep="\t", parse_dates=["Time"])
     df_pld = pd.read_csv(pld, sep="\t", parse_dates=["Time"])
+    if len(df_nav) == 0 or len(df_pld) == 0:
+        return mission_num
     df_combi = pd.merge_asof(
         df_pld,
         df_nav,
@@ -78,12 +78,20 @@ def split_nrt_sailbuoy(
     )
     df_combi = remove_test_missions(df_combi)
     df_combi["time_diff"] = df_combi.Time.diff()
+    df_combi.index = np.arange(len(df_combi))
     start_i = 0
     for i, dt in zip(df_combi.index, df_combi.time_diff):
         if dt > max_nocomm_time:
             df_mission = df_combi[start_i:i]
+            df_clean = clean_sailbuoy_df(df_mission)
+            if len(df_clean) == 0:
+                _log.warning(f"no good data in SB{sb_num} mission, skipping")
+                continue
             start_i = i
-            if df_mission.Time.iloc[-1] - df_mission.Time.iloc[0] > min_mission_time:
+            if (
+                df_mission.Time.iloc[-1] - df_mission.Time.iloc[0] > min_mission_time
+                and len(df_mission) > 50
+            ):
                 if all_missions:
                     add_nrt_sailbuoy(df_mission, sb_num, mission_num)
                 mission_num += 1
@@ -96,18 +104,24 @@ def split_nrt_sailbuoy(
     return mission_num
 
 
-def clean_sailbuoy_df(df):
+def clean_sailbuoy_df(df, speed_limit=4):
     df.index = np.arange(len(df))
     df = df[df.Time > datetime.datetime(2015, 1, 1)]
-    dist_m = np.abs(
-        111000 * (df.Long.diff() * np.cos(np.deg2rad(df.Lat.mean())) + df.Lat.diff())
-    )
-    dt = pd.to_timedelta(df["Time"].diff()).dt.total_seconds()
-    speed = dist_m / dt
-    speed_rolling = speed.rolling(window=3).mean()
-    if speed_rolling.max() > 3:
-        fast_indices = df.index[speed_rolling > 3]
-        df = df[fast_indices.max() + 1 :]
+    if len(df) < 5:
+        return pd.DataFrame()
+    speed_rolling = df.Velocity.rolling(window=3).mean()
+    if speed_rolling.max() > speed_limit:
+        mid_index = int(df.index.max() / 2)
+        bad_starts = speed_rolling[:mid_index].index[
+            speed_rolling[:mid_index] > speed_limit
+        ]
+        bad_ends = speed_rolling[mid_index:].index[
+            speed_rolling[mid_index:] > speed_limit
+        ]
+        if len(bad_starts) > 0:
+            df = df[max(bad_starts) :]
+        if len(bad_ends) > 0:
+            df = df[: min(bad_ends) - 1]
     return df
 
 
@@ -208,7 +222,7 @@ def run_locally():
         level=logging.INFO,
         datefmt="%Y-%m-%d %H:%M:%S",
     )
-    all_nrt_sailbuoys(Path("/home/pipeline/sailbuoy_download/nrt"))
+    all_nrt_sailbuoys(Path("/home/pipeline/sailbuoy_download/nrt"), all_missions=True)
 
 
 if __name__ == "__main__":

@@ -163,6 +163,7 @@ def sailbuoy_nrt_plots(ds):
     )
     _log.info(f"writing figure to {filename}")
     fig.savefig(filename, format="png", transparent=True)
+    plt.close("all")
 
 
 def scale_bar(
@@ -223,7 +224,7 @@ def make_map(dataset):
     lats = dataset.latitude.values
     lons = dataset.longitude.values
     coord = cartopy.crs.AzimuthalEquidistant(
-        central_longitude=np.mean(lons), central_latitude=np.mean(lats)
+        central_longitude=np.nanmean(lons), central_latitude=np.nanmean(lats)
     )
     pc = cartopy.crs.PlateCarree()
     fig = plt.figure(figsize=(12, 6))
@@ -261,4 +262,5 @@ def make_map(dataset):
     filename_map = f"{fn_root}_map.{fn_ext}"
     _log.info(f"writing map to {filename_map}")
     fig.savefig(filename_map, format="png", transparent=True)
+    plt.close("all")
     return filename_map
