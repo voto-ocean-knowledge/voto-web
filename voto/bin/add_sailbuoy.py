@@ -34,7 +34,13 @@ def all_nrt_sailbuoys(full_dir, all_missions=False):
             raise ValueError(
                 f"nav and pld filenames do not match {nav.name} {pld.name}"
             )
-        split_nrt_sailbuoy(nav, pld, int(nav.name[2:6]), all_missions)
+        sb_num = int(nav.name[2:6])
+        sb_mission_num = split_nrt_sailbuoy(nav, pld, sb_num, all_missions)
+        pld_2 = Path(str(pld).replace("pld", "pld_2"))
+        if pld_2.exists():
+            split_nrt_sailbuoy(
+                nav, pld_2, sb_num, all_missions, mission_num=sb_mission_num
+            )
     _log.info("Finished processing nrt sailbuoy data")
 
 
@@ -46,6 +52,7 @@ def remove_test_missions(df):
     df = df[~in_gbg]
     # seconds = df.time_diff.astype(int) / 1e9
     df = df[df.Velocity < 5]
+    df = df.sort_values("Time")
     df.index = np.arange(len(df))
     return df
 
@@ -57,21 +64,21 @@ def split_nrt_sailbuoy(
     all_missions,
     max_nocomm_time=datetime.timedelta(hours=3),
     min_mission_time=datetime.timedelta(days=3),
+    mission_num=1,
 ):
     df_nav = pd.read_csv(nav, sep="\t", parse_dates=["Time"])
     df_pld = pd.read_csv(pld, sep="\t", parse_dates=["Time"])
     df_combi = pd.merge_asof(
-        df_nav,
         df_pld,
+        df_nav,
         on="Time",
         direction="nearest",
         tolerance=datetime.timedelta(minutes=30),
-        suffixes=("", "_pld"),
+        suffixes=("_pld", ""),
     )
     df_combi = remove_test_missions(df_combi)
     df_combi["time_diff"] = df_combi.Time.diff()
     start_i = 0
-    mission_num = 1
     for i, dt in zip(df_combi.index, df_combi.time_diff):
         if dt > max_nocomm_time:
             df_mission = df_combi[start_i:i]
@@ -86,10 +93,27 @@ def split_nrt_sailbuoy(
     live_mission = now - df_mission.Time.iloc[-1] < datetime.timedelta(hours=6)
     if long_mission and all_missions or live_mission:
         add_nrt_sailbuoy(df_mission, sb_num, mission_num)
+    return mission_num
+
+
+def clean_sailbuoy_df(df):
+    df.index = np.arange(len(df))
+    df = df[df.Time > datetime.datetime(2015, 1, 1)]
+    dist_m = np.abs(
+        111000 * (df.Long.diff() * np.cos(np.deg2rad(df.Lat.mean())) + df.Lat.diff())
+    )
+    dt = pd.to_timedelta(df["Time"].diff()).dt.total_seconds()
+    speed = dist_m / dt
+    speed_rolling = speed.rolling(window=3).mean()
+    if speed_rolling.max() > 3:
+        fast_indices = df.index[speed_rolling > 3]
+        df = df[fast_indices.max() + 1 :]
+    return df
 
 
 def add_nrt_sailbuoy(df_in, sb, mission):
-    ds = df_in.to_xarray()
+    df_clean = clean_sailbuoy_df(df_in)
+    ds = df_clean.to_xarray()
     ds["longitude"] = ds.Long
     ds["latitude"] = ds.Lat
     ds["time"] = ds.Time
@@ -108,7 +132,6 @@ def add_nrt_sailbuoy(df_in, sb, mission):
     }
     ds.attrs = attrs
     send_alert_email(ds, t_step=15)
-    return
     _log.info(f"adding SB{sb} mission {mission} to database")
     mission_obj = add_sailbuoymission(ds)
     update_sailbuoy(mission_obj)
@@ -144,7 +167,7 @@ def send_alert_email(ds, t_step=15):
         mailer("leak-detect-sailbuoy", msg_l, leak_mails)
 
     # Only alarm on warnings / off track after mission has run for 12 hours
-    if (ds.Time.values.max() - ds.Time.values.min()) / np.timedelta64(1, "h") < 12:
+    if (ds.Time.values.max() - ds.Time.values.min()) / np.timedelta64(1, "h") < 24:
         _log.info(f"SB{sb_num} M{mission} has just been deployed. Only leak emails")
         return
     if ds.Warning[-t_step:].any():
@@ -175,6 +198,17 @@ def mailer(title, message, recipients):
                 recipient,
             ]
         )
+
+
+def run_locally():
+    logging.basicConfig(
+        filename=f"/home/callum/Downloads/sailbuoy.log",
+        filemode="a",
+        format="%(asctime)s %(levelname)-8s %(message)s",
+        level=logging.INFO,
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
+    all_nrt_sailbuoys(Path("/home/pipeline/sailbuoy_download/nrt"))
 
 
 if __name__ == "__main__":
