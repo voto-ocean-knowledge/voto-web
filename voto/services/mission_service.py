@@ -294,7 +294,11 @@ def get_stats(name, year=0):
 def distance_m(dlon, dlat, lat):
     dy = dlon * 111000
     dx = dlat * 111000 * np.cos(np.deg2rad(lat))
-    return np.sqrt(dx**2 + dy**2)
+    distance = np.sqrt(dx**2 + dy**2)
+    if np.isnan(distance):
+        return 0
+    else:
+        return distance
 
 
 def total_mission_distance(profiles):
