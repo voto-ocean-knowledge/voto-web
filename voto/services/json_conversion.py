@@ -1,3 +1,4 @@
+import numpy as np
 from voto.data.db_classes import GliderMission, SailbuoyMission
 from voto.services.mission_service import profiles_from_mission
 from voto.services.platform_service import select_glider
@@ -54,6 +55,9 @@ def sailbuoy_to_json(sailbuoy, mission):
     mission = SailbuoyMission.objects(sailbuoy=sailbuoy, mission=mission).first()
     coords = []
     for lon, lat in zip(mission.lon, mission.lat):
+        if np.isnan(lon) or np.isnan(lat):
+            print(lon, lat)
+            continue
         coords.append([lon, lat])
 
     popup = (
