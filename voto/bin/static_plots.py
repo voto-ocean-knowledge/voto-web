@@ -28,19 +28,6 @@ def sort_by_priority_list(values, priority):
     return sorted(values, key=priority_getter)
 
 
-# list of variables we want to plot in order
-sailbuoy_variables = (
-    "RBRL_T",
-    "RBRL_Sal",
-    "FT_WindSpeed",
-    "FT_WindDir",
-    "AirmarAirTemp",
-    "AirmarWindSpeed",
-    "AirmarWindDirection",
-    "Hs",
-    "Ts",
-)
-
 sailbuoy_var_names = {
     "RBRL_T": "Water temperature (C)",
     "RBRL_Sal": "Salinity (g/kg)",
@@ -52,6 +39,12 @@ sailbuoy_var_names = {
     "AirmarWindSpeed": "Wind speed (m/s)",
     "Hs": "Significant wave height (m)",
     "Ts": "Significant wave period (s)",
+    "AirPressure": "Air pressure (dbar)",
+    "AirTemp": "Air temperature (C)",
+    "RelativeHumidity": "Relative Humidity",
+    "WindDirection": "Wind direction",
+    "WindSpeed": "Wind speed (m/s)",
+    "WindGust": "Wind gust (m/s)",
 }
 
 
@@ -62,9 +55,9 @@ def sailbuoy_nrt_plots(ds):
 
     a = list(ds.keys())  # list data variables in ds
     to_plot_unsort = list(
-        set(a).intersection(sailbuoy_variables)
+        set(a).intersection(sailbuoy_var_names.keys())
     )  # find elements in glider_variables relevant to this dataset
-    to_plot = sort_by_priority_list(to_plot_unsort, sailbuoy_variables)
+    to_plot = sort_by_priority_list(to_plot_unsort, sailbuoy_var_names.keys())
     _log.info(f"will plot {to_plot}")
     num_variables = len(to_plot)
     fig, axs = plt.subplots(num_variables, 1, figsize=(12, 3.5 * num_variables))
