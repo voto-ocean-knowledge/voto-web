@@ -8,6 +8,7 @@ from voto.viewmodels.home.home_viewmodel import (
     DataViewModel,
     FeedViewModel,
     CalibrateViewModel,
+    ViewModelBase,
 )
 
 blueprint = flask.Blueprint("home", __name__, template_folder="templates")
@@ -54,6 +55,13 @@ def monitor_view():
 @response(template_file="home/calibrate.html")
 def calibrate_view():
     vm = CalibrateViewModel()
+    return vm.to_dict()
+
+
+@blueprint.route("/explorer")
+@response(template_file="home/explorer.html")
+def explorer_view():
+    vm = ViewModelBase()
     return vm.to_dict()
 
 
