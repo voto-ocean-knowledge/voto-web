@@ -58,8 +58,8 @@ def calibrate_view():
     return vm.to_dict()
 
 
-@blueprint.route("/explorer")
-@response(template_file="home/explorer.html")
+@blueprint.route("/dashboard")
+@response(template_file="home/dashboard.html")
 def explorer_view():
     vm = ViewModelBase()
     return vm.to_dict()
