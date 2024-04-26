@@ -69,7 +69,7 @@ def split_nrt_sailbuoy(
     try:
         df_nav = pd.read_csv(nav, sep="\t", parse_dates=["Time"])
         df_pld = pd.read_csv(pld, sep="\t", parse_dates=["Time"])
-    except pd.errors.ParserError:
+    except (pd.errors.ParserError, ValueError):
         _log.error(f"could not read one of {nav}, {pld}")
         return mission_num
     if len(df_nav) == 0 or len(df_pld) == 0:
