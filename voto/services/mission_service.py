@@ -230,7 +230,6 @@ def get_missions_df(baltic_only=True):
     for i, row in df.iterrows():
         basin = row["basin"]
         if type(basin) is not str:
-            print(row)
             continue
         if "Gotland" in basin or basin == "Northern Baltic Proper":
             df.loc[i, "basin_def"] = "Gotland"

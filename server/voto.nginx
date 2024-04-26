@@ -1,5 +1,4 @@
 server {
-    listen 80;
     server_name observations.voiceoftheocean.org;
     server_tokens off;
     charset utf-8;
@@ -11,7 +10,7 @@ server {
         uwsgi_buffers   8 256k;
 
         alias /app/voto/voto/static;
-        expires 365d;
+        expires 1h;
     }
     location / {
         try_files $uri @yourapplication;

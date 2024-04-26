@@ -35,9 +35,11 @@ def all_nrt_sailbuoys(full_dir, all_missions=False):
                 f"nav and pld filenames do not match {nav.name} {pld.name}"
             )
         sb_num = int(nav.name[2:6])
+        _log.info(f"process {sb_num}")
         sb_mission_num = split_nrt_sailbuoy(nav, pld, sb_num, all_missions)
         pld_2 = Path(str(pld).replace("pld", "pld_2"))
         if pld_2.exists():
+            _log.info(f"process {sb_num} pld2")
             split_nrt_sailbuoy(
                 nav, pld_2, sb_num, all_missions, mission_num=sb_mission_num
             )
@@ -156,7 +158,6 @@ def add_nrt_sailbuoy(df_in, sb, mission):
     _log.info(f"plotting sailbuoy data from SB{sb} mission {mission}")
     sailbuoy_nrt_plots(ds)
     make_map(ds)
-    send_alert_email(ds, t_step=15)
     _log.info(f"Completed add SB{sb} mission {mission}")
 
 

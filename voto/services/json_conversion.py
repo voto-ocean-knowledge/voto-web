@@ -56,7 +56,6 @@ def sailbuoy_to_json(sailbuoy, mission):
     coords = []
     for lon, lat in zip(mission.lon, mission.lat):
         if np.isnan(lon) or np.isnan(lat):
-            print(lon, lat)
             continue
         coords.append([lon, lat])
 
