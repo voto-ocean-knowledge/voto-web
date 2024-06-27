@@ -19,7 +19,7 @@ from static_plots import sailbuoy_nrt_plots, make_map
 
 leak_mails = [
     "callum.rollo@voiceoftheocean.org",
-    "alarms-aaaak6sn7vydeww34wcbshfqdq@voice-of-the-ocean.slack.com",
+    # "alarms-aaaak6sn7vydeww34wcbshfqdq@voice-of-the-ocean.slack.com",
 ]
 
 
@@ -89,7 +89,7 @@ def split_nrt_sailbuoy(
     for i, dt in zip(df_combi.index, df_combi.time_diff):
         if dt > max_nocomm_time:
             df_mission = df_combi[start_i:i]
-            df_clean = clean_sailbuoy_df(df_mission)
+            df_clean = df_mission  # clean_sailbuoy_df(df_mission)
             if len(df_clean) == 0:
                 _log.warning(f"no good data in SB{sb_num} mission, skipping")
                 continue
@@ -125,9 +125,11 @@ def clean_sailbuoy_df(df, speed_limit=4):
             speed_rolling[mid_index:] > speed_limit
         ]
         if len(bad_starts) > 0:
-            df = df[max(bad_starts) :]
+            if max(bad_starts) < 50:
+                df = df[max(bad_starts) :]
         if len(bad_ends) > 0:
-            df = df[: min(bad_ends) - 1]
+            if min(bad_ends) > len(df) - 50:
+                df = df[: min(bad_ends) - 1]
     return df
 
 
@@ -229,10 +231,14 @@ def run_locally():
         level=logging.INFO,
         datefmt="%Y-%m-%d %H:%M:%S",
     )
-    all_nrt_sailbuoys(Path("/home/pipeline/sailbuoy_download/nrt"), all_missions=True)
+    all_nrt_sailbuoys(Path("/data/sailbuoy/raw"), all_missions=True)
 
 
 if __name__ == "__main__":
+    run_locally()
+
+
+def asdgvawef():
     parser = argparse.ArgumentParser(
         description="Add sailbuoy missions to the database"
     )
