@@ -79,7 +79,8 @@ class GliderMissionViewModel(ViewModelBase):
             "Command console plots": f"SEA{self.glider}_M{self.mission}_cmd_log.png",
             "Deployment CTD cast": f"ctd_deployment.png",
             "Recovery CTD cast": f"ctd_recovery.png",
-            "nrt scatter": f"/SEA{self.glider}_M{self.mission}.png",
+            "nrt scatter": f"SEA{self.glider}_M{self.mission}.png",
+            "battery": f"battery.png",
         }
         for name, fn in extra_plots.items():
             if not (plots_dir / fn).exists():
