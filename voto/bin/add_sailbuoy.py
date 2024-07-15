@@ -52,6 +52,7 @@ def remove_test_missions(df):
         np.logical_and(df.Long > 11.7, df.Long < 12.1),
     )
     df = df[~in_gbg]
+    df = df[df.Time < np.datetime64("2035-01-01")]
     df = df.sort_values("Time")
     df.index = np.arange(len(df))
     return df
@@ -110,12 +111,13 @@ def split_nrt_sailbuoy(
     return mission_num
 
 
-def clean_sailbuoy_df(df, speed_limit=4):
+def clean_sailbuoy_df(df, speed_limit=4, max_distance=5000):
     df.index = np.arange(len(df))
     df = df[df.Time > datetime.datetime(2015, 1, 1)]
     if len(df) < 5:
         return pd.DataFrame()
     speed_rolling = df.Velocity.rolling(window=3).mean()
+
     if speed_rolling.max() > speed_limit:
         mid_index = int(df.index.max() / 2)
         bad_starts = speed_rolling[:mid_index].index[
@@ -124,12 +126,31 @@ def clean_sailbuoy_df(df, speed_limit=4):
         bad_ends = speed_rolling[mid_index:].index[
             speed_rolling[mid_index:] > speed_limit
         ]
+        start = 0
+        end = len(df)
         if len(bad_starts) > 0:
-            if max(bad_starts) < 50:
-                df = df[max(bad_starts) :]
+            start = min((max(bad_starts), 50))
         if len(bad_ends) > 0:
-            if min(bad_ends) > len(df) - 50:
-                df = df[: min(bad_ends) - 1]
+            end = max((min(bad_ends)), len(df) - 50)
+        df = df[start:end]
+    distance_travelled = (
+        np.abs(df["Lat_pld"].diff()) * 111000 + np.abs(df["Long_pld"].diff() * 111000)
+    ) * np.cos(np.deg2rad(np.nanmean(df["Lat_pld"])))
+    if np.nanmax(distance_travelled) > max_distance:
+        mid_index = int(df.index.max() / 2)
+        bad_starts = distance_travelled[:mid_index].index[
+            distance_travelled[:mid_index] > max_distance
+        ]
+        bad_ends = distance_travelled[mid_index:].index[
+            distance_travelled[mid_index:] > max_distance
+        ]
+        start = 0
+        end = len(df)
+        if len(bad_starts) > 0:
+            start = min((max(bad_starts), 50))
+        if len(bad_ends) > 0:
+            end = max((min(bad_ends)), len(df) - 50)
+        df = df[start:end]
     return df
 
 

@@ -228,7 +228,7 @@ def get_missions_df(baltic_only=True):
     df["km_per_day"] = df.total_distance_m / (1000 * df.days)
     df["basin_def"] = "unknown"
     for i, row in df.iterrows():
-        basin = row["basin"]
+        basin = row["basin"].split(",")[0]
         if type(basin) is not str:
             continue
         if "Gotland" in basin or basin == "Northern Baltic Proper":
