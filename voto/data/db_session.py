@@ -7,10 +7,6 @@ _log = logging.getLogger(__name__)
 def initialise_database(
     user=None, password=None, port=27017, server="localhost", db="glider"
 ):
-    if server != "49.13.50.189":
-        extra_auth = "&ssl=true&tlsAllowInvalidCertificates=true"
-    else:
-        extra_auth = ""
     if user or password:
         data = dict(
             username=user,
@@ -23,7 +19,7 @@ def initialise_database(
         )
         mongoengine.connect(
             host=f"mongodb://{data['username']}:{data['password']}@{data['host']}:{data['port']}/{data['dbname']}"
-            f"?authSource=admin{extra_auth}",
+            f"?authSource=admin",
             alias="core",
             uuidRepresentation="standard",
             connect=False,
