@@ -1,3 +1,5 @@
+import pandas as pd
+import ast
 from voto.data.db_classes import Glider, GliderMission, Sailbuoy, SailbuoyMission
 from voto.services.utility_functions import seconds_to_pretty, m_to_naut_miles
 from voto.viewmodels.shared.viewmodelbase import ViewModelBase
@@ -31,6 +33,48 @@ class GliderViewModel(ViewModelBase):
             self.marianas = int(self.marianas)
         self.iss = round(self.glider.total_depth / (800 * 1000), 1)
         glider_missions = GliderMission.objects(glider=int(self.glider_num))
+        df = pd.read_csv(
+            f"https://erddap.observations.voiceoftheocean.org/erddap/tabledap/meta_users_table.csvp?&glider_serial=%22SEA{self.glider_fill}%22"
+        )
+        df = df[
+            [
+                "deployment_id",
+                "basin",
+                "deployment_start (UTC)",
+                "deployment_end (UTC)",
+                "ctd",
+                "oxygen",
+                "optics",
+                "ad2cp",
+                "irradiance",
+                "nitrate",
+            ]
+        ]
+        df = df.rename(
+            {
+                "deployment_id": "mission",
+                "deployment_start (UTC)": "start",
+                "deployment_end (UTC)": "end",
+            },
+            axis=1,
+        )
+        df["start"] = df["start"].str[:10]
+        df["end"] = df["end"].str[:10]
+        df.dropna(how="all", axis=1, inplace=True)
+        for sensor in ["ctd", "oxygen", "optics", "ad2cp", "irradiance", "nitrate"]:
+            if sensor not in list(df):
+                continue
+            dict_list = df[sensor]
+            clean_list = []
+            for dict_str in dict_list:
+                if str(dict_str).lower() == "nan":
+                    clean_list.append("")
+                    continue
+                cal_dict = ast.literal_eval(dict_str)
+                cal_str = f"{cal_dict['make_model']} {cal_dict['serial']} {cal_dict['calibration_date']}"
+                clean_list.append(cal_str)
+            df[sensor] = clean_list
+        self.df = df
         for gm in glider_missions:
             gm.glider_fill = str(gm.glider).zfill(3)
             gm.start_pretty = str(gm.start)[:10]

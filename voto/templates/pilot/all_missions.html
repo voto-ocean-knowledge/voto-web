@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+
+{% block additional_css %}
+    <title>All plots</title>
+{% endblock %}
+{% block main_content %}
+
+    <div class="container-xl monitor-missions">
+        <h2 class="mt-4">All plots</h2>
+      <div class="row mb-2">
+          {{plots_display | safe}}
+      </div>
+    </div>
+
+{% endblock %}

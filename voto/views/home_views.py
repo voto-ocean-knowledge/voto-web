@@ -4,10 +4,8 @@ from voto.viewmodels.home.home_viewmodel import (
     IndexViewModel,
     StatsViewModel,
     PipelineViewModel,
-    MonitorViewModel,
     DataViewModel,
     FeedViewModel,
-    CalibrateViewModel,
     ViewModelBase,
 )
 
@@ -44,31 +42,10 @@ def pipeline_view():
     return vm.to_dict()
 
 
-@blueprint.route("/monitor")
-@response(template_file="home/monitor.html")
-def monitor_view():
-    vm = MonitorViewModel()
-    return vm.to_dict()
-
-
-@blueprint.route("/calibrate")
-@response(template_file="home/calibrate.html")
-def calibrate_view():
-    vm = CalibrateViewModel()
-    return vm.to_dict()
-
-
 @blueprint.route("/dashboard")
 @response(template_file="home/dashboard.html")
 def explorer_view():
     vm = ViewModelBase()
-    return vm.to_dict()
-
-
-@blueprint.route("/battery")
-@response(template_file="home/monitor.html")
-def battery_view():
-    vm = MonitorViewModel(all_plots=False)
     return vm.to_dict()
 
 

@@ -1,7 +1,7 @@
 from flask import Response
 
 from tests.test_client import flask_app
-from voto.views import home_views, mission_views, platform_views
+from voto.views import home_views, mission_views, platform_views, pilot_views
 
 
 def test_homepage_missions():
@@ -70,7 +70,7 @@ def test_stats_page():
 
 def test_monitor():
     with flask_app.test_request_context(path="monitor"):
-        r: Response = home_views.monitor_view()
+        r: Response = pilot_views.monitor_view()
     assert r.status_code == 200
     assert b"monitor" in r.data
 

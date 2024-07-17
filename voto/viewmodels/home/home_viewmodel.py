@@ -1,6 +1,5 @@
 import numpy as np
 import datetime
-from pathlib import Path
 from voto.services.feeds_service import get_news, news_xml
 from voto.services.json_conversion import (
     glidermission_to_json,
@@ -63,54 +62,6 @@ class IndexViewModel(ViewModelBase):
             self.plots_display += link
         self.sailbuoy_lines = sailbuoy_lines_json
         self.sailbuoys = sailbuoys_json
-
-
-class MonitorViewModel(ViewModelBase):
-    def __init__(self, all_plots=True):
-        super().__init__()
-        self.plots_display = ""
-        gliders, missions = mission_service.recent_glidermissions(baltic_only=False)
-        for glider, mission in zip(gliders, missions):
-            battery = f"/static/img/glider/nrt/SEA{glider}/M{mission}/battery.png"
-            battery_prediction = (
-                f"/static/img/glider/nrt/SEA{glider}/M{mission}/battery_prediction.png"
-            )
-            plot = f"/static/img/glider/nrt/SEA{glider}/M{mission}/SEA{glider}_M{mission}.png"
-            content = f'<img class="img-fluid" src={battery}><br><img class="img-fluid" src={battery_prediction}><br>'
-            if all_plots:
-                content += f'<img class="img-fluid" src={plot}><br>'
-            link = f'<div class="col-lg-6 themed-grid-col"><a href="/SEA{glider}/M{mission}">{content}</a></div>'
-            self.plots_display += link
-        sailbuoys, missions = mission_service.recent_sailbuoymissions()
-        for sailbuoy, mission in zip(sailbuoys, missions):
-            battery = f"/static/img/glider/sailbuoy/nrt/monitor_SB{sailbuoy}_M{mission}_short.png"
-            plot = (
-                f"/static/img/glider/sailbuoy/nrt/monitor_SB{sailbuoy}_M{mission}.png"
-            )
-            content = f'<img class="img-fluid" src={battery}><br>'
-            if all_plots:
-                content += f'<img class="img-fluid" src={plot}><br>'
-            link = f'<div class="col-lg-6 themed-grid-col"><a href="/SB{sailbuoy}/M{mission}">{content}</a></div>'
-            self.plots_display += link
-
-
-class CalibrateViewModel(ViewModelBase):
-    def __init__(self):
-        super().__init__()
-        mission_paths = list(
-            Path("/app/voto/voto/static/img/glider/nrt/").rglob("SEA*/M*")
-        )
-        display = ""
-        for path in mission_paths:
-            base = str(path).split("voto/voto")[-1]
-            path_parts = base.split("/")
-            nice_name = f"SEA0{path_parts[-2][-2:]} M{path_parts[-1][1:]}"
-            ctds = list(path.glob("ctd*png"))
-            if len(ctds) == 0:
-                continue
-            display += f'<div class="col-lg-6 themed-grid-col border"><h4>{nice_name} deployment</h4><img class="img-fluid" src="{base}/ctd_deployment.png"></div>'
-            display += f'<div class="col-lg-6 themed-grid-col border"><h4>{nice_name} recovery</h4><img class="img-fluid" src="{base}/ctd_recovery.png"></div>'
-        self.display = display
 
 
 class StatsViewModel(ViewModelBase):
