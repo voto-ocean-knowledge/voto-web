@@ -18,9 +18,20 @@ class AccountViewModel(ViewModelBase):
         gliders = Glider.objects().order_by("glider")
         for glider in gliders:
             glider.glider_fill = str(glider.glider).zfill(3)
+        glider_grid = []
+        glider_list = []
+        for i, glider in enumerate(gliders):
+            glider_list.append(glider.glider)
+            print(glider_list)
+            if (i + 1) % 3 == 0:
+                glider_grid.append(glider_list)
+                glider_list = []
+        print(glider_grid)
+        self.glider_grid = glider_grid
+
         self.gliders = gliders
         sink_links = [
-            "https://static.wikia.nocookie.net/monopoly/images/9/95/Chance_go_to_jail.jpg",
+            "https://images.fineartamerica.com/images/artworkimages/mediumlarge/1/chance-card-vintage-monopoly-go-directly-to-jail-design-turnpike.jpg",
             "https://i.giphy.com/wVG5iaHYWS3eT1I2EY.webp",
             "https://c.tenor.com/FRYZ7FnxC8UAAAAC/tenor.gif"
             "https://sv.wikipedia.org/wiki/Regalskeppet_Vasa#Jungfruf%C3%A4rden",

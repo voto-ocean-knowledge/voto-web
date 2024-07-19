@@ -5,20 +5,37 @@
     <div class="welcome">
         <h1>Welcome {{ user.name }}</h1><br>
         <h3>Bonus pages</h3>
+                <div class="container">
+
             <p><a  class="btn btn-primary" role="button" href="monitor"> pilot plots </a> </p>
             <p><a  class="btn btn-primary" role="button" href="battery"> battery plots </a> </p>
             <p><a  class="btn btn-primary" role="button" href="pilot/all-plots"> All mission plots </a> </p>
-
+                </div>
         <h3>Glider engineering pages</h3>
-            {% for g in gliders %}
-            <p><a href="fleet/SEA{{ g.glider }}-engineering" class="btn btn-primary" role="button">SEA{{ g.glider }}</a></p>
-            {%  endfor %}
 
+
+        <div class="container">
+            {% for g in glider_grid %}
+            <p>
+          <div class="row justify-content-md-left">
+            <div class="col-md-auto">
+                <a href="fleet/SEA{{ g[0] }}-engineering" class="btn btn-primary" role="button">SEA0{{ g[0] }}</a>
+            </div>
+            <div class="col-md-auto">
+                <a href="fleet/SEA{{ g[1] }}-engineering" class="btn btn-primary" role="button">SEA0{{ g[1] }}</a>
+            </div>
+            <div class="col-md-auto">
+                <a href="fleet/SEA{{ g[2] }}-engineering" class="btn btn-primary" role="button">SEA0{{ g[2] }}</a>
+            </div>
+            </p>
+            {%  endfor %}
+          </div>
         <h3>External services</h3>
-    <div class="options">
-        <a  class="btn btn-primary" role="button" href="https://www.glimpse-alseamar.com/"> pilot gliders (GLIMPSE) </a> <br>
-        <a  class="btn btn-primary" role="button" href="https://iridium2.azurewebsites.net"> pilot sailbuoys (iridium) </a> <br>
-        <a  class="btn btn-danger" role="button" href="{{sink_link}}"> Sink all gliders</a>
+
+    <div class="container">
+       <p> <a  class="btn btn-primary" role="button" href="https://www.glimpse-alseamar.com/"> pilot gliders (GLIMPSE) </a> </p>
+        <p><a  class="btn btn-primary" role="button" href="https://iridium2.azurewebsites.net"> pilot sailbuoys (iridium) </a> </p>
+        <p><a  class="btn btn-danger" role="button" href="{{sink_link}}"> Sink all gliders</a></p>
     </div>
         <a href="/account/logout" class="btn btn-primary" role="button">Logout</a>
     </div>
