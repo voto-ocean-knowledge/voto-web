@@ -89,3 +89,23 @@ form.account-form {
     max-width: 800px;
     padding: 10px;
 }
+.welcome {
+    margin-bottom: 20px;
+  margin-top: 20px;
+  margin-left: 20px;
+}
+.error-message {
+    color: #a00d0d;
+}
+
+.options {
+  margin-top: 20px;
+  margin-left: 20px;
+  margin-bottom: 20px;
+  font-size:34px;
+}
+.login {
+  margin-top: 20px;
+  margin-left: 20px;
+  margin-bottom: 20px;
+}

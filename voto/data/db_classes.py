@@ -150,3 +150,16 @@ class EmailList(mongoengine.Document):
         "db_alias": "core",
         "collection": "mailinglist",
     }
+
+
+class User(mongoengine.Document):
+    user_id = mongoengine.IntField(required=True)
+    email = mongoengine.StringField(required=True)
+    hashed_password = mongoengine.StringField(required=True)
+    date_added = mongoengine.DateTimeField(default=datetime.now())
+    last_login = mongoengine.DateTimeField(default=datetime.now())
+    name = mongoengine.StringField(defaul="mysterious stranger")
+    meta = {
+        "db_alias": "core",
+        "collection": "user",
+    }

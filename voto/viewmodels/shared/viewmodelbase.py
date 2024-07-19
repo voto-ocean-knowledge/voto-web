@@ -1,7 +1,7 @@
 import flask
 from flask import Request
 
-from voto.infrastructure import request_dict
+from voto.infrastructure import request_dict, cookie_auth
 
 
 class ViewModelBase:
@@ -9,6 +9,7 @@ class ViewModelBase:
         self.request: Request = flask.request
         self.request_dict = request_dict.create("")
         self.error = None
+        self.user_id = cookie_auth.get_user_id_via_auth_cookie(self.request)
 
     def to_dict(self):
         return self.__dict__

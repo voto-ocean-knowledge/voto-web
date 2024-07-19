@@ -6,5 +6,5 @@ xarray
 pandas
 matplotlib
 feedgen
-uwsgi
 pyyaml
+passlib

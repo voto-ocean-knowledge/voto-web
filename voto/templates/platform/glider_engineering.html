@@ -1,0 +1,121 @@
+{% extends "layout.html" %}
+
+{% block additional_css %}
+    <title>SEA{{glider_fill}}</title>
+<!-- CSS and javascript for datatables, requires jquery-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+<!-- Setup datatables-->
+<script>
+    $(document).ready( function () {
+        $('#missions_table').DataTable({
+        "paging": false,
+        "order": [[ 0, "desc" ]]
+        });
+    } );
+</script>
+
+<script>
+    $(document).ready( function () {
+        $('#comments_table').DataTable({
+        "paging": false,
+        "order": [[ 0, "desc" ]]
+        });
+    } );
+</script>
+
+
+<script>
+    $(document).ready( function () {
+        $('#ballast_table').DataTable({
+        "paging": false,
+        "order": [[ 0, "desc" ]]
+        });
+    } );
+</script>
+{% endblock %}
+{% block main_content %}
+
+<div class="mt-4 container-xl glider-list">
+    <h3 class="mt-4">SEA{{glider_fill}} {{glider.name}}</h3>
+
+    <h2>Sensors</h2>
+    <table class="table table-hover" id="missions_table">
+        <thead>
+        <tr>
+            {% for column in sensors_df.columns %}
+                <th scope="col">{{ column }}</th>
+            {% endfor %}
+        </tr>
+        </thead>
+        <tbody>
+        {% for row in sensors_df.itertuples() %}
+
+        <tr>
+            <td><a href="/SEA{{glider_fill}}/M{{row[1]}}" class="link-primary">M{{row[1]}}</a></td>
+                {% for cell in row[2:] %}
+                    <td>{{ cell }}</td>
+                {% endfor %}
+        </tr>
+            {%  endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="mt-4 container-xl glider-list">
+
+    <h2>Ballast</h2>
+    <table class="table table-hover" id="ballast_table">
+        <thead>
+        <tr>
+            {% for column in ballast_df.columns %}
+                <th scope="col">{{ column }}</th>
+            {% endfor %}
+        </tr>
+        </thead>
+        <tbody>
+        {% for row in ballast_df.itertuples() %}
+
+
+        <tr>
+                <td><a href="/SEA{{glider_fill}}/M{{row[1]}}" class="link-primary">M{{row[1]}}</a></td>
+
+                {% for cell in row[2:] %}
+                    <td>{{ cell }}</td>
+                {% endfor %}
+        </tr>
+            {%  endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+
+    <div class="mt-4 container-xl glider-list">
+
+        <h2>Pilot comments</h2>
+        <table class="table table-hover" id="comments_table">
+            <thead>
+            <tr>
+                <th scope="col">Mission</th>
+                <th scope="col">Location</th>
+                <th scope="col">Duration (days)</th>
+                <th scope="col">Start</th>
+                <th scope="col">Comment</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for m in glidermissions %}
+
+                <tr>
+                <td><a href="/SEA{{ m.glider_fill }}/M{{m.mission}}" class="link-primary">M{{m.mission}}</a></td>
+                <td>{{m.basin}}</td>
+                <td>{{m.duration_pretty}}</td>
+                <td>{{m.start_pretty}}</td>
+                <td>{{m.comment}}</a></td>
+            {%  endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

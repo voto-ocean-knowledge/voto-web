@@ -7,6 +7,7 @@ from voto.viewmodels.shared.viewmodelbase import ViewModelBase
 
 class PlatformListViewModel(ViewModelBase):
     def __init__(self):
+        super().__init__()
         gliders = Glider.objects().order_by("glider")
         sailbuoys = Sailbuoy.objects().order_by("sailbuoy")
         for glider in gliders:
@@ -21,6 +22,7 @@ class PlatformListViewModel(ViewModelBase):
 
 class GliderViewModel(ViewModelBase):
     def __init__(self, glider_num):
+        super().__init__()
         self.glider_num = glider_num
         self.glider_fill = str(glider_num).zfill(3)
 
@@ -33,6 +35,16 @@ class GliderViewModel(ViewModelBase):
             self.marianas = int(self.marianas)
         self.iss = round(self.glider.total_depth / (800 * 1000), 1)
         glider_missions = GliderMission.objects(glider=int(self.glider_num))
+        for gm in glider_missions:
+            gm.glider_fill = str(gm.glider).zfill(3)
+            gm.start_pretty = str(gm.start)[:10]
+            gm.duration_pretty = (gm.end - gm.start).days
+            gm.variables_pretty = ", ".join(gm.variables)
+            if gm.basin is None:
+                gm.basin = " "
+        self.glidermissions = glider_missions
+
+    def pilot_tables(self):
         df = pd.read_csv(
             f"https://erddap.observations.voiceoftheocean.org/erddap/tabledap/meta_users_table.csvp?&glider_serial=%22SEA{self.glider_fill}%22"
         )
@@ -74,19 +86,42 @@ class GliderViewModel(ViewModelBase):
                 cal_str = f"{cal_dict['make_model']} {cal_dict['serial']} {cal_dict['calibration_date']}"
                 clean_list.append(cal_str)
             df[sensor] = clean_list
-        self.df = df
-        for gm in glider_missions:
-            gm.glider_fill = str(gm.glider).zfill(3)
-            gm.start_pretty = str(gm.start)[:10]
-            gm.duration_pretty = (gm.end - gm.start).days
-            gm.variables_pretty = ", ".join(gm.variables)
-            if gm.basin is None:
-                gm.basin = " "
-        self.glidermissions = glider_missions
+        self.sensors_df = df
+
+        df = pd.read_csv(
+            f"https://erddap.observations.voiceoftheocean.org/erddap/tabledap/meta_ballast.csvp?&glider_serial={self.glider.glider}"
+        )
+        df = df[
+            [
+                "deployment_id",
+                "basin",
+                "total_dives",
+                "max_ballast",
+                "min_ballast",
+                "avg_max_pumping_value",
+                "avg_min_pumping_value",
+                "std_max",
+                "std_min",
+                "avg_pumping_range",
+                "times_crossing_over_420_ml",
+            ]
+        ]
+        df = df.rename(
+            {
+                "deployment_id": "mission",
+                "avg_min_pumping_value": "avg min",
+                "avg_max_pumping_value": "avg max",
+                "avg_pumping_range": "avg range",
+                "times_crossing_over_420_ml": "times cross 420",
+            },
+            axis=1,
+        )
+        self.ballast_df = df
 
 
 class SailbuoyViewModel(ViewModelBase):
     def __init__(self, sailbuoy_num):
+        super().__init__()
         self.sailbuoy_num = sailbuoy_num
 
     def validate(self):

@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+
+{% block main_content %}
+    <div class="login">
+    <div class="form-container">
+        <form action="" method="POST" class="account-form">
+            <h1>Login for VOTO personnel</h1>
+            <input name="email" type="text" placeholder=" Your email address" class="form-control" value="{{ email}}" required>
+            <input name="password" type="password" placeholder=" Your password" class="form-control" required>
+            <p></p><button type="submit" class="btn btn-primary">Login</button></p>
+            <p>Not got an account? <a href="/account/register">sign up</a></p>
+            <div style="clear: both;"></div>
+
+            {% if error %}
+                <div class="error-message">{{ error }}</div>
+            {% endif %}
+        </form>
+    </div>
+    </div>
+{% endblock %}
+
+{% block additional_css %}
+    <link rel="stylesheet" href="/static/css/account.css">
+{% endblock %}

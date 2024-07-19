@@ -1,0 +1,69 @@
+import datetime
+from voto.data.db_classes import Glider
+from voto.viewmodels.shared.viewmodelbase import ViewModelBase
+from voto.services import user_service
+import random
+import os
+import json
+
+folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
+with open(folder + "/mongo_secrets.json") as json_file:
+    secrets = json.load(json_file)
+
+
+class AccountViewModel(ViewModelBase):
+    def __init__(self):
+        super().__init__()
+        self.user = user_service.find_user_by_id(self.user_id)
+        gliders = Glider.objects().order_by("glider")
+        for glider in gliders:
+            glider.glider_fill = str(glider.glider).zfill(3)
+        self.gliders = gliders
+        sink_links = [
+            "https://static.wikia.nocookie.net/monopoly/images/9/95/Chance_go_to_jail.jpg",
+            "https://i.giphy.com/wVG5iaHYWS3eT1I2EY.webp",
+            "https://c.tenor.com/FRYZ7FnxC8UAAAAC/tenor.gif"
+            "https://sv.wikipedia.org/wiki/Regalskeppet_Vasa#Jungfruf%C3%A4rden",
+            "https://media.timeout.com/images/100654045/image.jpg",
+        ]
+        if datetime.datetime.now() - self.user.date_added < datetime.timedelta(hours=1):
+            sink_links = sink_links[:3]
+        self.sink_link = random.choice(sink_links)
+        if random.randint(0, 99) == 7:
+            self.sink_link = "https://youtu.be/dQw4w9WgXcQ?si=njkBEY1tTO75UUrR&t=43"
+
+
+class RegisterViewModel(ViewModelBase):
+    def __init__(self):
+        super().__init__()
+        self.name = self.request_dict.name
+        self.email = self.request_dict.email.lower().strip()
+        self.secret = self.request_dict.secret.lower().strip()
+        self.password = self.request_dict.password.strip()
+
+    def validate(self):
+        if not self.name or not self.name.strip():
+            self.error = "You must specify a name."
+        elif not self.email or not self.email.strip():
+            self.error = "You must specify an email."
+        elif self.secret != secrets["magic_word"]:
+            self.error = "You didn't say the magic word"
+        elif not self.password:
+            self.error = "You must specify a password."
+        elif len(self.password.strip()) < 8:
+            self.error = "The password must be at least 8 characters."
+        elif user_service.find_user_by_email(self.email):
+            self.error = "A user with that email address already exists."
+
+
+class LoginViewModel(ViewModelBase):
+    def __init__(self):
+        super().__init__()
+        self.email = self.request_dict.email.lower().strip()
+        self.password = self.request_dict.password.strip()
+
+    def validate(self):
+        if not self.email or not self.email.strip():
+            self.error = "You must specify a email."
+        elif not self.password:
+            self.error = "You must specify a password."

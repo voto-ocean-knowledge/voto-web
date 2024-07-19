@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% block main_content %}
+<div class="mt-4 container-xl glider-list">
+    <div class="welcome">
+        <h1>Welcome {{ user.name }}</h1><br>
+        <h3>Bonus pages</h3>
+            <p><a  class="btn btn-primary" role="button" href="monitor"> pilot plots </a> </p>
+            <p><a  class="btn btn-primary" role="button" href="battery"> battery plots </a> </p>
+            <p><a  class="btn btn-primary" role="button" href="pilot/all-plots"> All mission plots </a> </p>
+
+        <h3>Glider engineering pages</h3>
+            {% for g in gliders %}
+            <p><a href="fleet/SEA{{ g.glider }}-engineering" class="btn btn-primary" role="button">SEA{{ g.glider }}</a></p>
+            {%  endfor %}
+
+        <h3>External services</h3>
+    <div class="options">
+        <a  class="btn btn-primary" role="button" href="https://www.glimpse-alseamar.com/"> pilot gliders (GLIMPSE) </a> <br>
+        <a  class="btn btn-primary" role="button" href="https://iridium2.azurewebsites.net"> pilot sailbuoys (iridium) </a> <br>
+        <a  class="btn btn-danger" role="button" href="{{sink_link}}"> Sink all gliders</a>
+    </div>
+        <a href="/account/logout" class="btn btn-primary" role="button">Logout</a>
+    </div>
+</div>
+{% endblock %}

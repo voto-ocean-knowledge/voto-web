@@ -24,6 +24,18 @@ def glider_page(glider: int):
     return vm.to_dict()
 
 
+@blueprint.route("/fleet/SEA<int:glider>-engineering")
+@response(template_file="platform/glider_engineering.html")
+def glider_page_engineering(glider: int):
+    vm = GliderViewModel(glider)
+    if not vm.user_id:
+        return flask.redirect(f"/fleet/SEA{glider}")
+    vm.validate()
+    if vm.user_id:
+        vm.pilot_tables()
+    return vm.to_dict()
+
+
 @blueprint.route("/fleet/SB<int:sailbuoy>")
 @response(template_file="platform/sailbuoy.html")
 def sailbuoy_page(sailbuoy: int):
