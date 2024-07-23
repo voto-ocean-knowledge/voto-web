@@ -269,8 +269,10 @@ if __name__ == "__main__":
         glider_fill = str(glider.glider).zfill(3)
         meta = get_meta_table(glider_fill)
         ballast = get_ballast_table(glider_fill)
-        meta.to_csv(stats_dir / f"sensors_SEA{glider_fill}.csv", index=False, sep=";")
+        meta["basin"] = meta["basin"].str.replace(",", "-")
+        meta.to_csv(stats_dir / f"sensors_SEA{glider_fill}.csv", index=False, sep=",")
+        ballast["basin"] = ballast["basin"].str.replace(",", "-")
         ballast.to_csv(
-            stats_dir / f"ballast_SEA{glider_fill}.csv", index=False, sep=";"
+            stats_dir / f"ballast_SEA{glider_fill}.csv", index=False, sep=","
         )
     _log.info("Finished computing stats")
