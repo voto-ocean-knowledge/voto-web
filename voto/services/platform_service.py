@@ -1,4 +1,6 @@
 from voto.data.db_classes import Glider, GliderMission, Sailbuoy, SailbuoyMission
+import ast
+import pandas as pd
 import os
 import sys
 import datetime
@@ -107,3 +109,83 @@ def update_sailbuoy(mission):
     sailbuoy = sailbuoy_calc_totals(sailbuoy)
     _log.info(f"Add sailbuoy SEA{mission.sailbuoy}")
     return sailbuoy
+
+
+def get_meta_table(glider_fill):
+    df = pd.read_csv(
+        f"https://erddap.observations.voiceoftheocean.org/erddap/tabledap/meta_users_table.csvp?&glider_serial=%22SEA{glider_fill}%22"
+    )
+    df = df[
+        [
+            "glider_serial",
+            "deployment_id",
+            "basin",
+            "deployment_start (UTC)",
+            "deployment_end (UTC)",
+            "ctd",
+            "oxygen",
+            "optics",
+            "ad2cp",
+            "irradiance",
+            "nitrate",
+        ]
+    ]
+    df = df.rename(
+        {
+            "deployment_id": "mission",
+            "deployment_start (UTC)": "start",
+            "deployment_end (UTC)": "end",
+        },
+        axis=1,
+    )
+    df["start"] = df["start"].str[:10]
+    df["end"] = df["end"].str[:10]
+    df.dropna(how="all", axis=1, inplace=True)
+    for sensor in ["ctd", "oxygen", "optics", "ad2cp", "irradiance", "nitrate"]:
+        if sensor not in list(df):
+            continue
+        dict_list = df[sensor]
+        clean_list = []
+        for dict_str in dict_list:
+            if str(dict_str).lower() == "nan":
+                clean_list.append("")
+                continue
+            cal_dict = ast.literal_eval(dict_str)
+            cal_str = f"{cal_dict['make_model']} {cal_dict['serial']} {cal_dict['calibration_date']}"
+            clean_list.append(cal_str)
+        df[sensor] = clean_list
+    return df
+
+
+def get_ballast_table(glider_fill):
+    df = pd.read_csv(
+        f"https://erddap.observations.voiceoftheocean.org/erddap/tabledap/meta_ballast.csvp?&glider_serial={glider_fill}"
+    )
+    df = df[df.datasetID.str.contains("delayed")]
+    df = df[
+        [
+            "glider_serial",
+            "deployment_id",
+            "basin",
+            "total_dives",
+            "max_ballast",
+            "min_ballast",
+            "avg_max_pumping_value",
+            "avg_min_pumping_value",
+            "std_max",
+            "std_min",
+            "avg_pumping_range",
+            "times_crossing_over_420_ml",
+        ]
+    ]
+    df = df.rename(
+        {
+            "deployment_id": "mission",
+            "avg_min_pumping_value": "avg min",
+            "avg_max_pumping_value": "avg max",
+            "avg_pumping_range": "avg range",
+            "times_crossing_over_420_ml": "times cross 420",
+        },
+        axis=1,
+    )
+    return df

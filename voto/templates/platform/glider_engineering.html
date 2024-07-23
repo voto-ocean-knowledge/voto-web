@@ -40,11 +40,11 @@
 <div class="mt-4 container-xl glider-list">
     <h3 class="mt-4">SEA{{glider_fill}} {{glider.name}}</h3>
 
-    <h2>Sensors</h2>
+    <h2>Sensors</h2>  <a class="btn btn-primary" role="button" href="/static/img/glider/stats/sensors_SEA{{glider_fill}}.csv"> Download csv </a>
     <table class="table table-hover" id="missions_table">
         <thead>
         <tr>
-            {% for column in sensors_df.columns %}
+            {% for column in sensors_df.columns[1:] %}
                 <th scope="col">{{ column }}</th>
             {% endfor %}
         </tr>
@@ -53,8 +53,8 @@
         {% for row in sensors_df.itertuples() %}
 
         <tr>
-            <td><a href="/SEA{{glider_fill}}/M{{row[1]}}" class="link-primary">M{{row[1]}}</a></td>
-                {% for cell in row[2:] %}
+            <td><a href="/SEA{{glider.glider}}/M{{row[2]}}" class="link-primary">M{{row[2]}}</a></td>
+                {% for cell in row[3:] %}
                     <td>{{ cell }}</td>
                 {% endfor %}
         </tr>
@@ -65,11 +65,11 @@
 
 <div class="mt-4 container-xl glider-list">
 
-    <h2>Ballast</h2>
+    <h2>Ballast</h2>  <a class="btn btn-primary" role="button" href="/static/img/glider/stats/ballast_SEA{{glider_fill}}.csv"> Download csv </a>
     <table class="table table-hover" id="ballast_table">
         <thead>
         <tr>
-            {% for column in ballast_df.columns %}
+            {% for column in ballast_df.columns[1:] %}
                 <th scope="col">{{ column }}</th>
             {% endfor %}
         </tr>
@@ -79,9 +79,9 @@
 
 
         <tr>
-                <td><a href="/SEA{{glider_fill}}/M{{row[1]}}" class="link-primary">M{{row[1]}}</a></td>
+                <td><a href="/SEA{{glider.glider}}/M{{row[2]}}" class="link-primary">M{{row[2]}}</a></td>
 
-                {% for cell in row[2:] %}
+                {% for cell in row[3:] %}
                     <td>{{ cell }}</td>
                 {% endfor %}
         </tr>

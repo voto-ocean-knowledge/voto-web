@@ -2,6 +2,7 @@ import logging
 import os
 import json
 import sys
+from pathlib import Path
 import matplotlib.pyplot as plt
 from matplotlib.patches import Patch
 from matplotlib import font_manager
@@ -22,8 +23,9 @@ from voto.services.mission_service import (
     totals,
     get_stats,
 )
+from voto.services.platform_service import get_meta_table, get_ballast_table
 from voto.data.db_session import initialise_database
-from voto.data.db_classes import Stat
+from voto.data.db_classes import Stat, Glider
 
 _log = logging.getLogger(__name__)
 with open(folder + "/mongo_secrets.json") as json_file:
@@ -255,4 +257,20 @@ if __name__ == "__main__":
     profiles_df = get_profiles_df()
     coverage(profiles_df, mission_df)
     generate_stats()
+    _log.info("Creating tables from gliders")
+    stats_dir = Path(f"{secrets['plots_dir']}/stats")
+    if not stats_dir.exists():
+        stats_dir.mkdir(parents=True)
+    for glider in Glider.objects():
+        if glider.glider in [
+            57,
+        ]:
+            continue
+        glider_fill = str(glider.glider).zfill(3)
+        meta = get_meta_table(glider_fill)
+        ballast = get_ballast_table(glider_fill)
+        meta.to_csv(stats_dir / f"sensors_SEA{glider_fill}.csv", index=False, sep=";")
+        ballast.to_csv(
+            stats_dir / f"ballast_SEA{glider_fill}.csv", index=False, sep=";"
+        )
     _log.info("Finished computing stats")
