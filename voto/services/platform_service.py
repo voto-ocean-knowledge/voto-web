@@ -1,4 +1,5 @@
 from voto.data.db_classes import Glider, GliderMission, Sailbuoy, SailbuoyMission
+from voto.services.utility_functions import fix_df_erddap_str
 import ast
 import pandas as pd
 import os
@@ -154,6 +155,7 @@ def get_meta_table(glider_fill):
             cal_str = f"{cal_dict['make_model']} {cal_dict['serial']} {cal_dict['calibration_date']}"
             clean_list.append(cal_str)
         df[sensor] = clean_list
+    df = fix_df_erddap_str(df)
     return df
 
 
@@ -175,9 +177,12 @@ def get_ballast_table(glider_fill):
             "std_max",
             "std_min",
             "avg_pumping_range",
+            "total_active_pumping",
             "times_crossing_over_420_ml",
         ]
     ]
+    df["total_active_pumping"] = (df["total_active_pumping"] / 1000).astype(int)
+
     df = df.rename(
         {
             "deployment_id": "mission",
@@ -185,7 +190,10 @@ def get_ballast_table(glider_fill):
             "avg_max_pumping_value": "avg max",
             "avg_pumping_range": "avg range",
             "times_crossing_over_420_ml": "times cross 420",
+            "total_active_pumping": "total pumped (litres)",
         },
         axis=1,
     )
+    df.columns = df.columns.str.replace("_", " ")
+    df = fix_df_erddap_str(df)
     return df
