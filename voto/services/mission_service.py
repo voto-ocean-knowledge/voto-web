@@ -101,6 +101,8 @@ def add_glidermission(ds, data_points, total_profiles=None, mission_complete=Fal
     i = 0
     profile_objs = []
     for i in range(len(profiles)):
+        if np.isnan(lons[i]) or np.isnan(lats[i]) or np.isnan(max_depths[i]):
+            continue
         profile = Profile()
         profile.mission = mission.mission
         profile.glider = mission.glider
