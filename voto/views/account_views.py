@@ -24,6 +24,8 @@ def account_index():
 @blueprint.route("/account/register", methods=["GET", "POST"])
 @response(template_file="account/register.html")
 def register_post():
+    if cookie_auth.secrets["accept_new_members"] != "True":
+        return flask.redirect("/account/login")
     vm = RegisterViewModel()
     vm.validate()
 
