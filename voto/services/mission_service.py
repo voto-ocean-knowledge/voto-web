@@ -2,6 +2,10 @@ import datetime
 import numpy as np
 import pandas as pd
 import logging
+from pathlib import Path
+import os
+import sys
+import json
 from voto.data.db_classes import (
     Profile,
     GliderMission,
@@ -11,6 +15,10 @@ from voto.data.db_classes import (
 )
 from voto.services.utility_functions import seconds_to_pretty
 
+folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+sys.path.insert(0, folder)
+with open(folder + "/mongo_secrets.json") as json_file:
+    secrets = json.load(json_file)
 _log = logging.getLogger(__name__)
 desire_vars = {
     "oxygen_concentration",
@@ -19,13 +27,13 @@ desire_vars = {
     "phycocyanin",
     "backscatter",
     "cdom",
-    "down_irradiance_380",
+    "downwelling_PAR",
     "ad2cp_heading",
 }
 replace = {
     "ad2cp_heading": "adcp",
     "oxygen_concentration": "oxygen",
-    "down_irradiance_380": "irradiance",
+    "downwelling_PAR": "irradiance",
 }
 
 
@@ -141,6 +149,24 @@ def add_glidermission(ds, data_points, total_profiles=None, mission_complete=Fal
 
 
 def totals(year=None, baltic_only=True):
+    totals_location = Path(f"{secrets['log_dir']}/totals.json")
+    if totals_location.exists():
+        with open(totals_location) as totals_file:
+            totals_dict = json.load(totals_file)
+        totals_datetime = datetime.datetime.fromisoformat(totals_dict["datetime"])
+        if totals_datetime > datetime.datetime.now() - datetime.timedelta(days=1):
+            out = (
+                totals_dict["total_profiles"],
+                totals_dict["num_gliders"],
+                totals_dict["time_str"],
+                totals_dict["dist_km"],
+                totals_dict["total_points"],
+                totals_dict["num_sailbuoys"],
+                totals_dict["time_str_sb"],
+                totals_dict["dist_km_sb"],
+            )
+            return out
+
     missions = GliderMission.objects()
     total_profiles = 0
     gliders = []
@@ -195,6 +221,19 @@ def totals(year=None, baltic_only=True):
     seconds = total_time.total_seconds()
     time_str_sb = seconds_to_pretty(seconds)
     dist_km_sb = int(total_dist / 1000)
+    totals_json = {
+        "datetime": datetime.datetime.now().isoformat(),
+        "total_profiles": total_profiles,
+        "num_gliders": num_gliders,
+        "time_str": time_str,
+        "dist_km": dist_km,
+        "total_points": total_points,
+        "num_sailbuoys": num_sailbuoys,
+        "time_str_sb": time_str_sb,
+        "dist_km_sb": dist_km_sb,
+    }
+    with open(totals_location, "w") as totals_file:
+        json.dump(totals_json, totals_file)
     return (
         total_profiles,
         num_gliders,
@@ -252,18 +291,15 @@ def get_profiles_df(baltic_only=True):
 
 
 def recent_glidermissions(timespan=datetime.timedelta(hours=24), baltic_only=True):
-    missions = GliderMission.objects()
-    recent_gliders = []
-    recent_missions = []
-    for mission in missions:
-        basin = mission.basin
-        if baltic_only and not basin:
-            continue
-        since_last_dive = datetime.datetime.now() - mission.end
-        if since_last_dive < timespan:
-            recent_gliders.append(mission.glider)
-            recent_missions.append(mission.mission)
-    return recent_gliders, recent_missions
+    time_cut = datetime.datetime.now() - timespan
+    df = pd.DataFrame(
+        GliderMission.objects(end__gte=time_cut, basin__exists=baltic_only)
+        .only("mission", "glider")
+        .as_pymongo()
+    )
+    if df.empty:
+        return [], []
+    return df.glider, df.mission
 
 
 def select_glidermission(glider, mission):
@@ -398,15 +434,15 @@ def add_sailbuoymission(ds, mission_complete=False):
 
 
 def recent_sailbuoymissions(timespan=datetime.timedelta(hours=12)):
-    missions = SailbuoyMission.objects()
-    recent_sailbuoys = []
-    recent_missions = []
-    for mission in missions:
-        since_last_dive = datetime.datetime.now() - mission.end
-        if since_last_dive < timespan:
-            recent_sailbuoys.append(mission.sailbuoy)
-            recent_missions.append(mission.mission)
-    return recent_sailbuoys, recent_missions
+    time_cut = datetime.datetime.now() - timespan
+    df = pd.DataFrame(
+        SailbuoyMission.objects(end__gte=time_cut)
+        .only("mission", "sailbuoy")
+        .as_pymongo()
+    )
+    if df.empty:
+        return [], []
+    return df.sailbuoy, df.mission
 
 
 def select_sailbuoymission(sailbuoy, mission):
