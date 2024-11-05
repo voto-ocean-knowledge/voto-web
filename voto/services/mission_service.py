@@ -292,11 +292,19 @@ def get_profiles_df(baltic_only=True):
 
 def recent_glidermissions(timespan=datetime.timedelta(hours=24), baltic_only=True):
     time_cut = datetime.datetime.now() - timespan
-    df = pd.DataFrame(
-        GliderMission.objects(end__gte=time_cut, basin__exists=baltic_only)
-        .only("mission", "glider")
-        .as_pymongo()
-    )
+    if baltic_only:
+        missions = (
+            GliderMission.objects(end__gte=time_cut, basin__exists=True)
+            .only("mission", "glider")
+            .as_pymongo()
+        )
+    else:
+        missions = (
+            GliderMission.objects(end__gte=time_cut)
+            .only("mission", "glider")
+            .as_pymongo()
+        )
+    df = pd.DataFrame(missions)
     if df.empty:
         return [], []
     return df.glider, df.mission
