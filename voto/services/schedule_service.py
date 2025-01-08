@@ -6,9 +6,7 @@ import json
 import numpy as np
 
 script_dir = Path(__file__).parent.parent.parent.absolute()
-with open(
-    "/home/callum/Documents/data-flow/raw-to-nc/votoutils/contacts_secrets.json", "r"
-) as secrets_file:
+with open("contacts_secrets.json", "r") as secrets_file:
     contacts = json.load(secrets_file)
 
 

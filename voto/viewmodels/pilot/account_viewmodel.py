@@ -19,6 +19,7 @@ class AccountViewModel(ViewModelBase):
         self.piloting = user_is_piloting(self.user_id)
         self.name = self.user.name.lower()
         self.alarm_me = self.request_dict.alarm_me
+        self.alarm_me_surface = self.request_dict.alarm_me_surface
         if self.piloting:
             self.alarm_me = True
         if self.piloting:

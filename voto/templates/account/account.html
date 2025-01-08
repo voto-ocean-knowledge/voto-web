@@ -35,17 +35,28 @@
 
 
             <div class="form-check form-switch">
-            {% if alarm_me %}
-                <input name="alarm_me" class="form-check-input" type="checkbox" role="switch" id="alarm_me" checked />
-            {% else %}
-                <input name="alarm_me" class="form-check-input" type="checkbox" role="switch" id="alarm_me" />
-            {% endif %}
-            <label class="form-check-label" for="alarm_me">Dummy switch that one day will get u alarm texts and calls :)</label>
+                {% if alarm_me %}
+                    <input name="alarm_me" class="form-check-input" type="checkbox" role="switch" id="alarm_me" checked />
+                {% else %}
+                    <input name="alarm_me" class="form-check-input" type="checkbox" role="switch" id="alarm_me" />
+                {% endif %}
+                <label class="form-check-label" for="alarm_me">Dummy switch that one day will get u alarm texts and calls :)</label>
+                <br>
+                {% if alarm_me_surface %}
+                    <input name="alarm_me_surface" class="form-check-input" type="checkbox" role="switch" id="alarm_me_surface" checked />
+                {% else %}
+                    <input name="alarm_me_surface" class="form-check-input" type="checkbox" role="switch" id="alarm_me_surface" />
+                {% endif %}
+                <label class="form-check-label" for="alarm_me_surface">Another dummy switch, this one is for surfacing alarms</label>
             </div>
             <br>
-            <button type="submit" class="btn btn-danger">Update</button>
+            <p> <button type="submit" class="btn btn-danger">Update Preferences</button></p>
+            <br>
             {% if alarm_me %}
-            <div class="error-message"><p><br>🔥 You will receive calls and texts from the alarm service! 🔥</p></div>
+            <div class="error-message"><p>🚨 You will receive calls and texts when a glider alarms 🚨</p></div>
+            {% endif %}
+            {% if alarm_me_surface %}
+            <div class="error-message"><p>⬆️ You will receive calls and texts when a glider surfaces (make sure you enabled surfacing emails for that glider!) ⬆️</p></div>
             {% endif %}
             <div style="clear: both;"></div>
 
