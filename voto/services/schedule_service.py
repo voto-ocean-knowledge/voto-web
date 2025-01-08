@@ -6,7 +6,7 @@ import json
 import numpy as np
 
 script_dir = Path(__file__).parent.parent.parent.absolute()
-with open("contacts_secrets.json", "r") as secrets_file:
+with open(script_dir / "contacts_secrets.json", "r") as secrets_file:
     contacts = json.load(secrets_file)
 
 

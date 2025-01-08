@@ -1,11 +1,29 @@
 import datetime
 from voto.data.db_classes import Glider
-from voto.services.schedule_service import user_is_piloting, read_schedule, time_pretty
+from voto.services.schedule_service import (
+    user_is_piloting,
+    read_schedule,
+    time_pretty,
+    current_pilot,
+)
 from voto.viewmodels.shared.viewmodelbase import ViewModelBase
 from voto.services import user_service
 import random
 import os
 import json
+
+schedule_names = {
+    "Gunnar": "Gunnar",
+    "Callum": "Callum",
+    "Michaela Edwinson": "Michaela",
+    "Aleksandra Mazur": "Aleksandra",
+    "Marcus Melin": "Marcus",
+    "Anna Willstrand Wranne": "Anna",
+    "Gustav Holmquist": "Gustav",
+    "Gonzalo Ruiz": "Gonzalo",
+    "Martin Mohrmann": "Martin",
+    "Andrew Birkett": "Andrew",
+}
 
 folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
 with open(folder + "/mongo_secrets.json") as json_file:
@@ -18,6 +36,14 @@ class AccountViewModel(ViewModelBase):
         self.user = user_service.find_user_by_id(self.user_id)
         self.piloting = user_is_piloting(self.user_id)
         self.name = self.user.name.lower()
+        pilot, supervisor = current_pilot()
+        if not supervisor:
+            supervisor = "None"
+        self.current_pilot = pilot
+        self.current_supervisor = supervisor
+        self.schedule_name = self.name
+        if self.name in schedule_names.keys():
+            self.schedule_name = schedule_names[self.name]
         self.alarm_me = self.request_dict.alarm_me
         self.alarm_me_surface = self.request_dict.alarm_me_surface
         if self.piloting:
@@ -26,6 +52,9 @@ class AccountViewModel(ViewModelBase):
             self.user_message = "⚡ Stay vigilant Pilot ⚡"
         else:
             self.user_message = "Relax, you're off duty 😴"
+        self.duty_message = (
+            f"Current pilot: {pilot.title()}, current supervisor: {supervisor.title()}"
+        )
         schedule = read_schedule()
         self.schedule = schedule[
             schedule.index
@@ -36,8 +65,8 @@ class AccountViewModel(ViewModelBase):
         df = schedule[
             schedule.index > datetime.datetime.now() - datetime.timedelta(hours=1)
         ]
-        if self.name in df.pilot.values and not self.piloting:
-            next_on = df[df.pilot == "callum"].index.min()
+        if self.schedule_name in df.pilot.values and not self.piloting:
+            next_on = df[df.pilot == self.schedule_name].index.min()
             in_time = time_pretty(next_on - datetime.datetime.now())
             self.next_shift = f"Your next shift starts at {next_on} UTC (in {in_time})."
         gliders = Glider.objects().order_by("glider")
