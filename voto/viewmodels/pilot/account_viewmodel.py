@@ -1,5 +1,6 @@
 import datetime
 from voto.data.db_classes import Glider
+from voto.services.schedule_service import user_is_piloting, read_schedule, time_pretty
 from voto.viewmodels.shared.viewmodelbase import ViewModelBase
 from voto.services import user_service
 import random
@@ -15,6 +16,29 @@ class AccountViewModel(ViewModelBase):
     def __init__(self):
         super().__init__()
         self.user = user_service.find_user_by_id(self.user_id)
+        self.piloting = user_is_piloting(self.user_id)
+        self.name = self.user.name.lower()
+        self.alarm_me = self.request_dict.alarm_me
+        if self.piloting:
+            self.alarm_me = True
+        if self.piloting:
+            self.user_message = "⚡ Stay vigilant Pilot ⚡"
+        else:
+            self.user_message = "Relax, you're off duty 😴"
+        schedule = read_schedule()
+        self.schedule = schedule[
+            schedule.index
+            > datetime.datetime.combine(
+                datetime.date.today(), datetime.datetime.min.time()
+            )
+        ]
+        df = schedule[
+            schedule.index > datetime.datetime.now() - datetime.timedelta(hours=1)
+        ]
+        if self.name in df.pilot.values and not self.piloting:
+            next_on = df[df.pilot == "callum"].index.min()
+            in_time = time_pretty(next_on - datetime.datetime.now())
+            self.next_shift = f"Your next shift starts at {next_on} UTC (in {in_time})."
         gliders = Glider.objects().order_by("glider")
         for glider in gliders:
             glider.glider_fill = str(glider.glider).zfill(3)
@@ -34,6 +58,7 @@ class AccountViewModel(ViewModelBase):
             "https://c.tenor.com/FRYZ7FnxC8UAAAAC/tenor.gif",
             "https://sv.wikipedia.org/wiki/Regalskeppet_Vasa#Jungfruf%C3%A4rden",
             "https://media.timeout.com/images/100654045/image.jpg",
+            "https://callumrollo.com/files/frederik_short.mp3",
         ]
         if datetime.datetime.now() - self.user.date_added < datetime.timedelta(hours=1):
             sink_links = sink_links[:3]

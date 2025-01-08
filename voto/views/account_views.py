@@ -11,7 +11,7 @@ from voto.infrastructure.view_modifiers import response
 blueprint = flask.Blueprint("account", __name__, template_folder="templates")
 
 
-@blueprint.route("/account")
+@blueprint.route("/account", methods=["GET", "POST"])
 @response(template_file="account/account.html")
 def account_index():
     vm = AccountViewModel()

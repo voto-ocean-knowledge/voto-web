@@ -1,9 +1,58 @@
 {% extends "layout.html" %}
+{% block additional_css %}
+    <title>Account</title>
+<!-- CSS and javascript for datatables, requires jquery-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+<!-- Setup datatables-->
+<script>
+    $(document).ready( function () {
+        $('#schedule').DataTable({
+        "paging": false,
+        "order": [[ 0, "asc" ]]
+        });
+    } );
+</script>
+{% endblock %}
 
 {% block main_content %}
 <div class="mt-4 container-xl glider-list">
     <div class="welcome">
-        <h1>Welcome {{ user.name }}</h1><br>
+        <div class="pilot-info">
+            <h1>Welcome {{ user.name }}</h1><br>
+
+            <p class="fw-bold">{{user_message}}</p>
+
+            <p>{{next_shift}}</p>
+
+            <div class="form-check form-switch">
+
+            </div>
+
+            <div class="form-container">
+        <form>
+
+
+            <div class="form-check form-switch">
+            {% if alarm_me %}
+                <input name="alarm_me" class="form-check-input" type="checkbox" role="switch" id="alarm_me" checked />
+            {% else %}
+                <input name="alarm_me" class="form-check-input" type="checkbox" role="switch" id="alarm_me" />
+            {% endif %}
+            <label class="form-check-label" for="alarm_me">Dummy switch that one day will get u alarm texts and calls :)</label>
+            </div>
+            <br>
+            <button type="submit" class="btn btn-danger">Update</button>
+            {% if alarm_me %}
+            <div class="error-message"><p><br>🔥 You will receive calls and texts from the alarm service! 🔥</p></div>
+            {% endif %}
+            <div style="clear: both;"></div>
+
+        </form>
+    </div>
+        </div>
+        <br>
         <h3>Bonus pages</h3>
                 <div class="container">
 
@@ -36,9 +85,39 @@
        <p> <a  class="btn btn-primary" role="button" href="https://www.glimpse-alseamar.com/"> Pilot gliders (GLIMPSE) </a> </p>
         <p><a  class="btn btn-primary" role="button" href="https://iridium2.azurewebsites.net"> Pilot sailbuoys (iridium) </a> </p>
         <p><a  class="btn btn-danger" role="button" href="{{sink_link}}"> Sink all gliders</a></p>
-        <p><a href="/account/logout" class="btn btn-primary" role="button">Logout</a></p>
     </div>
+
+<div class="mt-4 container-xl glider-list">
+    <h3 class="mt-4">Piloting schedule</h3>
+
+    <table class="table table-hover" id="schedule">
+        <thead>
+        <tr>
+            <th scope="col">datetime start</th>
+            {% for column in schedule.columns %}
+                <th scope="col">{{ column }}</th>
+            {% endfor %}
+        </tr>
+        </thead>
+        <tbody>
+        {% for row in schedule.itertuples() %}
+
+        <tr>
+                {% for cell in row %}
+                    <td>{{ cell }}</td>
+                {% endfor %}
+        </tr>
+            {%  endfor %}
+        </tbody>
+    </table>
+
+    <p><a href="/account/logout" class="btn btn-primary" role="button">Logout</a></p>
+
 </div>
-    </div>
+</div>
+</div>
+</div>
+</div>
+</div>
 </div>
 {% endblock %}

@@ -27,7 +27,11 @@
 
 <!-- Nav elements link to other pages -->
 
-<nav class="navbar sticky-top navbar-expand-md navbar-custom navbar-dark">
+{% if piloting %}
+    <nav class="navbar sticky-top navbar-expand-md navbar-custom navbar-dark bg-danger">
+{% else %}
+    <nav class="navbar sticky-top navbar-expand-md navbar-custom navbar-dark">
+{% endif %}
   <div class="container-xl">
     <a class="navbar-brand" href="https://voiceoftheocean.org"  target="_blank" rel="noreferrer noopener"><img alt="VOTO" src="/static/img/icons/voto_text.png" height="35"></a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
