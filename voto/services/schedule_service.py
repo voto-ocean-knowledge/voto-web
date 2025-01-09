@@ -6,7 +6,7 @@ import json
 import numpy as np
 
 script_dir = Path(__file__).parent.parent.parent.absolute()
-with open(script_dir / "contacts_secrets.json", "r") as secrets_file:
+with open("contacts_secrets.json", "r") as secrets_file:
     contacts = json.load(secrets_file)
 
 
@@ -47,7 +47,7 @@ def current_pilot():
 
 def time_pretty(dt):
     seconds = int(dt.seconds)
-    days, seconds = divmod(seconds, 86400)
+    days = dt.days
     hours, seconds = divmod(seconds, 3600)
     minutes, seconds = divmod(seconds, 60)
     if days > 0:

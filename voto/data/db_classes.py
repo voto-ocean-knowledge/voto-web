@@ -158,7 +158,10 @@ class User(mongoengine.Document):
     hashed_password = mongoengine.StringField(required=True)
     date_added = mongoengine.DateTimeField(default=datetime.now())
     last_login = mongoengine.DateTimeField(default=datetime.now())
-    name = mongoengine.StringField(defaul="mysterious stranger")
+    name = mongoengine.StringField(default="mysterious stranger")
+    admin = mongoengine.BooleanField(default=False)
+    alarm = mongoengine.BooleanField(default=False)
+    alarm_surface = mongoengine.BooleanField(default=False)
     meta = {
         "db_alias": "core",
         "collection": "user",

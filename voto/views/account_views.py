@@ -11,13 +11,22 @@ from voto.infrastructure.view_modifiers import response
 blueprint = flask.Blueprint("account", __name__, template_folder="templates")
 
 
-@blueprint.route("/account", methods=["GET", "POST"])
+@blueprint.route("/account", methods=["GET"])
 @response(template_file="account/account.html")
-def account_index():
+def account_index_get():
     vm = AccountViewModel()
     if not vm.user:
         return flask.redirect("/account/login")
+    return vm.to_dict()
 
+
+@blueprint.route("/account", methods=["POST"])
+@response(template_file="account/account.html")
+def account_index_post():
+    vm = AccountViewModel()
+    if not vm.user:
+        return flask.redirect("/account/login")
+    vm.validate()
     return vm.to_dict()
 
 

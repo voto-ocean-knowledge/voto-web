@@ -12,18 +12,6 @@ import random
 import os
 import json
 
-schedule_names = {
-    "Gunnar": "Gunnar",
-    "Callum": "Callum",
-    "Michaela Edwinson": "Michaela",
-    "Aleksandra Mazur": "Aleksandra",
-    "Marcus Melin": "Marcus",
-    "Anna Willstrand Wranne": "Anna",
-    "Gustav Holmquist": "Gustav",
-    "Gonzalo Ruiz": "Gonzalo",
-    "Martin Mohrmann": "Martin",
-    "Andrew Birkett": "Andrew",
-}
 
 folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
 with open(folder + "/mongo_secrets.json") as json_file:
@@ -35,17 +23,14 @@ class AccountViewModel(ViewModelBase):
         super().__init__()
         self.user = user_service.find_user_by_id(self.user_id)
         self.piloting = user_is_piloting(self.user_id)
-        self.name = self.user.name.lower()
+        self.name = self.user.name
         pilot, supervisor = current_pilot()
         if not supervisor:
             supervisor = "None"
         self.current_pilot = pilot
         self.current_supervisor = supervisor
-        self.schedule_name = self.name
-        if self.name in schedule_names.keys():
-            self.schedule_name = schedule_names[self.name]
-        self.alarm_me = self.request_dict.alarm_me
-        self.alarm_me_surface = self.request_dict.alarm_me_surface
+        self.alarm_me = self.user.alarm
+        self.alarm_me_surface = self.user.alarm_surface
         if self.piloting:
             self.alarm_me = True
         if self.piloting:
@@ -65,8 +50,8 @@ class AccountViewModel(ViewModelBase):
         df = schedule[
             schedule.index > datetime.datetime.now() - datetime.timedelta(hours=1)
         ]
-        if self.schedule_name in df.pilot.values and not self.piloting:
-            next_on = df[df.pilot == self.schedule_name].index.min()
+        if self.name in df.pilot.values and not self.piloting:
+            next_on = df[df.pilot == self.name].index.min()
             in_time = time_pretty(next_on - datetime.datetime.now())
             self.next_shift = f"Your next shift starts at {next_on} UTC (in {in_time})."
         gliders = Glider.objects().order_by("glider")
@@ -95,6 +80,23 @@ class AccountViewModel(ViewModelBase):
         self.sink_link = random.choice(sink_links)
         if random.randint(0, 99) == 7:
             self.sink_link = "https://youtu.be/dQw4w9WgXcQ?si=njkBEY1tTO75UUrR&t=43"
+
+    def validate(self):
+        user = self.user
+        if self.request_dict.alarm_me:
+            user.alarm = True
+            self.alarm_me = True
+        else:
+            user.alarm = False
+            self.alarm_me = False
+        if self.request_dict.alarm_me_surface:
+            user.alarm_surface = True
+            self.alarm_me_surface = True
+        else:
+            user.alarm_surface = False
+            self.alarm_me_surface = False
+
+        user.save()
 
 
 class RegisterViewModel(ViewModelBase):

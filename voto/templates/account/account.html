@@ -33,7 +33,7 @@
             </div>
 
             <div class="form-container">
-        <form>
+        <form action="" method="POST" class="account-form">
 
 
             <div class="form-check form-switch">
@@ -42,14 +42,14 @@
                 {% else %}
                     <input name="alarm_me" class="form-check-input" type="checkbox" role="switch" id="alarm_me" />
                 {% endif %}
-                <label class="form-check-label" for="alarm_me">Dummy switch that one day will get u alarm texts and calls :)</label>
+                <label class="form-check-label" for="alarm_me">Send me alerts when a glider alarms</label>
                 <br>
                 {% if alarm_me_surface %}
                     <input name="alarm_me_surface" class="form-check-input" type="checkbox" role="switch" id="alarm_me_surface" checked />
                 {% else %}
                     <input name="alarm_me_surface" class="form-check-input" type="checkbox" role="switch" id="alarm_me_surface" />
                 {% endif %}
-                <label class="form-check-label" for="alarm_me_surface">Another dummy switch, this one is for surfacing alarms</label>
+                <label class="form-check-label" for="alarm_me_surface">Send me alerts when a glider surfaces with surfacing emails enabled</label>
             </div>
             <br>
             <p> <button type="submit" class="btn btn-danger">Update Preferences</button></p>
@@ -106,7 +106,7 @@
     <table class="table table-hover" id="schedule">
         <thead>
         <tr>
-            <th scope="col">datetime start</th>
+            <th scope="col">datetime start (UTC)</th>
             {% for column in schedule.columns %}
                 <th scope="col">{{ column }}</th>
             {% endfor %}
