@@ -5,6 +5,7 @@ from voto.services.schedule_service import (
     read_schedule,
     time_pretty,
     current_pilot,
+    currently_alarmed_users,
 )
 from voto.viewmodels.shared.viewmodelbase import ViewModelBase
 from voto.services import user_service
@@ -54,6 +55,12 @@ class AccountViewModel(ViewModelBase):
             next_on = df[df.pilot == self.name].index.min()
             in_time = time_pretty(next_on - datetime.datetime.now())
             self.next_shift = f"Your next shift starts at {next_on} UTC (in {in_time})."
+        currently_alarmed, currently_surfaced = currently_alarmed_users()
+        self.current_message = ""
+        if currently_alarmed:
+            self.current_message += f"<p>The following pilots are receiving alerts from glider alarms: {', '.join(list(currently_alarmed))}</p>"
+        if currently_surfaced:
+            self.current_message += f"<p>The following pilots are receiving alerts from glider surfacing emails: {', '.join(list(currently_surfaced))}</p>"
         gliders = Glider.objects().order_by("glider")
         for glider in gliders:
             glider.glider_fill = str(glider.glider).zfill(3)

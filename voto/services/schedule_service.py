@@ -1,3 +1,4 @@
+from voto.data.db_classes import User
 from voto.services.user_service import find_user_by_id
 import pandas as pd
 import datetime
@@ -6,7 +7,7 @@ import json
 import numpy as np
 
 script_dir = Path(__file__).parent.parent.parent.absolute()
-with open("contacts_secrets.json", "r") as secrets_file:
+with open(script_dir / "contacts_secrets.json", "r") as secrets_file:
     contacts = json.load(secrets_file)
 
 
@@ -38,11 +39,11 @@ def current_pilot():
     schedule = read_schedule()
     now = datetime.datetime.now()
     row = schedule[schedule.index < now].iloc[-1]
-    pilot_phone = row["pilot"]
-    supervisor_phone = row["supervisor"]
-    if type(supervisor_phone) is float:
-        supervisor_phone = None
-    return pilot_phone, supervisor_phone
+    pilot = row["pilot"]
+    supervisor = row["supervisor"]
+    if type(supervisor) is float:
+        supervisor = None
+    return pilot, supervisor
 
 
 def time_pretty(dt):
@@ -56,3 +57,14 @@ def time_pretty(dt):
         return f"{hours} hours {minutes} minutes"
     else:
         return f"{minutes} minutes"
+
+
+def currently_alarmed_users():
+    pilot, __ = current_pilot()
+    alarm_users = User.objects(alarm=True)
+    alarm_usernames = {user.to_mongo().to_dict()["name"] for user in alarm_users}.union(
+        [pilot]
+    )
+    surface_users = User.objects(alarm_surface=True)
+    surface_usernames = {user.to_mongo().to_dict()["name"] for user in surface_users}
+    return alarm_usernames, surface_usernames
