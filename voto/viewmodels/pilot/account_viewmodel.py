@@ -38,9 +38,7 @@ class AccountViewModel(ViewModelBase):
             self.user_message = "⚡ Stay vigilant Pilot ⚡"
         else:
             self.user_message = "Relax, you're off duty 😴"
-        self.duty_message = (
-            f"Current pilot: {pilot.title()}, current supervisor: {supervisor.title()}"
-        )
+        self.duty_message = f"Current pilot: <b>{pilot.title()}</b></p><p>Current supervisor: <b>{supervisor.title()}</b>"
         schedule = read_schedule()
         self.schedule = schedule[
             schedule.index
@@ -54,13 +52,15 @@ class AccountViewModel(ViewModelBase):
         if self.name in df.pilot.values and not self.piloting:
             next_on = df[df.pilot == self.name].index.min()
             in_time = time_pretty(next_on - datetime.datetime.now())
-            self.next_shift = f"Your next shift starts at {next_on} UTC (in {in_time})."
+            self.next_shift = (
+                f"Your next shift starts at {next_on} UTC (in <b>{in_time}</b>)."
+            )
         currently_alarmed, currently_surfaced = currently_alarmed_users()
         self.current_message = ""
         if currently_alarmed:
-            self.current_message += f"<p>The following pilots are receiving alerts from glider alarms: {', '.join(list(currently_alarmed))}</p>"
+            self.current_message += f"<p>Pilots receiving alerts from glider alarms: <b>{', '.join(list(currently_alarmed))}</b></p>"
         if currently_surfaced:
-            self.current_message += f"<p>The following pilots are receiving alerts from glider surfacing emails: {', '.join(list(currently_surfaced))}</p>"
+            self.current_message += f"<p>Pilots receiving alerts from glider surfacing emails: <b>{', '.join(list(currently_surfaced))}</b></p>"
         gliders = Glider.objects().order_by("glider")
         for glider in gliders:
             glider.glider_fill = str(glider.glider).zfill(3)
@@ -104,6 +104,12 @@ class AccountViewModel(ViewModelBase):
             self.alarm_me_surface = False
 
         user.save()
+        currently_alarmed, currently_surfaced = currently_alarmed_users()
+        self.current_message = ""
+        if currently_alarmed:
+            self.current_message += f"<p>Pilots receiving alerts from glider alarms: <b>{', '.join(list(currently_alarmed))}</b></p>"
+        if currently_surfaced:
+            self.current_message += f"<p>Pilots receiving alerts from glider surfacing emails: <b>{', '.join(list(currently_surfaced))}</b></p>"
 
 
 class RegisterViewModel(ViewModelBase):

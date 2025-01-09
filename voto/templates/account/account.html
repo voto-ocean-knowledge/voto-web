@@ -24,7 +24,7 @@
 
             <p class="fw-bold">{{user_message}}</p>
 
-            <p>{{next_shift}}</p>
+            <p>{{next_shift | safe}}</p>
 
             <div class="form-check form-switch">
 
@@ -35,22 +35,27 @@
 
 
             <div class="form-check form-switch">
-                {% if alarm_me %}
+                <div class="form-check form-switch">
+                {% if piloting %}
+                    <input name="alarm_me" class="form-check-input" type="checkbox" role="switch" id="alarm_me" checked disabled />
+                {% elif alarm_me %}
                     <input name="alarm_me" class="form-check-input" type="checkbox" role="switch" id="alarm_me" checked />
                 {% else %}
                     <input name="alarm_me" class="form-check-input" type="checkbox" role="switch" id="alarm_me" />
                 {% endif %}
                 <label class="form-check-label" for="alarm_me">Send me alerts when a glider alarms</label>
-                <br>
+                </div>
+                <div class="form-check form-switch">
                 {% if alarm_me_surface %}
                     <input name="alarm_me_surface" class="form-check-input" type="checkbox" role="switch" id="alarm_me_surface" checked />
                 {% else %}
                     <input name="alarm_me_surface" class="form-check-input" type="checkbox" role="switch" id="alarm_me_surface" />
                 {% endif %}
                 <label class="form-check-label" for="alarm_me_surface">Send me alerts when a glider surfaces with surfacing emails enabled</label>
+                </div>
             </div>
             <br>
-            <p> <button type="submit" class="btn btn-danger">Update Preferences</button></p>
+            <div class="form-check form-switch"> <button type="submit" class="btn btn-danger">Update Preferences</button></div>
             <br>
             {% if alarm_me %}
             <div class="error-message"><p>🚨 You will receive calls and texts when a glider alarms 🚨</p></div>
@@ -63,7 +68,7 @@
         </form>
     </div>
 
-            <p>{{duty_message}}</p>
+            <p>{{duty_message | safe}}</p>
 
             <p>{{current_message | safe }}</p>
         </div>
