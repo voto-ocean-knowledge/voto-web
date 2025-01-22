@@ -51,17 +51,17 @@
                 {% else %}
                     <input name="alarm_me_surface" class="form-check-input" type="checkbox" role="switch" id="alarm_me_surface" />
                 {% endif %}
-                <label class="form-check-label" for="alarm_me_surface">Send me alerts when a glider surfaces with surfacing emails enabled</label>
+                <label class="form-check-label" for="alarm_me_surface">Send me alerts when a glider with <b>{{alert_email}}</b> in "Mail on surfacing" surfaces</label>
                 </div>
             </div>
             <br>
             <div class="form-check form-switch"> <button type="submit" class="btn btn-danger">Update Preferences</button></div>
             <br>
             {% if alarm_me %}
-            <div class="error-message"><p>🚨 You will receive calls and texts when a glider alarms 🚨</p></div>
+            <div class="error-message"><p>🚨 You will receive calls and texts when any VOTO glider alarms 🚨</p></div>
             {% endif %}
             {% if alarm_me_surface %}
-            <div class="error-message"><p>⬆️ You will receive calls and texts when a glider surfaces (make sure you enabled surfacing emails for that glider!) ⬆️</p></div>
+            <div class="error-message"><p>⬆️ You will receive calls and texts when selected gliders surface. To select gliders, add <b>{{alert_email}}</b> to "Mail on surfacing" to each glider you want surface alerts for ⬆️</p></div>
             {% endif %}
             <div style="clear: both;"></div>
 

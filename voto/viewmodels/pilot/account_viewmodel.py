@@ -25,6 +25,7 @@ class AccountViewModel(ViewModelBase):
         self.user = user_service.find_user_by_id(self.user_id)
         self.piloting = user_is_piloting(self.user_id)
         self.name = self.user.name
+        self.alert_email = secrets["alert_email"]
         pilot, supervisor = current_pilot()
         if not supervisor:
             supervisor = "None"
@@ -38,7 +39,7 @@ class AccountViewModel(ViewModelBase):
             self.user_message = "⚡ Stay vigilant Pilot ⚡"
         else:
             self.user_message = "Relax, you're off duty 😴"
-        self.duty_message = f"Current pilot: <b>{pilot.title()}</b></p><p>Current supervisor: <b>{supervisor.title()}</b>"
+        self.duty_message = f"Current on-duty pilot: <b>{pilot.title()}</b></p><p>Current supervisor: <b>{supervisor.title()}</b>"
         schedule = read_schedule()
         self.schedule = schedule[
             schedule.index
