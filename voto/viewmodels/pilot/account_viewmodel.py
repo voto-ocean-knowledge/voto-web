@@ -53,9 +53,7 @@ class AccountViewModel(ViewModelBase):
         if self.name in df.pilot.values and not self.piloting:
             next_on = df[df.pilot == self.name].index.min()
             in_time = time_pretty(next_on - datetime.datetime.now())
-            self.next_shift = (
-                f"Your next shift starts at {next_on} UTC (in <b>{in_time}</b>)."
-            )
+            self.next_shift = f"Your next shift starts on {next_on.strftime('%A %d %b %Y at %H:%M UTC')} (in <b>{in_time}</b>)."
         currently_alarmed, currently_surfaced = currently_alarmed_users()
         self.current_message = ""
         if currently_alarmed:
