@@ -18,7 +18,7 @@ def account_admin():
     if not vm.user:
         return flask.redirect("/account/login")
     if not vm.user.admin:
-        return flask.redirect("/account/login")
+        return flask.redirect("/account")
     vm.admin_info()
     return vm.to_dict()
 

@@ -24,6 +24,8 @@ class AccountViewModel(ViewModelBase):
     def __init__(self):
         super().__init__()
         self.user = user_service.find_user_by_id(self.user_id)
+        if not self.user:
+            return
         self.piloting = user_is_piloting(self.user_id)
         self.name = self.user.name
         self.alert_email = secrets["alert_email"]
