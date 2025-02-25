@@ -109,3 +109,8 @@ form.account-form {
   margin-left: 20px;
   margin-bottom: 20px;
 }
+
+/* for admin table */
+.alarm {
+  background-color: coral !important;
+}

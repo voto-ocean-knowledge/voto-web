@@ -6,6 +6,7 @@ from voto.services.schedule_service import (
     time_pretty,
     current_pilot,
     currently_alarmed_users,
+    users_table,
 )
 from voto.viewmodels.shared.viewmodelbase import ViewModelBase
 from voto.services import user_service
@@ -86,6 +87,8 @@ class AccountViewModel(ViewModelBase):
         self.sink_link = random.choice(sink_links)
         if random.randint(0, 99) == 7:
             self.sink_link = "https://youtu.be/dQw4w9WgXcQ?si=njkBEY1tTO75UUrR&t=43"
+        self.user.last_login = datetime.datetime.now()
+        self.user.save()
 
     def validate(self):
         user = self.user
@@ -109,6 +112,11 @@ class AccountViewModel(ViewModelBase):
             self.current_message += f"<p>Pilots receiving alerts from glider alarms: <b>{', '.join(list(currently_alarmed))}</b></p>"
         if currently_surfaced:
             self.current_message += f"<p>Pilots receiving alerts from glider surfacing emails: <b>{', '.join(list(currently_surfaced))}</b></p>"
+
+    def admin_info(self):
+        if not self.user.admin:
+            return
+        self.users_table = users_table()
 
 
 class RegisterViewModel(ViewModelBase):

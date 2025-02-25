@@ -68,3 +68,15 @@ def currently_alarmed_users():
     surface_users = User.objects(alarm_surface=True)
     surface_usernames = {user.to_mongo().to_dict()["name"] for user in surface_users}
     return alarm_usernames, surface_usernames
+
+
+def users_table():
+    users = User.objects().as_pymongo()
+    pilot, __ = current_pilot()
+    df = pd.DataFrame(list(users))
+    df.loc[df.name == pilot, "alarm"] = True
+    df.index = df.user_id
+    df = df.drop(["hashed_password", "_id", "user_id"], axis=1)
+    df["date_added"] = df["date_added"].astype(str).str[:10]
+    df["last_login"] = df["last_login"].astype(str).str[:16]
+    return df
