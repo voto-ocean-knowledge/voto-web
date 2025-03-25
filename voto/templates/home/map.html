@@ -66,17 +66,15 @@
         };
 
         // add gliders and sailbuoys to map
-        var polyStyle = {
-    "weight": 1,
-    "opacity": 0.65
-};
 
         //L.geoJSON(helcom, {onEachFeature: popupText,style: polyStyle}).addTo(map);
 
 
         // 'file' is a geojson layer
         var helcomLayer = L.geoJSON(helcom, {
+        {% if not glidermissions %}
             onEachFeature: colorlayer,
+        {% endif %}
             style: {
                 "weight": 1,
                 opacity: 0.6,
@@ -103,14 +101,54 @@ function colorlayer(feature, layer) {
             fillOpacity: 0.2
         });
     });
-    layer.on('click', function (e) {
-        map.fitBounds(e.target.getBounds());
-    });
 }
 
 
+	// setting color from geojson. We have enough unique colors for 8 years. After that they'll all be black
+        function getColor(style) {
+          switch (style) {
+            case 2020:
+              return "white";
+            case 2021:
+              return '#1f77b4';
+            case 2022:
+              return '#ff7f0e';
+            case 2023:
+              return '#2ca02c';
+            case 2024:
+              return '#d62728';
+            case 2025:
+              return '#9467bd';
+            case 2026:
+              return "#8c564b" ;
+            case 2027:
+              return "#e377c2" ;
+            case 2028:
+              return "#7f7f7f" ;
+            case 2029:
+              return "#bcbd22" ;
+            case 2030:
+              return "#17becf" ;
+            default:
+              return 'black';
+          }
+        }
 
-        L.geoJSON(gliderLines, {color:'#fffb08',
+    {% if glidermissions %}
+    function style(feature) {
+        return {
+            weight: 5,
+            color: getColor(feature.properties.year),
+        };
+    }
+    {% else %}
+        var style = {
+        "weight": 2,
+        "color": "#fffb08"
+        };
+    {% endif %}
+
+        L.geoJSON(gliderLines, {style: style,
                 lineStringToLayer: function (feature, latlng) {
                     return L.line(latlng, );},
                 onEachFeature: popupText}).addTo(map);

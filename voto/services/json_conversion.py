@@ -69,7 +69,8 @@ def glidermission_to_json(glider, mission, subset=1):
                 "type": "Feature",
                 "properties": {
                     "popupContent": f"<a href='/fleet/SEA{mission.glider}'>SEA{glider_fill} {name}</a><br>"
-                    f"<a href='/SEA{mission.glider}/M{mission.mission}'> Mission {profile.mission}</a>"
+                    f"<a href='/SEA{mission.glider}/M{mission.mission}'> Mission {profile.mission}</a><br>Start {str(mission.start)[:11]}",
+                    "year": mission.start.year,
                 },
             }
         ],
@@ -170,7 +171,6 @@ def write_mission_json(basin=None):
         glider_lines_json = []
         if len(gliders) == 0:
             glider_lines_json = blank_json_dict
-
         for i, (glider, mission) in enumerate(zip(gliders, missions)):
             point_json, line_json, glider_dict = glidermission_to_json(glider, mission)
             glider_lines_json.append(line_json)

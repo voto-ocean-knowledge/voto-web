@@ -293,6 +293,7 @@ def get_profiles_df(baltic_only=True):
 def glidermissions_by_basin(basin):
     missions = (
         GliderMission.objects(basin__icontains=basin)
+        .order_by("start")
         .only("mission", "glider")
         .as_pymongo()
     )
@@ -307,12 +308,14 @@ def recent_glidermissions(timespan=datetime.timedelta(hours=24), baltic_only=Tru
     if baltic_only:
         missions = (
             GliderMission.objects(end__gte=time_cut, basin__exists=True)
+            .order_by("start")
             .only("mission", "glider")
             .as_pymongo()
         )
     else:
         missions = (
             GliderMission.objects(end__gte=time_cut)
+            .order_by("start")
             .only("mission", "glider")
             .as_pymongo()
         )
