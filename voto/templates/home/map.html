@@ -1,0 +1,103 @@
+{% extends "layout.html" %}
+
+{% block additional_css %}
+    <!-- JS and CSS for leaflet maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+        integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+        crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+        integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+        crossorigin=""></script>
+    <!-- Link to providers CSS and javascript for leaflet provider extension-->
+    <script src="http://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="/static/js/leaflet-providers.js"></script>
+    <title>Mission Map &bull; VOTO</title>
+{% endblock %}
+
+{% block main_content %}
+
+
+    <div id="map" style="height: 800px; "></div>
+    <script>
+
+        // geojson
+        var gliderLines = JSON.parse('{{ glider_lines | tojson | safe}}');
+        var helcom = JSON.parse('{{ helcom | tojson | safe}}');
+
+       // statics
+
+
+        // Function adds popup content to markers
+	    function popupText(feature, layer) {
+		    layer.bindPopup(feature.properties.popupContent);}
+        // create map
+        var map = L.map('map').setView([58, 15.7], 6);
+
+        var OpenStreetMap_Mapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+	        maxZoom: 19,
+	        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
+
+        // Add basemap layers to a layer group
+        var basemaps = {
+            OSM: OpenStreetMap_Mapnik
+        };
+
+        // add gliders and sailbuoys to map
+        var polyStyle = {
+    "weight": 1,
+    "opacity": 0.65
+};
+
+        //L.geoJSON(helcom, {onEachFeature: popupText,style: polyStyle}).addTo(map);
+
+
+        // 'file' is a geojson layer
+        var helcomLayer = L.geoJSON(helcom, {
+            onEachFeature: colorlayer,
+            style: {
+                "weight": 1,
+                opacity: 0.6,
+                fillOpacity: 0
+            }
+        }).addTo(map);
+
+
+
+
+function colorlayer(feature, layer) {
+    onEachFeature: popupText,
+    layer.on('mouseover', function (e) {
+        if (feature.properties && feature.properties.popupContent) {
+        layer.bindPopup(feature.properties.popupContent, {closeButton: false});
+        layer.openPopup();
+        }
+        layer.setStyle({
+            fillOpacity: 0.6
+        });
+    });
+    layer.on('mouseout', function (e) {
+        layer.setStyle({
+            fillOpacity: 0.2
+        });
+    });
+    layer.on('click', function (e) {
+        map.fitBounds(e.target.getBounds());
+    });
+}
+
+
+
+        L.geoJSON(gliderLines, {color:'#fffb08',
+                lineStringToLayer: function (feature, latlng) {
+                    return L.line(latlng, );},
+                onEachFeature: popupText}).addTo(map);
+
+        // add controls to map
+        controlPanel = L.control.layers(basemaps);
+        controlPanel.addTo(map);
+        L.control.scale().addTo(map);
+
+        map.fitBounds(helcomLayer.getBounds(), {padding: [0, 0]});
+    </script>
+
+{% endblock %}

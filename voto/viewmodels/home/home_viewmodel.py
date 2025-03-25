@@ -1,3 +1,5 @@
+import json
+from pathlib import Path
 import numpy as np
 import datetime
 from voto.services.feeds_service import get_news, news_xml
@@ -5,6 +7,9 @@ from voto.services.json_conversion import (
     glidermission_to_json,
     blank_json_dict,
     sailbuoy_to_json,
+    load_helcom_json,
+    helcom_basins,
+    write_mission_json,
 )
 from voto.viewmodels.shared.viewmodelbase import ViewModelBase
 import voto.services.mission_service as mission_service
@@ -62,6 +67,47 @@ class IndexViewModel(ViewModelBase):
             self.plots_display += link
         self.sailbuoy_lines = sailbuoy_lines_json
         self.sailbuoys = sailbuoys_json
+
+
+class MapViewModel(ViewModelBase):
+    def __init__(self):
+        super().__init__()
+        self.gliders = []
+        self.missions = []
+        self.glider_lines = blank_json_dict
+        self.helcom = blank_json_dict
+        self.basin = None
+
+    def add_all_missions(self):
+        self.gliders, self.missions = mission_service.recent_glidermissions(
+            timespan=datetime.timedelta(days=50)
+        )
+        self.helcom = load_helcom_json()
+
+    def add_basin_missions(self, basin_str):
+        self.basin = basin_str
+        try:
+            basin_name = helcom_basins[basin_str]
+        except KeyError:
+            self.error = "basin not found"
+            return
+        self.gliders, self.missions = mission_service.glidermissions_by_basin(
+            basin_name
+        )
+        self.helcom = load_helcom_json(basin_str)
+
+    def add_geojson(self):
+        if self.basin:
+            if not Path(f"/data/voto/json/{self.basin}.json").exists():
+                write_mission_json(basin=self.basin)
+            with open(f"/data/voto/json/{self.basin}.json") as f:
+                glider_lines_json = json.load(f)
+        else:
+            if not Path("/data/voto/json/all_missions_10.json").exists():
+                write_mission_json()
+            with open("/data/voto/json/all_missions_10.json") as f:
+                glider_lines_json = json.load(f)
+        self.glider_lines = glider_lines_json
 
 
 class StatsViewModel(ViewModelBase):

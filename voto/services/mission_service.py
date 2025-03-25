@@ -290,6 +290,18 @@ def get_profiles_df(baltic_only=True):
     return df
 
 
+def glidermissions_by_basin(basin):
+    missions = (
+        GliderMission.objects(basin__icontains=basin)
+        .only("mission", "glider")
+        .as_pymongo()
+    )
+    df = pd.DataFrame(missions)
+    if df.empty:
+        return [], []
+    return df.glider, df.mission
+
+
 def recent_glidermissions(timespan=datetime.timedelta(hours=24), baltic_only=True):
     time_cut = datetime.datetime.now() - timespan
     if baltic_only:
