@@ -11,13 +11,36 @@
     <!-- Link to providers CSS and javascript for leaflet provider extension-->
     <script src="http://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="/static/js/leaflet-providers.js"></script>
-    <title>Mission Map &bull; VOTO</title>
+
+    <!-- CSS and javascript for datatables, requires jquery-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+    <!-- Setup dataatables-->
+    <script>
+    $(document).ready( function () {
+        $('#missions_table').DataTable({
+        "paging": false,
+        "order": [[ 5, "desc" ]]
+        });
+    } );
+    </script>
+    <script>
+        $(document).ready( function () {
+            $('#basins_table').DataTable({
+            "paging": false,
+            "order": [[ 0, "asc" ]]
+            });
+        } );
+    </script>
+
+    <title>{% if basin_name %} {{basin_name}} {% endif %}Mission Map &bull; VOTO</title>
 {% endblock %}
 
 {% block main_content %}
 
 
-    <div id="map" style="height: 800px; "></div>
+    <div id="map" style="height: 700px; "></div>
     <script>
 
         // geojson
@@ -57,7 +80,7 @@
             style: {
                 "weight": 1,
                 opacity: 0.6,
-                fillOpacity: 0
+                fillOpacity: 0.2
             }
         }).addTo(map);
 
@@ -99,5 +122,60 @@ function colorlayer(feature, layer) {
 
         map.fitBounds(helcomLayer.getBounds(), {padding: [0, 0]});
     </script>
+    {% if glidermissions %}
+    <div class="mt-4 container-xl glider-list">
 
+        <h2>Missions</h2>
+        <table class="table table-hover" id="missions_table">
+            <thead>
+            <tr>
+                <th scope="col">Glider </th>
+                <th scope="col">Mission</th>
+                <th scope="col">Location</th>
+                <th scope="col">Project</th>
+                <th scope="col">Duration (days)</th>
+                <th scope="col">Start</th>
+                <th scope="col">Additional variables</th>
+                <th scope="col">Link</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for m in glidermissions %}
+
+                <tr>
+                <td><a href="/fleet/SEA{{ m.glider_fill}}" class="link-primary">SEA{{m.glider_fill}}</a></td>
+                <td><a href="/SEA{{ m.glider_fill }}/M{{m.mission}}" class="link-primary">M{{m.mission}}</a></td>
+                <td>{{m.basin}}</td>
+                <td><a href="{{ m.project_url}}"  class="link-primary">{{m.project}} </a></td>
+                <td>{{m.duration_pretty}}</td>
+                <td>{{m.start_pretty}}</td>
+                <td>{{m.variables_pretty}}</td>
+                <td><a href="/SEA{{ m.glider_fill }}/M{{m.mission}}" class="btn btn-primary" role="button">M{{m.mission}}</a></td>
+            {%  endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endif %}
+
+<div class="mt-4 container-xl glider-list">
+
+<h2>Basin maps</h2>
+<table class="table table-hover" id="basins_table">
+    <thead>
+    <tr>
+        <th scope="col">Basin id</th>
+        <th scope="col">Basin name</th>
+        <th scope="col">Link</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for m in basins %}
+    <tr>
+        <td>{{m.basin_id}}</td>
+        <td>{{m.basin_name}}</td>
+        <td><a href="{{ m.link}}" class="btn btn-primary" role="button">Missions in {{m.basin_name}}</a></td>
+        {%  endfor %}
+    </tbody>
+</table>
+</div>
 {% endblock %}

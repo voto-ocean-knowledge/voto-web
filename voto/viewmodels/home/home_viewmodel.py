@@ -2,6 +2,8 @@ import json
 from pathlib import Path
 import numpy as np
 import datetime
+import types
+from voto.data.db_classes import GliderMission
 from voto.services.feeds_service import get_news, news_xml
 from voto.services.json_conversion import (
     glidermission_to_json,
@@ -77,6 +79,16 @@ class MapViewModel(ViewModelBase):
         self.glider_lines = blank_json_dict
         self.helcom = blank_json_dict
         self.basin = None
+        self.basin_name = None
+        self.glidermissions = []
+        basins = []
+        for basin_id, basin_str in helcom_basins.items():
+            b = types.SimpleNamespace()
+            b.basin_id = basin_id
+            b.basin_name = basin_str
+            b.link = f"/map/basin/{basin_id}"
+            basins.append(b)
+        self.basins = basins
 
     def add_all_missions(self):
         self.gliders, self.missions = mission_service.recent_glidermissions(
@@ -88,6 +100,7 @@ class MapViewModel(ViewModelBase):
         self.basin = basin_str
         try:
             basin_name = helcom_basins[basin_str]
+            self.basin_name = basin_name
         except KeyError:
             self.error = "basin not found"
             return
@@ -95,6 +108,14 @@ class MapViewModel(ViewModelBase):
             basin_name
         )
         self.helcom = load_helcom_json(basin_str)
+        glider_missions = GliderMission.objects(basin__icontains=basin_name)
+        for gm in glider_missions:
+            gm.glider_fill = str(gm.glider).zfill(3)
+            gm.start_pretty = str(gm.start)[:10]
+            gm.duration_pretty = (gm.end - gm.start).days
+            gm.variables.sort()
+            gm.variables_pretty = ", ".join(gm.variables)
+        self.glidermissions = glider_missions
 
     def add_geojson(self):
         if self.basin:
