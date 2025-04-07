@@ -77,17 +77,27 @@ def add_glidermission(ds, data_points, total_profiles=None, mission_complete=Fal
         if len(comment) > 6:
             mission.comment = comment
 
-    profiles = ds.profile.values.astype(str)
-    lons = ds.longitude.values
-    lats = ds.latitude.values
+    profiles = ds.profile.values.astype(int).astype(str)
+    if "depth" in ds.longitude.dims:
+        lons = ds.longitude.median(dim="depth").values
+        lats = ds.latitude.median(dim="depth").values
+    else:
+        lons = ds.longitude.values
+        lats = ds.latitude.values
     times = ds.time.values
     depth_grid = np.tile(ds.depth, (len(ds.time), 1)).T
     depth_grid[np.isnan(ds.pressure)] = np.nan
     max_depths = np.nanmax(depth_grid, 0)
     max_depths[np.isnan(max_depths)] = 0
     total_depth = 0
-    mission.start = datetime.datetime.utcfromtimestamp(times[0].tolist() / 1e9)
-    mission.end = datetime.datetime.utcfromtimestamp(times[-1].tolist() / 1e9)
+    mission.start = datetime.datetime.fromtimestamp(
+        (np.nanmin(times) - np.datetime64("1970-01-01T00:00:00Z"))
+        / np.timedelta64(1, "s")
+    )
+    mission.end = datetime.datetime.fromtimestamp(
+        (np.nanmax(times) - np.datetime64("1970-01-01T00:00:00Z"))
+        / np.timedelta64(1, "s")
+    )
     mission.sea_name = attrs["sea_name"]
     if "basin" in attrs.keys():
         mission.basin = attrs["basin"]
@@ -109,7 +119,7 @@ def add_glidermission(ds, data_points, total_profiles=None, mission_complete=Fal
     i = 0
     profile_objs = []
     for i in range(len(profiles)):
-        if np.isnan(lons[i]) or np.isnan(lats[i]) or np.isnan(max_depths[i]):
+        if np.isnan([lons[i], lats[i], max_depths[i]]).any():
             continue
         profile = Profile()
         profile.mission = mission.mission
@@ -117,7 +127,9 @@ def add_glidermission(ds, data_points, total_profiles=None, mission_complete=Fal
         profile.number = i
         profile.lon = lons[i]
         profile.lat = lats[i]
-        profile.time = datetime.datetime.utcfromtimestamp(times[i].tolist() / 1e9)
+        profile.time = datetime.datetime.fromtimestamp(
+            (times[i] - np.datetime64("1970-01-01T00:00:00Z")) / np.timedelta64(1, "s")
+        )
         profile.max_depth = max_depths[i]
         profile_objs.append(profile)
         total_depth += max_depths[i]
