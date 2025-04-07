@@ -90,7 +90,6 @@ function colorlayer(feature, layer) {
     layer.on('mouseover', function (e) {
         if (feature.properties && feature.properties.popupContent) {
         layer.bindPopup(feature.properties.popupContent, {closeButton: false});
-        layer.openPopup();
         }
         layer.setStyle({
             fillOpacity: 0.6
