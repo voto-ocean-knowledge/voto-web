@@ -47,6 +47,7 @@
         var gliderLines = JSON.parse('{{ glider_lines | tojson | safe}}');
         var helcom = JSON.parse('{{ helcom | tojson | safe}}');
         var boos = JSON.parse('{{ boos | tojson | safe}}');
+        var boosSub = JSON.parse('{{ boos_sub | tojson | safe}}');
 
        // statics
 
@@ -60,16 +61,30 @@
         var OpenStreetMap_Mapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 	        maxZoom: 19,
 	        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
+        var emodnetBathy = L.tileLayer.wms('https://ows.emodnet-bathymetry.eu/wms', {
+            layers: 'mean_atlas_land',
+            attribution: '<a href="https://portal.emodnet-bathymetry.eu">EMODnet Bathymetry Consortium (2020)</a>'})
 
         // Add basemap layers to a layer group
-        var basemaps = {
-            OSM: OpenStreetMap_Mapnik
-        };
+        var baseMaps = {
+            "OpenStreetMap": OpenStreetMap_Mapnik,
+            "EMODnet bathymetry": emodnetBathy
+            };
 
         // add gliders and sailbuoys to map
 
         //L.geoJSON(helcom, {onEachFeature: popupText,style: polyStyle}).addTo(map);
-        L.geoJSON(boos, {onEachFeature: popupText}).addTo(map);
+
+
+        let boosLayer = L.geoJSON(boos, {
+		    pointToLayer: function (feature, latlng) {
+			return L.marker(latlng);},
+		    onEachFeature: popupText})
+
+        let boosSubLayer = L.geoJSON(boosSub, {
+		    pointToLayer: function (feature, latlng) {
+			return L.marker(latlng);},
+		    onEachFeature: popupText}).addTo(map);
 
         // 'file' is a geojson layer
         var helcomLayer = L.geoJSON(helcom, {
@@ -148,17 +163,23 @@ function colorlayer(feature, layer) {
         };
     {% endif %}
 
-        L.geoJSON(gliderLines, {style: style,
-                lineStringToLayer: function (feature, latlng) {
-                    return L.line(latlng, );},
-                onEachFeature: popupText}).addTo(map);
+    let gliderLayer = L.geoJSON(gliderLines, {style: style,
+            lineStringToLayer: function (feature, latlng) {
+                return L.line(latlng, );},
+            onEachFeature: popupText}).addTo(map);
+
+    let mapLayers = {
+    gliders: gliderLayer,
+    "HELCOM basins": helcomLayer,
+    "BOOS susbet": boosSubLayer,
+    "BOOS all stations": boosLayer,
+    }
 
         // add controls to map
-        controlPanel = L.control.layers(basemaps);
-        controlPanel.addTo(map);
+        L.control.layers(baseMaps, mapLayers).addTo(map);
         L.control.scale().addTo(map);
 
-        map.fitBounds(helcomLayer.getBounds(), {padding: [0, 0]});
+       map.fitBounds(helcomLayer.getBounds(), {padding: [0, 0]});
     </script>
     {% if glidermissions %}
     <div class="mt-4 container-xl glider-list">

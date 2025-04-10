@@ -162,11 +162,98 @@ def load_helcom_json(basin=None):
     return json_dict
 
 
+def boos_to_json(df):
+    features = []
+    for i, row in df.iterrows():
+        description = row.Description.replace('"', "'")
+        row_dict = {}
+        for line in description.split("<br>"):
+            if ":" in line:
+                key, val = line.split(":", 1)
+                row_dict[key] = val
+            row_dict[
+                "more info"
+            ] = "<a href='http://www.boos.org/boos-stations/'>BOOS stations site</a>"
+        desired_keys = [
+            "Station owner",
+            "Station type",
+            "Station id",
+            "Bottom depth",
+            "Observation period",
+            "more info",
+        ]
+        text = ""
+        for key in desired_keys:
+            if key in row_dict.keys():
+                text += f"{key}: {row_dict[key]}<br>"
+
+        popup = f"<b>{row.Name}</b><br> {text}"
+        dive_item = {
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    row.geometry.coords.xy[0][0],
+                    row.geometry.coords.xy[1][0],
+                ],
+            },
+            "type": "Feature",
+            "properties": {
+                "popupContent": popup,
+            },
+        }
+        features.append(dive_item)
+
+    boos_dict = {"type": "FeatureCollection", "features": features}
+
+    return boos_dict
+
+
+def make_boos_json():
+    import geopandas as gpd
+    import fiona
+
+    fiona.drvsupport.supported_drivers["KML"] = "rw"
+    import json
+
+    fp = "/data/third_party/boos/BOOS_Oceanographic_Stations.kml"
+
+    """
+    # To extract additional layers from the kml
+    import fiona
+    gdf_list = []
+    for layer in fiona.listlayers(fp):
+        gdf = gpd.read_file(fp, driver='LIBKML', layer=layer)
+        gdf_list.append(gdf)
+    gdf = gpd.GeoDataFrame(pd.concat(gdf_list, ignore_index=True))
+    """
+    gdf = gpd.read_file(fp, driver="KML", layer="BOOS Monitoring stations")
+    all_stations_json = boos_to_json(gdf)
+    with open(Path(f"/data/third_party/boos/boos_stations.json"), "w") as fout:
+        json.dump(all_stations_json, fout)
+
+    desired = ["BY5", "BY38", "Å14", "Å15", "Å16", "Å17"]
+    good_rows = []
+    for i, row in gdf.iterrows():
+        for name in desired:
+            if name in row.Name:
+                good_rows.append(row)
+    sub_df = gp.GeoDataFrame(good_rows)
+
+    sub_json = boos_to_json(sub_df)
+    with open(Path(f"/data/third_party/boos/boos_sub.json"), "w") as fout:
+        json.dump(sub_json, fout)
+
+
 def load_boos_json():
-    json_path = Path("/data/third_party/boos.json")
-    with open(json_path) as f:
-        json_dict = json.load(f)
-    return json_dict
+    all_path = Path("/data/third_party/boos/boos_stations.json")
+    sub_path = Path("/data/third_party/boos/boos_sub.json")
+    if not all_path.exists() or not sub_path.exists():
+        make_boos_json()
+    with open(all_path) as f:
+        all_dict = json.load(f)
+    with open(sub_path) as f:
+        sub_dict = json.load(f)
+    return all_dict, sub_dict
 
 
 def write_mission_json(basin=None):

@@ -79,7 +79,7 @@ class MapViewModel(ViewModelBase):
         self.missions = []
         self.glider_lines = blank_json_dict
         self.helcom = blank_json_dict
-        self.boos = load_boos_json()
+        self.boos, self.boos_sub = load_boos_json()
         self.basin = None
         self.basin_name = None
         self.glidermissions = []
