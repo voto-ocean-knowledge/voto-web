@@ -46,6 +46,7 @@
         // geojson
         var gliderLines = JSON.parse('{{ glider_lines | tojson | safe}}');
         var helcom = JSON.parse('{{ helcom | tojson | safe}}');
+        var boos = JSON.parse('{{ boos | tojson | safe}}');
 
        // statics
 
@@ -68,7 +69,7 @@
         // add gliders and sailbuoys to map
 
         //L.geoJSON(helcom, {onEachFeature: popupText,style: polyStyle}).addTo(map);
-
+        L.geoJSON(boos, {onEachFeature: popupText}).addTo(map);
 
         // 'file' is a geojson layer
         var helcomLayer = L.geoJSON(helcom, {

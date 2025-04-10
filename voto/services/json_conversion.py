@@ -162,6 +162,13 @@ def load_helcom_json(basin=None):
     return json_dict
 
 
+def load_boos_json():
+    json_path = Path("/data/third_party/boos.json")
+    with open(json_path) as f:
+        json_dict = json.load(f)
+    return json_dict
+
+
 def write_mission_json(basin=None):
     if not Path("/data/voto/json").exists():
         Path("/data/voto/json").mkdir(parents=True)

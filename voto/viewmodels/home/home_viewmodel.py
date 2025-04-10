@@ -12,6 +12,7 @@ from voto.services.json_conversion import (
     load_helcom_json,
     helcom_basins,
     write_mission_json,
+    load_boos_json,
 )
 from voto.viewmodels.shared.viewmodelbase import ViewModelBase
 import voto.services.mission_service as mission_service
@@ -78,6 +79,7 @@ class MapViewModel(ViewModelBase):
         self.missions = []
         self.glider_lines = blank_json_dict
         self.helcom = blank_json_dict
+        self.boos = load_boos_json()
         self.basin = None
         self.basin_name = None
         self.glidermissions = []
