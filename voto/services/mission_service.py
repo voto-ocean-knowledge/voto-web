@@ -85,7 +85,7 @@ def add_glidermission(ds, data_points, total_profiles=None, mission_complete=Fal
         lons = ds.longitude.values
         lats = ds.latitude.values
     times = ds.time.values
-    depth_grid = np.tile(ds.depth, (len(ds.time), 1)).T
+    depth_grid = np.tile(ds.depth, (len(lons), 1)).T
     depth_grid[np.isnan(ds.pressure)] = np.nan
     max_depths = np.nanmax(depth_grid, 0)
     max_depths[np.isnan(max_depths)] = 0
