@@ -79,6 +79,7 @@
             <p><a  class="btn btn-primary" role="button" href="monitor"> Pilot plots </a> </p>
             <p><a  class="btn btn-primary" role="button" href="battery"> Battery plots </a> </p>
             <p><a  class="btn btn-primary" role="button" href="pilot/all-plots"> All mission plots </a> </p>
+            <p><a  class="btn btn-primary" role="button" href="calibrate"> CTD comparison plots (messy!) </a> </p>
                 </div>
         <h3>Glider engineering pages</h3>
 
@@ -88,13 +89,13 @@
             <p>
           <div class="row justify-content-md-left">
             <div class="col-md-auto">
-                <a href="fleet/SEA{{ g[0] }}-engineering" class="btn btn-primary" role="button">SEA0{{ g[0] }}</a>
+                <a href="fleet/{{ g[0] }}-engineering" class="btn btn-primary" role="button">{{ g[0] }}</a>
             </div>
             <div class="col-md-auto">
-                <a href="fleet/SEA{{ g[1] }}-engineering" class="btn btn-primary" role="button">SEA0{{ g[1] }}</a>
+                <a href="fleet/{{ g[1] }}-engineering" class="btn btn-primary" role="button">{{ g[1] }}</a>
             </div>
             <div class="col-md-auto">
-                <a href="fleet/SEA{{ g[2] }}-engineering" class="btn btn-primary" role="button">SEA0{{ g[2] }}</a>
+                <a href="fleet/{{ g[2] }}-engineering" class="btn btn-primary" role="button">{{ g[2] }}</a>
             </div>
             </p>
             {%  endfor %}

@@ -1,5 +1,4 @@
 import datetime
-import subprocess
 from pathlib import Path
 import numpy as np
 import pandas as pd
@@ -7,6 +6,7 @@ import logging
 import os
 import argparse
 import sys
+from voto.services.utility_functions import mailer
 
 _log = logging.getLogger(__name__)
 folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
@@ -19,7 +19,7 @@ from static_plots import sailbuoy_nrt_plots, make_map
 
 leak_mails = [
     "callum.rollo@voiceoftheocean.org",
-    "alarms-aaaak6sn7vydeww34wcbshfqdq@voice-of-the-ocean.slack.com",
+    # "alarms-aaaak6sn7vydeww34wcbshfqdq@voice-of-the-ocean.slack.com",
 ]
 
 
@@ -230,20 +230,6 @@ def send_alert_email(ds, t_step=15):
         mailer("off-track-sailbuoy", msg_t, leak_mails)
 
 
-def mailer(title, message, recipients):
-    _log.warning(f"sending mail: {message}")
-    for recipient in recipients:
-        subprocess.check_call(
-            [
-                "/usr/bin/bash",
-                "/home/pipeline/utility_scripts/send.sh",
-                message,
-                title,
-                recipient,
-            ]
-        )
-
-
 def run_locally():
     logging.basicConfig(
         filename=f"/home/callum/Downloads/sailbuoy.log",
@@ -252,7 +238,7 @@ def run_locally():
         level=logging.INFO,
         datefmt="%Y-%m-%d %H:%M:%S",
     )
-    all_nrt_sailbuoys(Path("/home/pipeline/sailbuoy_download/nrt"), all_missions=True)
+    all_nrt_sailbuoys(Path("/data/sailbuoy/raw"), all_missions=True)
 
 
 if __name__ == "__main__":

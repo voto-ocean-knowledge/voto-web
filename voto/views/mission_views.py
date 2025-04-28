@@ -19,21 +19,6 @@ def mission_list():
     return vm.to_dict()
 
 
-@blueprint.route("/SEA<int:glider>/M<int:mission>")
-@response(template_file="mission/mission.html")
-def missions(glider: int, mission: int):
-    """
-    Mission page method,
-    :returns:
-    mission: selected mission information
-    """
-    vm = GliderMissionViewModel(glider, mission)
-    vm.validate()
-    if vm.error:
-        return flask.redirect("/")
-    return vm.to_dict()
-
-
 @blueprint.route("/SB<int:sailbuoy>/M<int:mission>")
 @response(template_file="mission/mission_sailbuoy.html")
 def mission_sailybuoy(sailbuoy: int, mission: int):
@@ -46,4 +31,19 @@ def mission_sailybuoy(sailbuoy: int, mission: int):
     vm.validate()
     # if vm.error:
     #   return flask.redirect("/")
+    return vm.to_dict()
+
+
+@blueprint.route("/<platform_serial>/M<int:mission>")
+@response(template_file="mission/mission.html")
+def missions(platform_serial: str, mission: int):
+    """
+    Mission page method,
+    :returns:
+    mission: selected mission information
+    """
+    vm = GliderMissionViewModel(platform_serial, mission)
+    vm.validate()
+    if vm.error:
+        return flask.redirect("/")
     return vm.to_dict()

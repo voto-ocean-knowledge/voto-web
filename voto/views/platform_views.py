@@ -16,23 +16,14 @@ def platform_list():
     return vm.to_dict()
 
 
-@blueprint.route("/fleet/SEA<int:glider>")
+@blueprint.route("/fleet/<platform_serial>")
 @response(template_file="platform/glider.html")
-def glider_page(glider: int):
-    vm = GliderViewModel(glider)
+def glider_page(platform_serial: str):
+    if platform_serial[:2] == "SB":
+        vm = SailbuoyViewModel(int(platform_serial[2:]))
+    else:
+        vm = GliderViewModel(platform_serial)
     vm.validate()
-    return vm.to_dict()
-
-
-@blueprint.route("/fleet/SEA<int:glider>-engineering")
-@response(template_file="platform/glider_engineering.html")
-def glider_page_engineering(glider: int):
-    vm = GliderViewModel(glider)
-    if not vm.user_id:
-        return flask.redirect(f"/fleet/SEA{glider}")
-    vm.validate()
-    if vm.user_id:
-        vm.pilot_tables()
     return vm.to_dict()
 
 
@@ -41,4 +32,16 @@ def glider_page_engineering(glider: int):
 def sailbuoy_page(sailbuoy: int):
     vm = SailbuoyViewModel(sailbuoy)
     vm.validate()
+    return vm.to_dict()
+
+
+@blueprint.route("/fleet/<platform_serial>-engineering")
+@response(template_file="platform/glider_engineering.html")
+def glider_page_engineering(platform_serial: str):
+    vm = GliderViewModel(platform_serial)
+    if not vm.user_id:
+        return flask.redirect(f"/fleet/{platform_serial}")
+    vm.validate()
+    if vm.user_id:
+        vm.pilot_tables()
     return vm.to_dict()

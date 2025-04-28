@@ -42,14 +42,16 @@ class IndexViewModel(ViewModelBase):
         gliders, missions = mission_service.recent_glidermissions()
         glider_lines_json = []
         gliders_json = []
-        for i, (glider, mission) in enumerate(zip(gliders, missions)):
-            point_json, line_json, glider_dict = glidermission_to_json(glider, mission)
+        for i, (platform_serial, mission) in enumerate(zip(gliders, missions)):
+            point_json, line_json, glider_dict = glidermission_to_json(
+                platform_serial, mission
+            )
             glider_lines_json.append(line_json)
             gliders_json.append(glider_dict)
-            plot = f"/static/img/glider/nrt/SEA{glider}/M{mission}/SEA{glider}_M{mission}_gt.png"
-            map = f"/static/img/glider/nrt/SEA{glider}/M{mission}/SEA{glider}_M{mission}_map.png"
+            plot = f"/static/img/glider/nrt/{platform_serial}/M{mission}/{platform_serial}_M{mission}_gt.png"
+            map = f"/static/img/glider/nrt/{platform_serial}/M{mission}/{platform_serial}_M{mission}_map.png"
             content = f'<img class="img-fluid" src={map}><br><img class="img-fluid" src={plot}><br>'
-            link = f'<div class="col-lg-6 themed-grid-col"><a href="/SEA{glider}/M{mission}">{content}</a></div>'
+            link = f'<div class="col-lg-6 themed-grid-col"><a href="/{platform_serial}/M{mission}">{content}</a></div>'
             self.plots_display += link
 
         self.glider_lines = glider_lines_json
@@ -112,7 +114,6 @@ class MapViewModel(ViewModelBase):
         self.helcom = load_helcom_json(basin_str)
         glider_missions = GliderMission.objects(basin__icontains=basin_name)
         for gm in glider_missions:
-            gm.glider_fill = str(gm.glider).zfill(3)
             gm.start_pretty = str(gm.start)[:10]
             gm.duration_pretty = (gm.end - gm.start).days
             gm.variables.sort()

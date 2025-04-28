@@ -1,3 +1,9 @@
+import subprocess
+import logging
+
+_log = logging.getLogger(__name__)
+
+
 def seconds_to_pretty(seconds):
     total_days = int(seconds / (24 * 60 * 60))
     years = total_days // 365
@@ -76,3 +82,19 @@ def fix_df_erddap_str(df):
             corr_str = fix_erddap_unicode(accent_str)
             df = df.replace(accent_str, corr_str)
     return df
+
+
+def mailer(title, message, recipients):
+    if type(recipients) is str:
+        recipients = [recipients]
+    _log.warning(f"sending mail: {message}")
+    for recipient in recipients:
+        subprocess.check_call(
+            [
+                "/usr/bin/bash",
+                "/home/pipeline/votoutils/votoutils/upload/mailer.sh",
+                message,
+                title,
+                recipient,
+            ]
+        )

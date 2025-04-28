@@ -9,16 +9,14 @@ class MonitorViewModel(ViewModelBase):
         super().__init__()
         self.plots_display = ""
         gliders, missions = mission_service.recent_glidermissions(baltic_only=False)
-        for glider, mission in zip(gliders, missions):
-            battery = f"/static/img/glider/nrt/SEA{glider}/M{mission}/battery.png"
-            battery_prediction = (
-                f"/static/img/glider/nrt/SEA{glider}/M{mission}/battery_prediction.png"
-            )
-            plot = f"/static/img/glider/nrt/SEA{glider}/M{mission}/SEA{glider}_M{mission}.png"
+        for platform_serial, mission in zip(gliders, missions):
+            battery = f"/static/img/glider/nrt/{platform_serial}/M{mission}/battery.png"
+            battery_prediction = f"/static/img/glider/nrt/{platform_serial}/M{mission}/battery_prediction.png"
+            plot = f"/static/img/glider/nrt/{platform_serial}/M{mission}/{platform_serial}_M{mission}.png"
             content = f'<img class="img-fluid" src={battery}><br><img class="img-fluid" src={battery_prediction}><br>'
             if all_plots:
                 content += f'<img class="img-fluid" src={plot}><br>'
-            link = f'<div class="col-lg-6 themed-grid-col"><a href="/SEA{glider}/M{mission}">{content}</a></div>'
+            link = f'<div class="col-lg-6 themed-grid-col"><a href="/{platform_serial}/M{mission}">{content}</a></div>'
             self.plots_display += link
         sailbuoys, missions = mission_service.recent_sailbuoymissions()
         for sailbuoy, mission in zip(sailbuoys, missions):
@@ -37,7 +35,7 @@ class CalibrateViewModel(ViewModelBase):
     def __init__(self):
         super().__init__()
         mission_paths = list(
-            Path("/app/voto/voto/static/img/glider/nrt/").rglob("SEA*/M*")
+            Path("/app/voto/voto/static/img/glider/nrt/").rglob("*/M*")
         )
         display = ""
         for path in mission_paths:
@@ -56,10 +54,10 @@ class AllPlotsViewModel(ViewModelBase):
     def __init__(self):
         super().__init__()
         self.plots_display = ""
-        glider_missions = GliderMission.objects().order_by("glider", "mission")
+        glider_missions = GliderMission.objects().order_by("platform_serial", "mission")
 
         for gm in glider_missions:
-            glider = gm.glider
+            platform_serial = gm.platform_serial
             mission = gm.mission
             if gm.is_complete:
                 img_type = "complete_mission"
@@ -68,10 +66,10 @@ class AllPlotsViewModel(ViewModelBase):
                 img_type = "nrt"
                 postfix = "_gt"
 
-            plot = f"/static/img/glider/{img_type}/SEA{glider}/M{mission}/SEA{glider}_M{mission}{postfix}.png"
-            map_plot = f"/static/img/glider/{img_type}/SEA{glider}/M{mission}/SEA{glider}_M{mission}_map.png "
+            plot = f"/static/img/glider/{img_type}/{platform_serial}/M{mission}/{platform_serial}_M{mission}{postfix}.png"
+            map_plot = f"/static/img/glider/{img_type}/{platform_serial}/M{mission}/{platform_serial}_M{mission}_map.png "
             content = f'<img class="img-fluid" src={plot}><br><img class="img-fluid" src={map_plot}><br>'
-            link = f'<div class="col-lg-6 themed-grid-col"><h2>SEA{glider} M{mission}</h2><a href="/SEA{glider}/M{mission}">{content}</a></div>'
+            link = f'<div class="col-lg-6 themed-grid-col"><h2>{platform_serial} M{mission}</h2><a href="/{platform_serial}/M{mission}">{content}</a></div>'
             self.plots_display += link
 
         sailbuoy_missions = SailbuoyMission.objects().order_by("sailbuoy", "mission")

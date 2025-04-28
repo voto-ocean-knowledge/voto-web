@@ -32,20 +32,21 @@ helcom_basins = {
 }
 
 
-def glidermission_to_json(glider, mission, subset=1):
-    mission = GliderMission.objects(glider=glider, mission=mission).first()
+def glidermission_to_json(platform_serial, mission, subset=1):
+    mission = GliderMission.objects(
+        platform_serial=platform_serial, mission=mission
+    ).first()
     profiles = profiles_from_mission(mission)
-    glider = select_glider(mission.glider)
-    glider_fill = str(mission.glider).zfill(3)
-    name = glider.name
+    glider_instance = select_glider(mission.platform_serial)
+    name = glider_instance.name
     features = []
     coords = []
     dive_item = {}
     for i, profile in enumerate(list(profiles)[::subset]):
         coords.append([profile.lon, profile.lat])
         popup = (
-            f"<a href='/fleet/SEA{mission.glider}'>SEA{glider_fill} {name}</a><br>"
-            f"<a href='/SEA{mission.glider}/M{mission.mission}'> Mission {profile.mission}</a>"
+            f"<a href='/fleet/{platform_serial}'>{platform_serial} {name}</a><br>"
+            f"<a href='/{mission.platform_serial}/M{mission.mission}'> Mission {profile.mission}</a>"
             f"<br>Profile {profile.number}<br> {str(profile.time)[:16]}"
         )
         dive_item = {
@@ -53,7 +54,7 @@ def glidermission_to_json(glider, mission, subset=1):
             "type": "Feature",
             "properties": {
                 "popupContent": popup,
-                "gliderNum": profile.glider,
+                "gliderNum": profile.platform_serial,
                 "diveNum": str(profile.number),
             },
         }
@@ -68,8 +69,8 @@ def glidermission_to_json(glider, mission, subset=1):
                 "geometry": {"type": "LineString", "coordinates": coords},
                 "type": "Feature",
                 "properties": {
-                    "popupContent": f"<a href='/fleet/SEA{mission.glider}'>SEA{glider_fill} {name}</a><br>"
-                    f"<a href='/SEA{mission.glider}/M{mission.mission}'> Mission {profile.mission}</a><br>Start {str(mission.start)[:11]}",
+                    "popupContent": f"<a href='/fleet/{mission.platform_serial}'>{platform_serial} {name}</a><br>"
+                    f"<a href='/{mission.platform_serial}/M{mission.mission}'> Mission {profile.mission}</a><br>Start {str(mission.start)[:11]}",
                     "year": mission.start.year,
                 },
             }
@@ -231,7 +232,7 @@ def make_boos_json():
     with open(Path(f"/data/third_party/boos/boos_stations.json"), "w") as fout:
         json.dump(all_stations_json, fout)
 
-    desired = ["BY5", "BY38", "Å14", "Å15", "Å16", "Å17"]
+    desired = ["BY5", "BY38", "BY15", "BY20", "Å14", "Å15", "Å16", "Å17"]
     good_rows = []
     for i, row in gdf.iterrows():
         for name in desired:
@@ -265,8 +266,10 @@ def write_mission_json(basin=None):
         glider_lines_json = []
         if len(gliders) == 0:
             glider_lines_json = blank_json_dict
-        for i, (glider, mission) in enumerate(zip(gliders, missions)):
-            point_json, line_json, glider_dict = glidermission_to_json(glider, mission)
+        for i, (platform_serial, mission) in enumerate(zip(gliders, missions)):
+            point_json, line_json, glider_dict = glidermission_to_json(
+                platform_serial, mission
+            )
             glider_lines_json.append(line_json)
         with open(f"/data/voto/json/{basin}.json", "w") as fout:
             json.dump(glider_lines_json, fout)
@@ -276,9 +279,9 @@ def write_mission_json(basin=None):
         timespan=datetime.timedelta(days=50000)
     )
     glider_lines_json = []
-    for i, (glider, mission) in enumerate(zip(gliders, missions)):
+    for i, (platform_serial, mission) in enumerate(zip(gliders, missions)):
         point_json, line_json, glider_dict = glidermission_to_json(
-            glider, mission, subset=10
+            platform_serial, mission, subset=10
         )
         glider_lines_json.append(line_json)
     with open("/data/voto/json/all_missions_10.json", "w") as fout:

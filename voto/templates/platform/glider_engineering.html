@@ -38,9 +38,9 @@
 {% block main_content %}
 
 <div class="mt-4 container-xl glider-list">
-    <h3 class="mt-4">SEA{{glider_fill}} {{glider.name}}</h3>
+    <h3 class="mt-4">{{glider.platform_serial}} {{glider.name}}</h3>
 
-    <h2>Sensors</h2>  <a class="btn btn-primary" role="button" href="/static/img/glider/stats/sensors_SEA{{glider_fill}}.csv"> Download csv </a>
+    <h2>Sensors</h2>  <a class="btn btn-primary" role="button" href="/static/img/glider/stats/sensors_{{glider.platform_serial}}.csv"> Download csv </a>
     <table class="table table-hover" id="missions_table">
         <thead>
         <tr>
@@ -53,7 +53,7 @@
         {% for row in sensors_df.itertuples() %}
 
         <tr>
-            <td><a href="/SEA{{glider.glider}}/M{{row[2]}}" class="link-primary">M{{row[2]}}</a></td>
+            <td><a href="/{{glider.platform_serial}}/M{{row[2]}}" class="link-primary">M{{row[2]}}</a></td>
                 {% for cell in row[3:] %}
                     <td>{{ cell }}</td>
                 {% endfor %}
@@ -65,7 +65,7 @@
 
 <div class="mt-4 container-xl glider-list">
 
-    <h2>Ballast</h2>  <a class="btn btn-primary" role="button" href="/static/img/glider/stats/ballast_SEA{{glider_fill}}.csv"> Download csv </a>
+    <h2>Ballast</h2>  <a class="btn btn-primary" role="button" href="/static/img/glider/stats/ballast_{{glider.platform_serial}}.csv"> Download csv </a>
     <table class="table table-hover" id="ballast_table">
         <thead>
         <tr>
@@ -79,7 +79,7 @@
 
 
         <tr>
-                <td><a href="/SEA{{glider.glider}}/M{{row[2]}}" class="link-primary">M{{row[2]}}</a></td>
+                <td><a href="/{{glider.platform_serial}}/M{{row[2]}}" class="link-primary">M{{row[2]}}</a></td>
 
                 {% for cell in row[3:] %}
                     <td>{{ cell }}</td>
@@ -109,7 +109,7 @@
             {% for m in glidermissions %}
 
                 <tr>
-                <td><a href="/SEA{{ m.glider_fill }}/M{{m.mission}}" class="link-primary">M{{m.mission}}</a></td>
+                <td><a href="/{{glider.platform_serial}}/M{{m.mission}}" class="link-primary">M{{m.mission}}</a></td>
                 <td>{{m.basin}}</td>
                 <td>{{m.duration_pretty}}</td>
                 <td>{{m.start_pretty}}</td>

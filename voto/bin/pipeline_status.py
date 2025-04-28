@@ -30,40 +30,44 @@ def check_yml():
         fn = yml_path.name
         parts = fn.split(".")[0].split("_")
         item = PipeLineMission()
-        glider = parts[0][3:]
+        platform_serial = parts[0]
         mission = parts[1][1:]
-        item.glider = glider
+        item.platform_serial = platform_serial
         item.mission = mission
         item.yml_time = datetime.fromtimestamp(yml_path.lstat().st_mtime)
         # delete item if it already exists
-        old_item = PipeLineMission.objects(glider=glider, mission=mission).first()
+        old_item = PipeLineMission.objects(
+            platform_serial=platform_serial, mission=mission
+        ).first()
         if old_item:
             old_item.delete()
-            _log.info(f"delete SEA{glider} M{mission}")
+            _log.info(f"delete {platform_serial} M{mission}")
         nrt_path = Path(
-            f"/data/data_raw/nrt/SEA{str(glider).zfill(3)}/{str(mission).zfill(6)}/C-Csv"
+            f"/data/data_raw/nrt/{platform_serial}/{str(mission).zfill(6)}/C-Csv"
         )
         if nrt_path.exists():
             item.nrt_profiles = len(list(nrt_path.glob("*pld*")))
             item.nrt_profiles_mtime = most_recent_mtime(nrt_path.glob("*pld*"))
-        nrt_proc_path = Path(f"/data/data_l0_pyglider/nrt/SEA{glider}/M{mission}")
+        nrt_proc_path = Path(f"/data/data_l0_pyglider/nrt/{platform_serial}/M{mission}")
         if nrt_proc_path.exists():
             item.nrt_proc = True
             item.nrt_proc_mtime = most_recent_mtime(
                 (nrt_proc_path / "gridfiles").glob("*.nc")
             )
-        nrt_plot_path = Path(f"/data/plots/nrt/SEA{glider}/M{mission}")
+        nrt_plot_path = Path(f"/data/plots/nrt/{platform_serial}/M{mission}")
         if nrt_plot_path.exists():
             item.nrt_plots = True
             item.nrt_plots_mtime = most_recent_mtime(nrt_plot_path.glob("*.png"))
-        complete_path = Path(f"/data/data_raw/complete_mission/SEA{glider}/M{mission}")
+        complete_path = Path(
+            f"/data/data_raw/complete_mission/{platform_serial}/M{mission}"
+        )
         if complete_path.exists():
             item.complete_profiles = len(list(complete_path.glob("*pld*")))
             item.complete_profiles_mtime = most_recent_mtime(
                 complete_path.glob("*pld*")
             )
         complete_proc_path = Path(
-            f"/data/data_l0_pyglider/complete_mission/SEA{glider}/M{mission}"
+            f"/data/data_l0_pyglider/complete_mission/{platform_serial}/M{mission}"
         )
         if complete_proc_path.exists():
             item.complete_proc = True
@@ -71,14 +75,14 @@ def check_yml():
                 (complete_proc_path / "gridfiles").glob("*.nc")
             )
         complete_plot_path = Path(
-            f"/data/plots/complete_mission/SEA{glider}/M{mission}"
+            f"/data/plots/complete_mission/{platform_serial}/M{mission}"
         )
         if complete_plot_path.exists():
             item.complete_plots = True
             item.complete_plots_mtime = most_recent_mtime(
                 complete_plot_path.glob("*.png")
             )
-        _log.info(f"add SEA{glider} M{mission}")
+        _log.info(f"add {platform_serial} M{mission}")
         item.up = bool(item.complete_plots + item.nrt_plots)
         item.save()
 

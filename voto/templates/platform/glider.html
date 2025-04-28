@@ -21,11 +21,11 @@
 <div class ="about" >
 <div class="row">
   <div class="col-lg-4 col-md-4 col-sm-12">
-      <img src="/static/img/glider/photos/SEA{{glider_fill}}.jpg" class="img-fluid ">
+      <img src="/static/img/glider/photos/{{glider.platform_serial}}.jpg" class="img-fluid ">
   </div>
   <div class="col-lg-8 col-md-8 col-sm-12 desc">
 
-        <h3 class="mt-4">SEA{{glider_fill}} {{glider.name}}</h3>
+        <h3 class="mt-4">{{glider.platform_serial}} {{glider.name}}</h3>
         <p>{{glider.name}} has completed {{total_missions}} missions and spent {{pretty_time}} at sea.<br>
             {{glider.name}} has recorded {{"{:,}".format(glider.total_profiles)}} vertical profiles, covering a total vertical distance of {{ "{:,}".format(glider.total_depth) }} m.
             This is equivalent to diving to the deepest part of the ocean and back {{marianas}} times.<br>
@@ -59,7 +59,7 @@
             <td><a href="{{ m.project_url}}"  class="link-primary">{{m.project}} </a></td>
             <td>{{m.duration_pretty}}</td>
             <td>{{m.start_pretty}}</td>
-            <td><a href="/SEA{{ m.glider_fill }}/M{{m.mission}}" class="btn btn-primary" role="button">M{{m.mission}}</a></td>
+            <td><a href="/{{glider.platform_serial }}/M{{m.mission}}" class="btn btn-primary" role="button">M{{m.mission}}</a></td>
             {%  endfor %}
         </tbody>
     </table>
