@@ -19,20 +19,19 @@ class PlatformListViewModel(ViewModelBase):
 
 
 class GliderViewModel(ViewModelBase):
-    def __init__(self, glider_num):
+    def __init__(self, platform_serial):
         super().__init__()
-        self.glider_num = glider_num
-        self.glider_fill = str(glider_num).zfill(3)
+        self.platform_serial = platform_serial
 
     def validate(self):
-        self.glider = Glider.objects(platform_serial=self.glider_num).first()
+        self.glider = Glider.objects(platform_serial=self.platform_serial).first()
         self.total_missions = len(self.glider.missions)
         self.pretty_time = seconds_to_pretty(self.glider.total_seconds)
         self.marianas = round(self.glider.total_depth / 21968, 1)
         if self.marianas > 10:
             self.marianas = int(self.marianas)
         self.iss = round(self.glider.total_depth / (800 * 1000), 1)
-        glider_missions = GliderMission.objects(platform_serial=self.glider_num)
+        glider_missions = GliderMission.objects(platform_serial=self.platform_serial)
         for gm in glider_missions:
             gm.start_pretty = str(gm.start)[:10]
             gm.duration_pretty = (gm.end - gm.start).days
@@ -42,8 +41,8 @@ class GliderViewModel(ViewModelBase):
         self.glidermissions = glider_missions
 
     def pilot_tables(self):
-        self.sensors_df = get_meta_table(self.glider_fill)
-        self.ballast_df = get_ballast_table(self.glider_fill)
+        self.sensors_df = get_meta_table(self.platform_serial)
+        self.ballast_df = get_ballast_table(self.platform_serial)
 
 
 class SailbuoyViewModel(ViewModelBase):

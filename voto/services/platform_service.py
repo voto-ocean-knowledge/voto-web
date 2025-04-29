@@ -1,5 +1,3 @@
-from voto.data.db_classes import Glider, GliderMission, Sailbuoy, SailbuoyMission
-from voto.services.utility_functions import fix_df_erddap_str
 import ast
 import pandas as pd
 import os
@@ -11,6 +9,8 @@ _log = logging.getLogger(__name__)
 
 folder = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, folder)
+from voto.data.db_classes import Glider, GliderMission, Sailbuoy, SailbuoyMission
+from voto.services.utility_functions import fix_df_erddap_str
 
 
 def glider_calc_totals(glider_instance):
@@ -114,11 +114,11 @@ def update_sailbuoy(mission):
 
 def get_meta_table(platform_serial):
     df = pd.read_csv(
-        f"https://erddap.observations.voiceoftheocean.org/erddap/tabledap/meta_users_table.csvp?&glider_serial=%22{platform_serial}%22"
+        f"https://erddap.observations.voiceoftheocean.org/erddap/tabledap/meta_users_table.csvp?&platform_serial=%22{platform_serial}%22"
     )
     df = df[
         [
-            "glider_serial",
+            "platform_serial",
             "deployment_id",
             "basin",
             "deployment_start (UTC)",
@@ -159,15 +159,15 @@ def get_meta_table(platform_serial):
     return df
 
 
-def get_ballast_table(glider_int):
+def get_ballast_table(platform_serial):
 
     df = pd.read_csv(
-        f"https://erddap.observations.voiceoftheocean.org/erddap/tabledap/meta_ballast.csvp?&glider_serial={glider_int}"
+        f"https://erddap.observations.voiceoftheocean.org/erddap/tabledap/meta_ballast.csvp?&platform_serial={platform_serial}"
     )
     df = df[df.datasetID.str.contains("delayed")]
     df = df[
         [
-            "glider_serial",
+            "platform_serial",
             "deployment_id",
             "basin",
             "total_dives",
