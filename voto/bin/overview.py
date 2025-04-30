@@ -14,10 +14,10 @@ import numpy as np
 from pyproj import Transformer
 import cartopy.crs as ccrs
 import cartopy
-from voto.services.utility_functions import mailer
 
 folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 sys.path.insert(0, folder)
+from voto.services.utility_functions import mailer
 from voto.services.mission_service import (
     get_missions_df,
     get_profiles_df,
@@ -25,7 +25,7 @@ from voto.services.mission_service import (
     get_stats,
 )
 from voto.services.platform_service import get_meta_table, get_ballast_table
-from voto.data.db_session import initialise_database
+from voto.data.db_session import init_db
 from voto.data.db_classes import Stat, Glider
 
 _log = logging.getLogger(__name__)
@@ -240,13 +240,8 @@ if __name__ == "__main__":
         datefmt="%Y-%m-%d %H:%M:%S",
     )
     _log.info("start computing stats")
-    initialise_database(
-        user=secrets["mongo_user"],
-        password=secrets["mongo_password"],
-        port=int(secrets["mongo_port"]),
-        server=secrets["mongo_server"],
-        db=secrets["mongo_db"],
-    )
+    init_db()
+
     mission_df = get_missions_df()
     glider_uptime(mission_df)
     years = np.arange(2021, datetime.date.today().year + 1)
@@ -262,13 +257,9 @@ if __name__ == "__main__":
         stats_dir.mkdir(parents=True)
     for glider in Glider.objects():
         platform_serial = glider.platform_serial
-        if platform_serial in [
-            "SEA057",
-        ]:
-            continue
         try:
             meta = get_meta_table(platform_serial)
-            ballast = get_ballast_table(int(platform_serial[-3:]))
+            ballast = get_ballast_table(platform_serial)
             meta["basin"] = meta["basin"].str.replace(",", "-")
             meta.to_csv(
                 stats_dir / f"sensors_{platform_serial}.csv", index=False, sep=","
