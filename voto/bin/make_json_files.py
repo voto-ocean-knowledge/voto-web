@@ -32,6 +32,7 @@ if __name__ == "__main__":
         db=secrets["mongo_db"],
     )
     _log.info("START")
+    _log.info("write sailbuoy json")
     write_sailbuoy_json()
     for basin in helcom_basins.keys():
         _log.info(f"start {basin}")

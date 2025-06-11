@@ -8,26 +8,13 @@ import sys
 
 folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 sys.path.insert(0, folder)
-from voto.data.db_session import initialise_database
+from voto.data.db_session import init_db
 from voto.services.mission_service import add_glidermission
 from voto.services.platform_service import update_glider
 
 _log = logging.getLogger(__name__)
 with open(folder + "/mongo_secrets.json") as json_file:
     secrets = json.load(json_file)
-
-
-def init_db():
-    if "mongo_user" not in secrets.keys():
-        initialise_database(user=None, password=None)
-        return
-    initialise_database(
-        user=secrets["mongo_user"],
-        password=secrets["mongo_password"],
-        port=int(secrets["mongo_port"]),
-        server=secrets["mongo_server"],
-        db=secrets["mongo_db"],
-    )
 
 
 def glider_name_lookup(ds):

@@ -164,7 +164,7 @@ def get_ballast_table(platform_serial):
     df = pd.read_csv(
         f"https://erddap.observations.voiceoftheocean.org/erddap/tabledap/meta_ballast.csvp?&platform_serial=%22{platform_serial}%22"
     )
-    df = df[df.datasetID.str.contains("nrt")]
+    df = df[df.datasetID.str.contains("delayed")]
     df = df[
         [
             "platform_serial",

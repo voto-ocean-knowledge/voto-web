@@ -129,6 +129,8 @@ def add_glidermission(ds, data_points, total_profiles=None, mission_complete=Fal
         profile.number = i
         profile.lon = lons[i]
         profile.lat = lats[i]
+        if np.isnan(times[i]):
+            continue
         profile.time = datetime.datetime.fromtimestamp(
             (times[i] - np.datetime64("1970-01-01T00:00:00Z")) / np.timedelta64(1, "s")
         )

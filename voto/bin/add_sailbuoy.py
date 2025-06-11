@@ -6,7 +6,6 @@ import logging
 import os
 import argparse
 import sys
-from voto.services.utility_functions import mailer
 
 _log = logging.getLogger(__name__)
 folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
@@ -16,6 +15,7 @@ from voto.services.mission_service import add_sailbuoymission
 from voto.services.platform_service import update_sailbuoy
 from voto.services.geo_functions import get_seas
 from static_plots import sailbuoy_nrt_plots, make_map
+from voto.services.utility_functions import mailer
 
 leak_mails = [
     "callum.rollo@voiceoftheocean.org",
