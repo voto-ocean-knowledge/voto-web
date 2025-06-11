@@ -22,6 +22,16 @@ def index():
     return vm.to_dict()
 
 
+@blueprint.route("/projects")
+@response(template_file="home/projects_map.html")
+def facilities_view():
+    vm = MapViewModel()
+    vm.add_all_missions()
+    vm.add_geojson()
+    vm.add_facilities()
+    return vm.to_dict()
+
+
 @blueprint.route("/map")
 @response(template_file="home/map.html")
 def map_view():

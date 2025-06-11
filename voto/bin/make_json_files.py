@@ -6,7 +6,11 @@ import json
 folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 sys.path.insert(0, folder)
 from voto.data.db_session import initialise_database
-from voto.services.json_conversion import write_mission_json, helcom_basins
+from voto.services.json_conversion import (
+    write_mission_json,
+    helcom_basins,
+    write_sailbuoy_json,
+)
 
 _log = logging.getLogger(__name__)
 with open(folder + "/mongo_secrets.json") as json_file:
@@ -28,6 +32,7 @@ if __name__ == "__main__":
         db=secrets["mongo_db"],
     )
     _log.info("START")
+    write_sailbuoy_json()
     for basin in helcom_basins.keys():
         _log.info(f"start {basin}")
         write_mission_json(basin=basin)

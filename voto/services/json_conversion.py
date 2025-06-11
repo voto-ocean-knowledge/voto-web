@@ -3,9 +3,14 @@ import datetime
 import json
 import numpy as np
 import geopandas as gp
+import pandas as pd
 from voto.data.db_classes import GliderMission, SailbuoyMission
 from voto.services import mission_service
-from voto.services.mission_service import profiles_from_mission, glidermissions_by_basin
+from voto.services.mission_service import (
+    profiles_from_mission,
+    glidermissions_by_basin,
+    recent_sailbuoymissions,
+)
 from voto.services.platform_service import select_glider
 
 blank_json_dict = {"type": "FeatureCollection", "features": []}
@@ -286,3 +291,70 @@ def write_mission_json(basin=None):
         glider_lines_json.append(line_json)
     with open("/data/voto/json/all_missions_10.json", "w") as fout:
         json.dump(glider_lines_json, fout)
+
+
+def write_sailbuoy_json():
+    if not Path("/data/voto/json").exists():
+        Path("/data/voto/json").mkdir(parents=True)
+    sailbuoys, missions = recent_sailbuoymissions(
+        timespan=datetime.timedelta(days=50000)
+    )
+    sailbuoy_lines_json = []
+    if len(sailbuoys) == 0:
+        sailbuoy_lines_json = blank_json_dict
+    for i, (platform_serial, mission) in enumerate(zip(sailbuoys, missions)):
+        line_json, glider_dict = sailbuoy_to_json(platform_serial, mission)
+        sailbuoy_lines_json.append(line_json)
+    with open(f"/data/voto/json/sailbuoy.json", "w") as fout:
+        json.dump(sailbuoy_lines_json, fout)
+    return
+
+
+def load_facilities_json():
+    df = pd.read_csv("/data/voto/support.csv", sep=";")
+    features = []
+
+    for i, row in df.iterrows():
+        text = f"<b>Project:</b> {row.Name}<br><b>PI:</b> {row['PI and affiliation']}<br><b>Call:</b> {row.Call} <br> {row['Main context of application']}".replace(
+            "\n", ""
+        )
+        if np.isnan(row.lon) or np.isnan(row.lat):
+            continue
+        color = "#f77a3c"
+        if row.Status == "complete":
+            color = "#33d173"
+
+        dive_item = {
+            "geometry": {
+                "type": "Point",
+                "coordinates": [row.lon, row.lat],
+            },
+            "type": "Feature",
+            "properties": {"popupContent": text, "group": "project", "color": color},
+        }
+        features.append(dive_item)
+    df = pd.read_csv("/data/voto/facilities.csv", sep=";")
+
+    for i, row in df.iterrows():
+        text = f"{row.facility}".replace("\n", "")
+        if np.isnan(row.lon) or np.isnan(row.lat):
+            continue
+
+        dive_item = {
+            "geometry": {
+                "type": "Point",
+                "coordinates": [row.lon, row.lat],
+            },
+            "type": "Feature",
+            "properties": {
+                "popupContent": text,
+                "group": "facility",
+                "color": "#2d5af6",
+            },
+        }
+        features.append(dive_item)
+
+    facilities_dict = {"type": "FeatureCollection", "features": features}
+    json_str = json.dumps(facilities_dict)
+    json_dict = json.loads(json_str)
+    return json_dict
