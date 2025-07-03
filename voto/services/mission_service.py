@@ -424,7 +424,7 @@ def add_sailbuoymission(ds, mission_complete=False):
     attrs = ds.attrs
     # delete the mission if it already exists
     old_mission = SailbuoyMission.objects(
-        sailbuoy=int(attrs["sailbuoy_serial"]), mission=int(attrs["deployment_id"])
+        sailbuoy=int(attrs["platform_serial"][2:]), mission=int(attrs["deployment_id"])
     ).first()
     # if mission haas already been completed, do not replace with nrt data
     if old_mission:
@@ -438,7 +438,7 @@ def add_sailbuoymission(ds, mission_complete=False):
         _log.info(f"Delete mission SB{old_mission.sailbuoy} M{old_mission.mission}")
         old_mission.delete()
     mission.mission = int(attrs["deployment_id"])
-    mission.sailbuoy = int(attrs["sailbuoy_serial"])
+    mission.sailbuoy = int(attrs["platform_serial"][2:])
     mission.lon_min = attrs["geospatial_lon_min"]
     mission.lon_max = attrs["geospatial_lon_max"]
     mission.lat_min = attrs["geospatial_lat_min"]
