@@ -1,4 +1,6 @@
 from pathlib import Path
+import datetime
+import numpy as np
 import xarray as xr
 import logging
 import os
@@ -10,29 +12,31 @@ sys.path.insert(0, folder)
 from add_profiles import init_db, secrets
 from voto.services.mission_service import add_sailbuoymission
 from voto.services.platform_service import update_sailbuoy
-from voto.services.geo_functions import get_seas
 from static_plots import sailbuoy_nrt_plots, make_map
 
 
-def add_all_nrt_sailbuoys():
+def add_all_nrt_sailbuoys(reprocess=False):
     ncs = Path("/data/sailbuoy/nrt_proc").glob("*.nc")
     for nc in ncs:
         ds = xr.open_dataset(nc)
+        file_time = datetime.datetime.fromtimestamp(nc.lstat().st_mtime)
+        max_time = ds.time.max()
+        if (
+            np.datetime64(file_time) > max_time + np.timedelta64(12, "h")
+            and not reprocess
+        ):
+            _log.info(f"sb mission {nc} not updated in last 12 hours. Skipping")
+            continue
         add_nrt_sailbuoy(ds)
 
 
 def add_nrt_sailbuoy(ds):
-    ds = get_seas(ds)
     attrs = ds.attrs
     sb = attrs["platform_serial"]
     mission = attrs["deployment_id"]
     _log.info(f"adding {sb} mission {mission} to database")
     mission_obj = add_sailbuoymission(ds)
     update_sailbuoy(mission_obj)
-    data_dir = Path("/data/sailbuoy/nrt_proc")
-    if not data_dir.exists():
-        data_dir.mkdir(parents=True)
-    ds.to_netcdf(f"/data/sailbuoy/nrt_proc/{sb}_M{mission}.nc")
     _log.info(f"plotting sailbuoy data from {sb} mission {mission}")
     sailbuoy_nrt_plots(ds)
     make_map(ds)
