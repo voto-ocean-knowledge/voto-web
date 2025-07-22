@@ -32,12 +32,23 @@ class GliderViewModel(ViewModelBase):
             self.marianas = int(self.marianas)
         self.iss = round(self.glider.total_depth / (800 * 1000), 1)
         glider_missions = GliderMission.objects(platform_serial=self.platform_serial)
+        basins = []
         for gm in glider_missions:
             gm.start_pretty = str(gm.start)[:10]
             gm.duration_pretty = (gm.end - gm.start).days
             gm.variables_pretty = ", ".join(gm.variables)
             if gm.basin is None:
                 gm.basin = " "
+            else:
+                for basin in gm.basin.split(","):
+                    basins.append(basin.strip(" "))
+        if basins:
+            basins = list(set(basins))
+            basins.sort()
+            basin_str = f"{self.glider.name} has completed missions in {len(basins)} Baltic basins: {', '.join(basins)}"
+            self.basins_str = " &".join(basin_str.rsplit(",", 1))
+        else:
+            self.basin_str = ""
         self.glidermissions = glider_missions
 
     def pilot_tables(self):

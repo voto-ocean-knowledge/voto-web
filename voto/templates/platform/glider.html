@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block additional_css %}
-    <title>SEA{{glider_fill}}</title>
+    <title>{{glider.platform_serial}}</title>
 <!-- CSS and javascript for datatables, requires jquery-->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
@@ -29,7 +29,7 @@
         <p>{{glider.name}} has completed {{total_missions}} missions and spent {{pretty_time}} at sea.<br>
             {{glider.name}} has recorded {{"{:,}".format(glider.total_profiles)}} vertical profiles, covering a total vertical distance of {{ "{:,}".format(glider.total_depth) }} m.
             This is equivalent to diving to the deepest part of the ocean and back {{marianas}} times.<br>
-            If {{glider.name}}'s wings were capable of operating in a vacuum, it could have flown to the International Space Station and back {{iss}} times.
+            {{basins_str}}
     </p>
    </div>
   </div>
