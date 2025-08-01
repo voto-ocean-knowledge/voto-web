@@ -17,6 +17,7 @@ import cartopy
 
 folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 sys.path.insert(0, folder)
+from voto.services.utility_functions import mailer
 from voto.services.mission_service import (
     get_missions_df,
     get_profiles_df,
@@ -24,7 +25,7 @@ from voto.services.mission_service import (
     get_stats,
 )
 from voto.services.platform_service import get_meta_table, get_ballast_table
-from voto.data.db_session import initialise_database
+from voto.data.db_session import init_db
 from voto.data.db_classes import Stat, Glider
 
 _log = logging.getLogger(__name__)
@@ -49,7 +50,7 @@ def gantt_plot(df):
         df.end - start_date
     ).dt.components["hours"] / 24
     df["duration_days"] = df.end_day_num - df.start_day_num
-    df = df.sort_values(by=["glider", "mission"])
+    df = df.sort_values(by=["platform_serial", "mission"])
     df["color"] = "C0"
     for i, row in df.iterrows():
         # First check sea name
@@ -69,17 +70,13 @@ def gantt_plot(df):
         elif "Skag" in basin or "Kat" in basin:
             df.loc[i, "color"] = "C0"
 
-    glider_str = []
-    for num in df.glider:
-        glider_str.append(f"SEA{str(num).zfill(3)}")
-    df["glider_str"] = glider_str
     first_days = pd.date_range(start_date, end=df.end.max(), freq="MS")
     xticks = pd.Series(first_days[::3] - first_days[0]).dt.days
 
     xtick_minor = pd.Series(first_days - first_days[0]).dt.days
 
     fig, ax = plt.subplots(figsize=(6, 4))
-    ax.barh(df.glider_str, df.duration_days, left=df.start_day_num, color=df.color)
+    ax.barh(df.platform_serial, df.duration_days, left=df.start_day_num, color=df.color)
 
     xtick_labels = first_days[::3].strftime("%b %y")
     ax.set_xticks(xticks)
@@ -178,8 +175,10 @@ def gridder(df):
 
 
 def coverage(df, missions):
-    missions["glider_mission"] = missions.glider * 1000 + missions.mission
-    df["glider_mission"] = df.glider * 1000 + df.mission
+    missions["glider_mission"] = (
+        missions.platform_serial + "_M" + missions.mission.astype(str)
+    )
+    df["glider_mission"] = df.platform_serial + "_M" + df.mission.astype(str)
     df["basin_def"] = " "
     for basin in missions.basin_def.unique():
         glider_missions = missions[missions.basin_def == basin].glider_mission
@@ -241,13 +240,8 @@ if __name__ == "__main__":
         datefmt="%Y-%m-%d %H:%M:%S",
     )
     _log.info("start computing stats")
-    initialise_database(
-        user=secrets["mongo_user"],
-        password=secrets["mongo_password"],
-        port=int(secrets["mongo_port"]),
-        server=secrets["mongo_server"],
-        db=secrets["mongo_db"],
-    )
+    init_db()
+
     mission_df = get_missions_df()
     glider_uptime(mission_df)
     years = np.arange(2021, datetime.date.today().year + 1)
@@ -262,17 +256,23 @@ if __name__ == "__main__":
     if not stats_dir.exists():
         stats_dir.mkdir(parents=True)
     for glider in Glider.objects():
-        if glider.glider in [
-            57,
-        ]:
-            continue
-        glider_fill = str(glider.glider).zfill(3)
-        meta = get_meta_table(glider_fill)
-        ballast = get_ballast_table(glider_fill)
-        meta["basin"] = meta["basin"].str.replace(",", "-")
-        meta.to_csv(stats_dir / f"sensors_SEA{glider_fill}.csv", index=False, sep=",")
-        ballast["basin"] = ballast["basin"].str.replace(",", "-")
-        ballast.to_csv(
-            stats_dir / f"ballast_SEA{glider_fill}.csv", index=False, sep=","
-        )
+        platform_serial = glider.platform_serial
+        try:
+            meta = get_meta_table(platform_serial)
+            ballast = get_ballast_table(platform_serial)
+            meta["basin"] = meta["basin"].str.replace(",", "-")
+            meta.to_csv(
+                stats_dir / f"sensors_{platform_serial}.csv", index=False, sep=","
+            )
+            ballast["basin"] = ballast["basin"].str.replace(",", "-")
+            ballast.to_csv(
+                stats_dir / f"ballast_{platform_serial}.csv", index=False, sep=","
+            )
+        except:
+            mailer(
+                "Failed-overview",
+                f"failed for {glider.platform_serial}",
+                "callum.rollo@voiceoftheocean.org",
+            )
+            print(f"failed meta for {glider.platform_serial}")
     _log.info("Finished computing stats")

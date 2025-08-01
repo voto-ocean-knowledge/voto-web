@@ -7,6 +7,7 @@ from voto.viewmodels.home.home_viewmodel import (
     DataViewModel,
     FeedViewModel,
     ViewModelBase,
+    MapViewModel,
 )
 
 blueprint = flask.Blueprint("home", __name__, template_folder="templates")
@@ -18,6 +19,37 @@ def index():
     vm = IndexViewModel()
     vm.check_missions()
     vm.check_sailbuoys()
+    return vm.to_dict()
+
+
+@blueprint.route("/projects")
+@response(template_file="home/projects_map.html")
+def facilities_view():
+    vm = MapViewModel()
+    vm.add_all_missions()
+    vm.add_geojson()
+    vm.add_facilities()
+    return vm.to_dict()
+
+
+@blueprint.route("/map")
+@response(template_file="home/map.html")
+def map_view():
+    vm = MapViewModel()
+    vm.add_all_missions()
+    vm.add_geojson()
+    return vm.to_dict()
+
+
+@blueprint.route("/map/basin/SEA-<int:basin_int>")
+@response(template_file="home/map.html")
+def map_basin(basin_int: int):
+    vm = MapViewModel()
+    basin_str = f"SEA-{str(basin_int).zfill(3)}"
+    vm.add_basin_missions(basin_str)
+    vm.add_geojson()
+    if vm.error:
+        return flask.redirect("/map")
     return vm.to_dict()
 
 

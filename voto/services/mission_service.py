@@ -48,25 +48,27 @@ def add_glidermission(ds, data_points, total_profiles=None, mission_complete=Fal
     attrs = ds.attrs
     # delete the mission if it already exists
     old_mission = GliderMission.objects(
-        glider=int(attrs["glider_serial"]), mission=int(attrs["deployment_id"])
+        platform_serial=attrs["platform_serial"], mission=int(attrs["deployment_id"])
     ).first()
     # If mission haas already been completed, do not replace with NRT data
     if old_mission:
         if not mission_complete and old_mission.is_complete:
             _log.warning(
-                f"Attempted overwrite of misson SEA{old_mission.glider} M{old_mission.mission} "
+                f"Attempted overwrite of misson {old_mission.platform_serial} M{old_mission.mission} "
                 f"with NRT data. Blocked"
             )
             return old_mission
     if old_mission:
         _log.info(
-            f"Delete profiles from mission SEA{old_mission.glider} M{old_mission.mission}"
+            f"Delete profiles from mission {old_mission.platform_serial} M{old_mission.mission}"
         )
-        delete_profiles_glidermission(old_mission.glider, old_mission.mission)
-        _log.info(f"Delete mission SEA{old_mission.glider} M{old_mission.mission}")
+        delete_profiles_glidermission(old_mission.platform_serial, old_mission.mission)
+        _log.info(
+            f"Delete mission {old_mission.platform_serial} M{old_mission.mission}"
+        )
         old_mission.delete()
     mission.mission = int(attrs["deployment_id"])
-    mission.glider = int(attrs["glider_serial"])
+    mission.platform_serial = attrs["platform_serial"]
     mission.lon_min = attrs["geospatial_lon_min"]
     mission.lon_max = attrs["geospatial_lon_max"]
     mission.lat_min = attrs["geospatial_lat_min"]
@@ -77,17 +79,27 @@ def add_glidermission(ds, data_points, total_profiles=None, mission_complete=Fal
         if len(comment) > 6:
             mission.comment = comment
 
-    profiles = ds.profile.values.astype(str)
-    lons = ds.longitude.values
-    lats = ds.latitude.values
+    profiles = ds.profile.values.astype(int).astype(str)
+    if "depth" in ds.longitude.dims:
+        lons = ds.longitude.median(dim="depth").values
+        lats = ds.latitude.median(dim="depth").values
+    else:
+        lons = ds.longitude.values
+        lats = ds.latitude.values
     times = ds.time.values
-    depth_grid = np.tile(ds.depth, (len(ds.time), 1)).T
+    depth_grid = np.tile(ds.depth, (len(lons), 1)).T
     depth_grid[np.isnan(ds.pressure)] = np.nan
     max_depths = np.nanmax(depth_grid, 0)
     max_depths[np.isnan(max_depths)] = 0
     total_depth = 0
-    mission.start = datetime.datetime.utcfromtimestamp(times[0].tolist() / 1e9)
-    mission.end = datetime.datetime.utcfromtimestamp(times[-1].tolist() / 1e9)
+    mission.start = datetime.datetime.fromtimestamp(
+        (np.nanmin(times) - np.datetime64("1970-01-01T00:00:00Z"))
+        / np.timedelta64(1, "s")
+    )
+    mission.end = datetime.datetime.fromtimestamp(
+        (np.nanmax(times) - np.datetime64("1970-01-01T00:00:00Z"))
+        / np.timedelta64(1, "s")
+    )
     mission.sea_name = attrs["sea_name"]
     if "basin" in attrs.keys():
         mission.basin = attrs["basin"]
@@ -109,27 +121,31 @@ def add_glidermission(ds, data_points, total_profiles=None, mission_complete=Fal
     i = 0
     profile_objs = []
     for i in range(len(profiles)):
-        if np.isnan(lons[i]) or np.isnan(lats[i]) or np.isnan(max_depths[i]):
+        if np.isnan([lons[i], lats[i], max_depths[i]]).any():
             continue
         profile = Profile()
         profile.mission = mission.mission
-        profile.glider = mission.glider
+        profile.platform_serial = mission.platform_serial
         profile.number = i
         profile.lon = lons[i]
         profile.lat = lats[i]
-        profile.time = datetime.datetime.utcfromtimestamp(times[i].tolist() / 1e9)
+        if np.isnan(times[i]):
+            continue
+        profile.time = datetime.datetime.fromtimestamp(
+            (times[i] - np.datetime64("1970-01-01T00:00:00Z")) / np.timedelta64(1, "s")
+        )
         profile.max_depth = max_depths[i]
         profile_objs.append(profile)
         total_depth += max_depths[i]
-    _log.info(f"Add profiles from SEA{mission.glider} M{mission.mission}")
+    _log.info(f"Add profiles from {mission.platform_serial} M{mission.mission}")
     # Need to save profiles to DB to get their object IDs
     Profile.objects().insert(profile_objs, load_bulk=True)
     # Get the profile object IDs to pass to the mission
     profile_ids = Profile.objects.filter(
-        glider=mission.glider, mission=mission.mission
+        platform_serial=mission.platform_serial, mission=mission.mission
     ).scalar("id")
     mission.profile_ids = profile_ids
-    profiles = profiles_from_glidermission(mission.glider, mission.mission)
+    profiles = profiles_from_glidermission(mission.platform_serial, mission.mission)
     mission.total_distance_m = total_mission_distance(profiles)
     mission.total_data_points = data_points
     if total_profiles:
@@ -143,14 +159,14 @@ def add_glidermission(ds, data_points, total_profiles=None, mission_complete=Fal
         mission.is_complete = True
     mission.save()
     _log.info(
-        f"Add mission SEA{mission.glider} M{mission.mission} (complete: {mission_complete})"
+        f"Add mission {mission.platform_serial} M{mission.mission} (complete: {mission_complete})"
     )
     return mission
 
 
 def totals(year=None, baltic_only=True):
     totals_location = Path(f"{secrets['log_dir']}/totals.json")
-    if totals_location.exists():
+    if totals_location.exists() and not year:
         with open(totals_location) as totals_file:
             totals_dict = json.load(totals_file)
         totals_datetime = datetime.datetime.fromisoformat(totals_dict["datetime"])
@@ -188,7 +204,7 @@ def totals(year=None, baltic_only=True):
         if not good_year:
             continue
         profiles = mission.total_profiles
-        gliders.append(mission.glider)
+        gliders.append(mission.platform_serial)
         total_profiles += profiles
         mission_time = mission.end - mission.start
         total_time += mission_time
@@ -232,8 +248,9 @@ def totals(year=None, baltic_only=True):
         "time_str_sb": time_str_sb,
         "dist_km_sb": dist_km_sb,
     }
-    with open(totals_location, "w") as totals_file:
-        json.dump(totals_json, totals_file)
+    if not year:
+        with open(totals_location, "w") as totals_file:
+            json.dump(totals_json, totals_file)
     return (
         total_profiles,
         num_gliders,
@@ -250,7 +267,7 @@ def get_missions_df(baltic_only=True):
     missions = (
         GliderMission.objects()
         .only(
-            "glider",
+            "platform_serial",
             "mission",
             "start",
             "end",
@@ -290,42 +307,63 @@ def get_profiles_df(baltic_only=True):
     return df
 
 
+def glidermissions_by_basin(basin):
+    missions = (
+        GliderMission.objects(basin__icontains=basin)
+        .order_by("start")
+        .only("mission", "platform_serial")
+        .as_pymongo()
+    )
+    df = pd.DataFrame(missions)
+    if df.empty:
+        return [], []
+    return df.platform_serial, df.mission
+
+
 def recent_glidermissions(timespan=datetime.timedelta(hours=24), baltic_only=True):
     time_cut = datetime.datetime.now() - timespan
     if baltic_only:
         missions = (
             GliderMission.objects(end__gte=time_cut, basin__exists=True)
-            .only("mission", "glider")
+            .order_by("start")
+            .only("mission", "platform_serial")
             .as_pymongo()
         )
     else:
         missions = (
             GliderMission.objects(end__gte=time_cut)
-            .only("mission", "glider")
+            .order_by("start")
+            .only("mission", "platform_serial")
             .as_pymongo()
         )
     df = pd.DataFrame(missions)
     if df.empty:
         return [], []
-    return df.glider, df.mission
+    return df.platform_serial, df.mission
 
 
-def select_glidermission(glider, mission):
-    mission_obj = GliderMission.objects(glider=glider, mission=mission).first()
+def select_glidermission(platform_serial, mission):
+    mission_obj = GliderMission.objects(
+        platform_serial=platform_serial, mission=mission
+    ).first()
     return mission_obj
 
 
 def profiles_from_mission(glidermission):
-    return profiles_from_glidermission(glidermission.glider, glidermission.mission)
+    return profiles_from_glidermission(
+        glidermission.platform_serial, glidermission.mission
+    )
 
 
-def profiles_from_glidermission(glider, mission):
-    profiles = Profile.objects(mission=mission, glider=glider).order_by("number")
+def profiles_from_glidermission(platform_serial, mission):
+    profiles = Profile.objects(
+        mission=mission, platform_serial=platform_serial
+    ).order_by("number")
     return profiles
 
 
-def delete_profiles_glidermission(glider, mission):
-    profiles = Profile.objects(mission=mission, glider=glider)
+def delete_profiles_glidermission(platform_serial, mission):
+    profiles = Profile.objects(mission=mission, platform_serial=platform_serial)
     profiles.delete()
 
 
@@ -373,7 +411,7 @@ def sailbuoy_distance(lons, lats):
 def pipeline_stats(yml_only=True):
     pipes = PipeLineMission.objects(yml=yml_only)
     for pipe in pipes:
-        pipe.glider_fill = str(pipe.glider).zfill(3)
+        pipe.glider_fill = pipe.platform_serial
     return pipes
 
 
@@ -386,7 +424,7 @@ def add_sailbuoymission(ds, mission_complete=False):
     attrs = ds.attrs
     # delete the mission if it already exists
     old_mission = SailbuoyMission.objects(
-        sailbuoy=int(attrs["sailbuoy_serial"]), mission=int(attrs["deployment_id"])
+        sailbuoy=int(attrs["platform_serial"][2:]), mission=int(attrs["deployment_id"])
     ).first()
     # if mission haas already been completed, do not replace with nrt data
     if old_mission:
@@ -400,7 +438,7 @@ def add_sailbuoymission(ds, mission_complete=False):
         _log.info(f"Delete mission SB{old_mission.sailbuoy} M{old_mission.mission}")
         old_mission.delete()
     mission.mission = int(attrs["deployment_id"])
-    mission.sailbuoy = int(attrs["sailbuoy_serial"])
+    mission.sailbuoy = int(attrs["platform_serial"][2:])
     mission.lon_min = attrs["geospatial_lon_min"]
     mission.lon_max = attrs["geospatial_lon_max"]
     mission.lat_min = attrs["geospatial_lat_min"]

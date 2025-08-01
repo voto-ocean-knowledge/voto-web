@@ -50,6 +50,7 @@ sailbuoy_var_names = {
 
 def sailbuoy_nrt_plots(ds):
     plots_dir = Path("/data/plots/sailbuoy/nrt")
+    id_string = f'{ds.attrs["platform_serial"]}_M{ds.attrs["deployment_id"]}'
     if not plots_dir.exists():
         plots_dir.mkdir(parents=True)
 
@@ -78,7 +79,7 @@ def sailbuoy_nrt_plots(ds):
         ax.tick_params(axis="x", which="both", length=4)
         plt.setp(ax.get_xticklabels(), rotation=0, ha="center")
     plt.tight_layout()
-    filename = plots_dir / f"SB{ds.sailbuoy_serial}_M{ds.deployment_id}.png"
+    filename = plots_dir / f"{id_string}.png"
     _log.info(f"writing figure to {filename}")
     fig.savefig(filename, format="png", transparent=True)
 
@@ -86,14 +87,12 @@ def sailbuoy_nrt_plots(ds):
 
     df = ds.to_dataframe()
     attrs = ds.attrs
-    df.index = df.Time
-    df.drop(["Time", "time", "time_diff"], axis=1, inplace=True)
     track_diff = np.abs(df["Heading"] - df["WaypointDirection"])
     track_diff[track_diff > 180] = 360 - track_diff[track_diff > 180]
     df["track_diff"] = track_diff
     df_roll = df.rolling(window=datetime.timedelta(hours=3)).mean()
     fig, axs = plt.subplots(5, 1, figsize=(12, 20), sharex="col")
-    fig.suptitle(f"SB{attrs['sailbuoy_serial']} mission {attrs['deployment_id']}")
+    fig.suptitle(f"{id_string}")
     axs = axs.ravel()
     ax = axs[0]
     ax.plot(df_roll.index, df_roll.V, label="nav")
@@ -143,7 +142,7 @@ def sailbuoy_nrt_plots(ds):
     ax.tick_params(axis="x", which="both", length=10)
     plt.setp(ax.get_xticklabels(), rotation=0, ha="center")
     plt.tight_layout()
-    filename = plots_dir / f"monitor_SB{ds.sailbuoy_serial}_M{ds.deployment_id}.png"
+    filename = plots_dir / f"monitor_{id_string}.png"
     _log.info(f"writing figure to {filename}")
     fig.savefig(filename, format="png", transparent=True)
     last = df.index.max()
@@ -151,9 +150,7 @@ def sailbuoy_nrt_plots(ds):
         ax.set(
             xlim=[last - datetime.timedelta(days=7), last + datetime.timedelta(hours=6)]
         )
-    filename = (
-        plots_dir / f"monitor_SB{ds.sailbuoy_serial}_M{ds.deployment_id}_short.png"
-    )
+    filename = plots_dir / f"monitor_{id_string}_short.png"
     _log.info(f"writing figure to {filename}")
     fig.savefig(filename, format="png", transparent=True)
     plt.close("all")
@@ -223,7 +220,7 @@ def make_map(dataset):
     fig = plt.figure(figsize=(12, 6))
     ax = fig.add_subplot(111, projection=coord)
     attrs = dataset.attrs
-    fig.suptitle(f"SB{attrs['sailbuoy_serial']} mission {attrs['deployment_id']}")
+    fig.suptitle(f"SB{attrs['platform_serial']} mission {attrs['deployment_id']}")
     ax.scatter(lons, lats, transform=pc, s=10)
     lon_extend = 3
     lat_extend = 1
@@ -250,7 +247,9 @@ def make_map(dataset):
     gl.right_labels = None
     scale_bar(ax, location=(0.41, 0.05))
 
-    fn_root = f"/data/plots/sailbuoy/nrt/SB{attrs['sailbuoy_serial']}_M{attrs['deployment_id']}"
+    fn_root = (
+        f"/data/plots/sailbuoy/nrt/{attrs['platform_serial']}_M{attrs['deployment_id']}"
+    )
     fn_ext = "png"
     filename_map = f"{fn_root}_map.{fn_ext}"
     _log.info(f"writing map to {filename_map}")

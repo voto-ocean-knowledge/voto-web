@@ -10,7 +10,6 @@ class MissionViewModel(ViewModelBase):
         super().__init__()
         glider_missions = GliderMission.objects()
         for gm in glider_missions:
-            gm.glider_fill = str(gm.glider).zfill(3)
             gm.start_pretty = str(gm.start)[:10]
             gm.duration_pretty = (gm.end - gm.start).days
             gm.variables.sort()
@@ -20,11 +19,10 @@ class MissionViewModel(ViewModelBase):
 
 
 class GliderMissionViewModel(ViewModelBase):
-    def __init__(self, glider, mission):
+    def __init__(self, platform_serial, mission):
         super().__init__()
         self.mission = mission
-        self.glider = glider
-        self.glider_fill = str(glider).zfill(3)
+        self.platform_serial = platform_serial
         self.extra_plots_html = ""
 
     def validate(self):
@@ -34,13 +32,13 @@ class GliderMissionViewModel(ViewModelBase):
         )
         glidermisssion_exists = False
         for glider_can, mission_can in zip(gliders, missions):
-            if glider_can == self.glider and mission_can == self.mission:
+            if glider_can == self.platform_serial and mission_can == self.mission:
                 glidermisssion_exists = True
         if not glidermisssion_exists:
             self.error = "This mission does not exist"
             return
         self.glidermission = mission_service.select_glidermission(
-            self.glider, self.mission
+            self.platform_serial, self.mission
         )
         self.start_date = str(self.glidermission.start)[:10]
         self.end_date = str(self.glidermission.end)[:10]
@@ -49,37 +47,37 @@ class GliderMissionViewModel(ViewModelBase):
             postfix = ""
             self.erddap_link = (
                 f'<a href="https://erddap.observations.voiceoftheocean.org/erddap/tabledap/'
-                f'delayed_SEA{self.glider_fill}_M{self.mission}.html">'
+                f'delayed_{self.platform_serial}_M{self.mission}.html">'
                 f"https://erddap.observations.voiceoftheocean.org/erddap/tabledap/"
-                f"delayed_SEA{self.glider_fill}_M{self.mission}.html</a>"
+                f"delayed_{self.platform_serial}_M{self.mission}.html</a>"
             )
         else:
             img_type = "nrt"
             postfix = "_gt"
             self.erddap_link = (
                 f'<a href="https://erddap.observations.voiceoftheocean.org/erddap/tabledap/'
-                f'nrt_SEA{self.glider_fill}_M{self.mission}.html">'
+                f'nrt_{self.platform_serial}_M{self.mission}.html">'
                 f"https://erddap.observations.voiceoftheocean.org/erddap/"
-                f"tabledap/nrt_SEA{self.glider_fill}_M{self.mission}.html</a>"
+                f"tabledap/nrt_{self.platform_serial}_M{self.mission}.html</a>"
             )
         self.combi_plot = (
-            f"/static/img/glider/{img_type}/SEA{self.glider}/M{self.mission}"
-            f"/SEA{self.glider}_M{self.mission}{postfix}.png"
+            f"/static/img/glider/{img_type}/{self.platform_serial}/M{self.mission}"
+            f"/{self.platform_serial}_M{self.mission}{postfix}.png"
         )
         self.map = (
-            f"/static/img/glider/{img_type}/SEA{self.glider}/"
-            f"M{self.mission}/SEA{self.glider}_M{self.mission}_map.png "
+            f"/static/img/glider/{img_type}/{self.platform_serial}/"
+            f"M{self.mission}/{self.platform_serial}_M{self.mission}_map.png "
         )
         extra_plot_html = ""
         plots_dir = Path(
-            f"/app/voto/voto/static/img/glider/nrt/SEA{self.glider}/M{self.mission}/"
+            f"/app/voto/voto/static/img/glider/nrt/{self.platform_serial}/M{self.mission}/"
         )
-        rel_dir = f"/static/img/glider/nrt/SEA{self.glider}/M{self.mission}/"
+        rel_dir = f"/static/img/glider/nrt/{self.platform_serial}/M{self.mission}/"
         extra_plots = {
-            "Command console plots": f"SEA{self.glider}_M{self.mission}_cmd_log.png",
+            "Command console plots": f"{self.platform_serial}_M{self.mission}_cmd_log.png",
             "Deployment CTD cast": f"ctd_deployment.png",
             "Recovery CTD cast": f"ctd_recovery.png",
-            "nrt scatter": f"SEA{self.glider}_M{self.mission}.png",
+            "nrt scatter": f"{self.platform_serial}_M{self.mission}.png",
             "battery": f"battery.png",
         }
         for name, fn in extra_plots.items():

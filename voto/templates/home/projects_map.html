@@ -1,0 +1,208 @@
+{% extends "layout.html" %}
+
+{% block additional_css %}
+    <!-- JS and CSS for leaflet maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+        integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+        crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+        integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+        crossorigin=""></script>
+    <!-- Link to providers CSS and javascript for leaflet provider extension-->
+    <script src="http://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="/static/js/leaflet-providers.js"></script>
+
+
+    <title>Operations &bull; VOTO</title>
+{% endblock %}
+
+{% block main_content %}
+
+
+    <div id="map" style="height: 700px; "></div>
+    <script>
+
+        // geojson
+        var gliderLines = JSON.parse('{{ glider_lines | tojson | safe}}');
+        var sailbuoyLines = JSON.parse('{{ sailbuoy_lines| tojson | safe}}');
+
+        var helcom = JSON.parse('{{ helcom | tojson | safe}}');
+        var boos = JSON.parse('{{ boos | tojson | safe}}');
+        var boosSub = JSON.parse('{{ boos_sub | tojson | safe}}');
+        var facilities =  JSON.parse('{{ facilities_json | tojson | safe}}');
+
+       // statics
+
+
+        // Function adds popup content to markers
+	    function popupText(feature, layer) {
+		    layer.bindPopup(feature.properties.popupContent);}
+        // create map
+        var map = L.map('map').setView([58, 15.7], 6);
+
+        var OpenStreetMap_Mapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+	        maxZoom: 19,
+	        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
+        var emodnetBathy = L.tileLayer.wms('https://ows.emodnet-bathymetry.eu/wms', {
+            layers: 'mean_atlas_land',
+            attribution: '<a href="https://portal.emodnet-bathymetry.eu">EMODnet Bathymetry Consortium (2020)</a>'})
+
+        // Add basemap layers to a layer group
+        var baseMaps = {
+            "OpenStreetMap": OpenStreetMap_Mapnik,
+            "EMODnet bathymetry": emodnetBathy
+            };
+
+        // add gliders and sailbuoys to map
+
+
+        let boosLayer = L.geoJSON(boos, {
+		    pointToLayer: function (feature, latlng) {
+			return L.marker(latlng);},
+		    onEachFeature: popupText})
+
+        let boosSubLayer = L.geoJSON(boosSub, {
+		    pointToLayer: function (feature, latlng) {
+			return L.marker(latlng);},
+		    onEachFeature: popupText})
+
+
+
+function colorlayer(feature, layer) {
+    onEachFeature: popupText,
+    layer.on('mouseover', function (e) {
+        if (feature.properties && feature.properties.popupContent) {
+        layer.bindPopup(feature.properties.popupContent, {closeButton: false});
+        }
+        layer.setStyle({
+            fillOpacity: 0.6
+        });
+    });
+    layer.on('mouseout', function (e) {
+        layer.setStyle({
+            fillOpacity: 0.2
+        });
+    });
+}
+        // 'file' is a geojson layer
+        var helcomLayer = L.geoJSON(helcom, {
+         onEachFeature: colorlayer,
+            style: {
+                "weight": 1,
+                opacity: 0.6,
+                fillOpacity: 0.2
+            }
+        })
+
+
+
+     var styleSail = {
+        "weight": 2,
+        "color": "#f94141"
+        };
+    let sailbuoyLayer = L.geoJSON(sailbuoyLines, {style: styleSail,
+            lineStringToLayer: function (feature, latlng) {
+                return L.line(latlng, );},
+            onEachFeature: popupText}).addTo(map);
+
+	// setting color from geojson. We have enough unique colors for 8 years. After that they'll all be black
+        function getColor(style) {
+          switch (style) {
+            case 2020:
+              return "white";
+            case 2021:
+              return '#1f77b4';
+            case 2022:
+              return '#ff7f0e';
+            case 2023:
+              return '#2ca02c';
+            case 2024:
+              return '#d62728';
+            case 2025:
+              return '#9467bd';
+            case 2026:
+              return "#8c564b" ;
+            case 2027:
+              return "#e377c2" ;
+            case 2028:
+              return "#7f7f7f" ;
+            case 2029:
+              return "#bcbd22" ;
+            case 2030:
+              return "#17becf" ;
+            default:
+              return 'black';
+          }
+        }
+
+    {% if glidermissions %}
+    function style(feature) {
+        return {
+            weight: 5,
+            color: getColor(feature.properties.year),
+        };
+    }
+    {% else %}
+        var style = {
+        "weight": 2,
+        "color": "#fffb08"
+        };
+    {% endif %}
+
+    let gliderLayer = L.geoJSON(gliderLines, {style: style,
+            lineStringToLayer: function (feature, latlng) {
+                return L.line(latlng, );},
+            onEachFeature: popupText}).addTo(map);
+
+
+
+
+    let facilitiesLayer = L.geoJson(facilities, {
+            pointToLayer: function (feature, latlng) {
+                return new L.CircleMarker(latlng, {radius: 8,
+                    color: 'black',
+                    fillOpacity: 1,
+                    fillColor: feature.properties.color,
+                    weight: 1,});
+            },
+            onEachFeature: popupText
+        });
+
+            var markers = facilitiesLayer.addTo(map)
+
+    let mapLayers = {
+    gliders: gliderLayer,
+    "HELCOM basins": helcomLayer,
+    "BOOS susbet": boosSubLayer,
+    "BOOS all stations": boosLayer,
+    "Facilities and projects": markers
+    }
+
+        // add controls to map
+        L.control.layers(baseMaps, mapLayers).addTo(map);
+        L.control.scale().addTo(map);
+
+       map.fitBounds(helcomLayer.getBounds(), {padding: [0, 0]});
+
+            /*Legend specific*/
+            var legend = L.control({ position: "bottomleft" });
+
+            legend.onAdd = function(map) {
+            var div = L.DomUtil.create("div", "legend");
+            div.innerHTML += "<h4>VOTO operations</h4>";
+            div.innerHTML += '<i style="background: #2d5af6"></i><span>Facilities</span><br>';
+            div.innerHTML += '<i style="background: #33d173"></i><span>Support projects (complete)</span><br>';
+            div.innerHTML += '<i style="background: #f77a3c"></i><span>Support projects (ongoing)</span><br>';
+            div.innerHTML += '<i style="background: yellow"></i><span>Glider missions</span><br>';
+            div.innerHTML += '<i style="background: #f94141"></i><span>Sailbuoy missions</span><br>';
+
+
+
+            return div;
+            };
+
+            legend.addTo(map);
+
+    </script>
+
+{% endblock %}

@@ -21,14 +21,14 @@ def test_mission_list_page():
 
 
 def test_mission_page():
-    with flask_app.test_request_context(path="/SEA63/M33"):
-        r: Response = mission_views.missions(63, 33)
+    with flask_app.test_request_context(path="/SEA063/M33"):
+        r: Response = mission_views.missions("SEA063", 33)
     assert r.status_code == 200
     assert b"mission" in r.data
 
 
 def test_sailbuoy_mission_page():
-    with flask_app.test_request_context(path="/SB2016/M3"):
+    with flask_app.test_request_context(path="/SB2016/M2"):
         r: Response = mission_views.mission_sailybuoy(2016, 2)
     assert r.status_code == 200
     assert b"mission" in r.data
@@ -44,8 +44,8 @@ def test_platform_list_page():
 
 
 def test_glider_page():
-    with flask_app.test_request_context(path="fleet/SEA63"):
-        r: Response = platform_views.glider_page(63)
+    with flask_app.test_request_context(path="fleet/SEA063"):
+        r: Response = platform_views.glider_page("SEA063")
     assert r.status_code == 200
     assert b"glider" in r.data
     # noinspection PyUnresolvedReferences

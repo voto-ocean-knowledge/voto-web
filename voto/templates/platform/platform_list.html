@@ -21,10 +21,10 @@
             <tbody>
             {% for g in gliders %}
                 <tr>
-                <td>SEA{{g.glider_fill}} {{g.name}}</td>
+                <td>{{g.platform_serial}} {{g.name}}</td>
                 <td>{{g.pretty_time}}</td>
                 <td>{{g.total_profiles}}</td>
-                <td><a href="fleet/SEA{{ g.glider }}" class="btn btn-primary" role="button">To glider</a></td>
+                <td><a href="fleet/{{ g.platform_serial }}" class="btn btn-primary" role="button">To glider</a></td>
             {%  endfor %}
             </tbody>
         </table>

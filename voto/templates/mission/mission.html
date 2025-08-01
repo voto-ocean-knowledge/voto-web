@@ -1,12 +1,13 @@
 {% extends "layout.html" %}
 
 {% block additional_css %}
-    <title>SEA{{glider_fill}} Mission {{mission}}</title>
+    <title>{{glidermission.platform_serial}} Mission {{mission}}</title>
 {% endblock %}
 {% block main_content %}
     <div class="container-xl mission-summary">
-        <h2 class="mt-4">SEA{{glider_fill}} Mission {{mission}}</h2>
+        <h2 class="mt-4">{{glidermission.platform_serial}} Mission {{mission}}</h2>
         <p>This mission was in <strong>{{glidermission.basin}}</strong>.
+            <br> All missions from this glider: <a href="/fleet/{{glidermission.platform_serial}}"  class="link-primary">{{glidermission.platform_serial}} page</a>
         <br> Start: {{start_date}} <br> End: {{end_date}}
         <br> Download data: {{erddap_link|safe}}
         <br> Comment: {{glidermission.comment}}</p>

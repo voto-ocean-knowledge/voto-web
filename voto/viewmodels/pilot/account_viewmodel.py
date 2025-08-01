@@ -64,12 +64,10 @@ class AccountViewModel(ViewModelBase):
         if currently_surfaced:
             self.current_message += f"<p>Pilots receiving alerts from glider surfacing emails: <b>{', '.join(list(currently_surfaced))}</b></p>"
         gliders = Glider.objects().order_by("glider")
-        for glider in gliders:
-            glider.glider_fill = str(glider.glider).zfill(3)
         glider_grid = []
         glider_list = []
         for i, glider in enumerate(gliders):
-            glider_list.append(glider.glider)
+            glider_list.append(glider.platform_serial)
             if (i + 1) % 3 == 0:
                 glider_grid.append(glider_list)
                 glider_list = []

@@ -5,7 +5,7 @@ default_mtime = datetime(1970, 1, 1, 0, 0, 0, 111111)
 
 
 class Glider(mongoengine.Document):
-    glider = mongoengine.IntField(required=True)
+    platform_serial = mongoengine.StringField(required=True)
     name = mongoengine.StringField(required=True)
     missions = mongoengine.ListField(default=[])
     total_profiles = mongoengine.IntField(default=0)
@@ -14,14 +14,14 @@ class Glider(mongoengine.Document):
     meta = {
         "db_alias": "core",
         "collection": "gliders",
-        "indexes": ["glider"],
+        "indexes": ["platform_serial"],
     }
 
 
 class Profile(mongoengine.Document):
     number = mongoengine.IntField(required=True)
     mission = mongoengine.IntField(required=True)
-    glider = mongoengine.IntField(required=True)
+    platform_serial = mongoengine.StringField(required=True)
     lon = mongoengine.FloatField()
     lat = mongoengine.FloatField()
     time = mongoengine.DateTimeField(default=datetime.now())
@@ -29,13 +29,13 @@ class Profile(mongoengine.Document):
     meta = {
         "db_alias": "core",
         "collection": "profiles",
-        "indexes": ["number", "mission", "glider", "time"],
+        "indexes": ["number", "mission", "platform_serial", "time"],
     }
 
 
 class GliderMission(mongoengine.Document):
     mission = mongoengine.IntField(required=True)
-    glider = mongoengine.IntField(required=True)
+    platform_serial = mongoengine.StringField(required=True)
     start = mongoengine.DateTimeField(default=datetime.now())
     end = mongoengine.DateTimeField(default=datetime.now())
     lat_min = mongoengine.FloatField()
@@ -61,7 +61,7 @@ class GliderMission(mongoengine.Document):
     meta = {
         "db_alias": "core",
         "collection": "glidermissions",
-        "indexes": ["mission", "glider", "profile_ids", "start", "end"],
+        "indexes": ["mission", "platform_serial", "profile_ids", "start", "end"],
     }
 
 
@@ -78,7 +78,7 @@ class Stat(mongoengine.Document):
 
 class PipeLineMission(mongoengine.Document):
     mission = mongoengine.IntField(required=True)
-    glider = mongoengine.IntField(required=True)
+    platform_serial = mongoengine.StringField(required=True)
     yml = mongoengine.BooleanField(default=True)
     yml_time = mongoengine.DateTimeField(default=default_mtime)
     nrt_profiles = mongoengine.IntField(default=0)
@@ -98,7 +98,7 @@ class PipeLineMission(mongoengine.Document):
     meta = {
         "db_alias": "core",
         "collection": "pipelinestatus",
-        "indexes": ["mission", "glider"],
+        "indexes": ["mission", "platform_serial"],
     }
 
 
