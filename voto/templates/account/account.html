@@ -9,6 +9,10 @@
 <script>
     $(document).ready( function () {
         $('#schedule').DataTable({
+        "createdRow": function( row, data, dataIndex ) {
+             if ( data[1] == "{{user.name}}" ) {
+         $(row).addClass('alarm');
+         }},
         "paging": false,
         "order": [[ 0, "asc" ]]
         });
