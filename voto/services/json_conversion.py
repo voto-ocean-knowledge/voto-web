@@ -310,6 +310,11 @@ def write_sailbuoy_json():
     return
 
 
+def load_facilities_table():
+    df = pd.read_csv("/data/voto/support.csv", sep=";")
+    return df
+
+
 def load_facilities_json():
     df = pd.read_csv("/data/voto/support.csv", sep=";")
     features = []

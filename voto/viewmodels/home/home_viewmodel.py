@@ -14,6 +14,7 @@ from voto.services.json_conversion import (
     write_mission_json,
     load_boos_json,
     load_facilities_json,
+    load_facilities_table,
     write_sailbuoy_json,
 )
 from voto.viewmodels.shared.viewmodelbase import ViewModelBase
@@ -89,6 +90,7 @@ class MapViewModel(ViewModelBase):
         self.basin_name = None
         self.glidermissions = []
         self.facilities_json = blank_json_dict
+        self.df_facilities = None
         basins = []
         for basin_id, basin_str in helcom_basins.items():
             b = types.SimpleNamespace()
@@ -145,6 +147,7 @@ class MapViewModel(ViewModelBase):
 
     def add_facilities(self):
         self.facilities_json = load_facilities_json()
+        self.df_facilities = load_facilities_table()
 
 
 class StatsViewModel(ViewModelBase):
