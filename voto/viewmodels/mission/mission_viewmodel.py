@@ -74,10 +74,12 @@ class GliderMissionViewModel(ViewModelBase):
         )
         rel_dir = f"/static/img/glider/nrt/{self.platform_serial}/M{self.mission}/"
         extra_plots = {
-            "Command console plots": f"{self.platform_serial}_M{self.mission}_cmd_log.png",
             "Deployment CTD cast": f"ctd_deployment.png",
             "Recovery CTD cast": f"ctd_recovery.png",
             "nrt scatter": f"{self.platform_serial}_M{self.mission}.png",
+        }
+        extra_plots_pilot = {
+            "Command console plots": f"{self.platform_serial}_M{self.mission}_cmd_log.png",
             "battery": f"battery.png",
         }
         for name, fn in extra_plots.items():
@@ -85,6 +87,13 @@ class GliderMissionViewModel(ViewModelBase):
                 continue
             relative_path = rel_dir + fn
             extra_plot_html += f'<div class="col-lg-12 themed-grid-col"><div class="container-xl"><h2>{name}</h2></div><img class="img-fluid" src={relative_path}><br></div>\n'
+        if self.user_id:
+            for name, fn in extra_plots_pilot.items():
+                if not (plots_dir / fn).exists():
+                    continue
+                relative_path = rel_dir + fn
+                extra_plot_html += f'<div class="col-lg-12 themed-grid-col"><div class="container-xl"><h2>{name}</h2></div><img class="img-fluid" src={relative_path}><br></div>\n'
+
         if extra_plot_html:
             self.extra_plots_html = f'<div class="row mb-2">\n{extra_plot_html}\n</div>'
 
