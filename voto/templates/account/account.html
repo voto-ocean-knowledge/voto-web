@@ -30,9 +30,6 @@
 
             <p>{{next_shift | safe}}</p>
 
-            <div class="form-check form-switch">
-
-            </div>
 
             <div class="form-container">
         <form action="" method="POST" class="account-form">
@@ -47,7 +44,7 @@
                 {% else %}
                     <input name="alarm_me" class="form-check-input" type="checkbox" role="switch" id="alarm_me" />
                 {% endif %}
-                <label class="form-check-label" for="alarm_me">Send me alerts when a glider alarms</label>
+                <label class="form-check-label" for="alarm_me">Send me alerts when a glider or sailbuoy alarms</label>
                 </div>
                 <div class="form-check form-switch">
                 {% if alarm_me_surface %}
@@ -62,7 +59,7 @@
             <div class="form-check form-switch"> <button type="submit" class="btn btn-danger">Update Preferences</button></div>
             <br>
             {% if alarm_me %}
-            <div class="error-message"><p>🚨 You will receive calls and texts when any VOTO glider alarms 🚨</p></div>
+            <div class="error-message"><p>🚨 You will receive calls and texts when any VOTO glider or sailbuoy alarms 🚨</p></div>
             {% endif %}
             {% if alarm_me_surface %}
             <div class="error-message"><p>⬆️ You will receive calls and texts when selected gliders surface. To select gliders, add <b>{{alert_email}}</b> to "Mail on surfacing" to each glider you want surface alerts for ⬆️</p></div>
@@ -76,16 +73,29 @@
 
             <p>{{current_message | safe }}</p>
         </div>
-        <br>
+
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-6">
         <h3>Bonus pages</h3>
                 <div class="container">
-
             <p><a  class="btn btn-primary" role="button" href="monitor"> Pilot plots </a> </p>
             <p><a  class="btn btn-primary" role="button" href="battery"> Battery plots </a> </p>
             <p><a  class="btn btn-primary" role="button" href="pilot/all-plots"> All mission plots </a> </p>
             <p><a  class="btn btn-primary" role="button" href="calibrate"> CTD comparison plots</a> (messy!)  </p>
-            <p><a  class="btn btn-secondary" role="button" href="http://192.168.30.120:8502/"> seaexplorer config file checker</a> (must be in office/on the VPN)  </p>
                 </div>
+    <h3>Additional services</h3>
+
+    <div class="container">
+        <p><a  class="btn btn-secondary" role="button" href="http://192.168.30.120:8502/"> seaexplorer config file checker</a> (must be in office/on the VPN)  </p>
+        <p><a  class="btn btn-secondary" role="button" href="https://nx60240.your-storageshare.de">Nextcloud storage share</a></p>
+       <p> <a  class="btn btn-warning" role="button" href="https://www.glimpse-alseamar.com/"> Pilot gliders (GLIMPSE) </a> </p>
+        <p><a  class="btn btn-warning" role="button" href="https://iridium2.azurewebsites.net"> Pilot sailbuoys (iridium) </a> </p>
+        <p><a  class="btn btn-danger" role="button" href="{{sink_link}}"> Sink all gliders</a></p>
+    </div>
+            </div>
+            <div class="col-md-6">
         <h3>Glider engineering pages</h3>
 
 
@@ -96,22 +106,30 @@
             <div class="col-md-auto">
                 <a href="fleet/{{ g[0] }}-engineering" class="btn btn-primary" role="button">{{ g[0] }}</a>
             </div>
+            {% if g[1] %}
             <div class="col-md-auto">
                 <a href="fleet/{{ g[1] }}-engineering" class="btn btn-primary" role="button">{{ g[1] }}</a>
             </div>
+            {% endif %}
+            {% if g[2] %}
             <div class="col-md-auto">
                 <a href="fleet/{{ g[2] }}-engineering" class="btn btn-primary" role="button">{{ g[2] }}</a>
             </div>
+            {% endif %}
             </p>
             {%  endfor %}
           </div>
-        <h3>External services</h3>
-
-    <div class="container">
-       <p> <a  class="btn btn-primary" role="button" href="https://www.glimpse-alseamar.com/"> Pilot gliders (GLIMPSE) </a> </p>
-        <p><a  class="btn btn-primary" role="button" href="https://iridium2.azurewebsites.net"> Pilot sailbuoys (iridium) </a> </p>
-        <p><a  class="btn btn-danger" role="button" href="{{sink_link}}"> Sink all gliders</a></p>
+            </div>
+        </div>
     </div>
+    </div>
+    </div>
+</div>
+</div>
+
+
+
+
 
 <div class="mt-4 container-xl glider-list">
     <h3 class="mt-4">Piloting schedule</h3>
@@ -140,10 +158,5 @@
     <p><a href="/account/logout" class="btn btn-primary" role="button">Logout</a></p>
 
 </div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
+
 {% endblock %}
