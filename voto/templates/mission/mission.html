@@ -16,10 +16,14 @@
 
         <p>
         <i>This study used data collected and made freely available by Voice of the Ocean Foundation
-            (https://voiceoftheocean.org) accessed from https://erddap.observations.voiceoftheocean.org/erddap/index.html </i> </p><br>
-
-        <p>
+            (https://voiceoftheocean.org) accessed from https://erddap.observations.voiceoftheocean.org/erddap/index.html </i> </p>
+        <hr>
+        <p>Full interactive plots on the dashboard: <a href="https://dashboard.observations.voiceoftheocean.org/glider_explorer?pick_toggle=DatasetID&pick_dsids=%5B%27nrt_{{glidermission.platform_serial}}_M{{mission}}%27%5D"> Dashboard for {{glidermission.platform_serial}} Mission {{mission}}</a></p>
     </div>
+<div class="row mb-2"  style="height: 580px;">
+ <iframe class="col-lg-12 col-md-12 col-sm-12" scrolling="no" src="https://dashboard.observations.voiceoftheocean.org/glider_explorer?pick_toggle=DatasetID&pick_dsids=%5B%27nrt_{{glidermission.platform_serial}}_M{{mission}}%27%5D">
+ </iframe>
+</div>
     <div class="row mb-2">
         <div class="col-lg-6 themed-grid-col"><img class="img-fluid" src={{combi_plot}}><br></div>
         <div class="col-lg-6 themed-grid-col"><img class="img-fluid" src={{map}}><br></div>
