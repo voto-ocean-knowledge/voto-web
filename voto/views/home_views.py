@@ -81,6 +81,13 @@ def explorer_view():
     return vm.to_dict()
 
 
+@blueprint.route("/projects/skamix")
+@response(template_file="projects/skamixmap.html")
+def skamix_view():
+    vm = ViewModelBase()
+    return vm.to_dict()
+
+
 @blueprint.route("/data/updates")
 @response(template_file="home/updates.html")
 def news_view():
