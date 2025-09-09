@@ -166,3 +166,15 @@ class User(mongoengine.Document):
         "db_alias": "core",
         "collection": "user",
     }
+
+
+class VesselData(mongoengine.Document):
+    vessel = mongoengine.StringField(required=True)
+    instrument = mongoengine.StringField()
+    location = mongoengine.PointField()
+    timestamp = mongoengine.DateTimeField(default=datetime.now(), required=True)
+    meta = {
+        "db_alias": "core",
+        "collection": "vesseldata",
+        "indexes": ["vessel"],
+    }

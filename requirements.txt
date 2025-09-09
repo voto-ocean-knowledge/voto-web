@@ -10,3 +10,4 @@ pyyaml
 passlib
 geopandas
 fiona
+geojson
