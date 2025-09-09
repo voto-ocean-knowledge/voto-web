@@ -15,4 +15,5 @@ def mission_list():
     """
     vm = SkamixViewModel()
     vm.add_json()
+    vm.add_time_info()
     return vm.to_dict()
