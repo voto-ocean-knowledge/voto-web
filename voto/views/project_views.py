@@ -2,7 +2,9 @@ from flask import request, jsonify
 import flask
 from voto.viewmodels.project.project_viewmodel import (
     VesselDataViewModel,
+    SkamixViewModel,
 )
+from voto.infrastructure.view_modifiers import response
 import logging
 
 _log = logging.getLogger(__name__)
@@ -45,3 +47,15 @@ def vessel_data():
         return jsonify({"Error": error_msg}), 404
 
     return jsonify({"Success": "Data accepted"}), 200
+
+
+@blueprint.route("/projects/skamix")
+@response(template_file="projects/skamixmap.html")
+def mission_list():
+    """
+    List of all glider missions
+    """
+    vm = SkamixViewModel()
+    vm.add_json()
+    vm.add_time_info()
+    return vm.to_dict()
