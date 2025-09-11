@@ -77,8 +77,11 @@ class SkamixViewModel(ViewModelBase):
             loc_dir = Path(
                 "/home/callum/Documents/projects/SkaMixMap/data/processed_location_data"
             )
-        info_string = "<h3>Age of platform location data</h3> Refresh to update!<ul>"
-        for csv in loc_dir.glob("*.csv"):
+        info_string = ""
+        csvs = list(loc_dir.glob("*.csv"))
+        csvs = sorted(csvs, key=lambda path: str(path).lower())
+
+        for csv in csvs:
             fn = csv.name.split(".")[0]
             now = datetime.datetime.now(datetime.timezone.utc)
             df = pd.read_csv(csv, parse_dates=["datetime"])
@@ -95,13 +98,17 @@ class SkamixViewModel(ViewModelBase):
             minutes, seconds = divmod(rem, 60)
             diff_str = ""
             if days:
-                diff_str += f"{days} days"
+                diff_str += f"{days} day"
+                if days > 1:
+                    diff_str += "s"
             if hours:
-                diff_str += f" {hours} hours"
+                diff_str += f" {hours} hour"
+                if hours > 1:
+                    diff_str += "s"
             if minutes:
-                diff_str += f" {minutes} minutes"
-            diff_str += f" {seconds} seconds"
-            info = f"<li><b>{fn}</b> last location at {str(last_update)[:19]}, <b>{diff_str} ago</b><br></li>"
+                diff_str += f" {minutes} min"
+            diff_str += f" {seconds} sec"
+            info = f"<p><b>{fn}:</b> {diff_str}</p>"
             info_string += info
         info_string += "</ul>"
         self.time_info = f"'{info_string}'"
