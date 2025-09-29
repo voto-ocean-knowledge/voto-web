@@ -63,9 +63,17 @@
           <li class="nav-item">
               <a class="nav-link" href="/dashboard">Dashboard</a>
           </li>
+           <li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Projects</a>
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="/projects">Projects map</a></li>
+       <div class="dropdown-divider"></div>
+      <li><a class="dropdown-item" href="/projects/skamix">SkaMix</a></li>
+    </ul>
+  </li>
+
           {% block extra_nav %}{% endblock %}
           {% if user_id %}
-            <li class="nav-item"><a class="nav-link" href="/projects">Projects</a>
             <li class="nav-item"><a class="nav-link" href="/account">Account</a>
             <li class="nav-item"><a class="nav-link" href="/account/logout">Logout</a>
           {% else %}

@@ -63,7 +63,7 @@ class AccountViewModel(ViewModelBase):
             self.current_message += f"<p>Pilots receiving alerts from glider alarms: <b>{', '.join(list(currently_alarmed))}</b></p>"
         if currently_surfaced:
             self.current_message += f"<p>Pilots receiving alerts from glider surfacing emails: <b>{', '.join(list(currently_surfaced))}</b></p>"
-        gliders = Glider.objects().order_by("glider")
+        gliders = Glider.objects().order_by("platform_serial")
         glider_grid = []
         glider_list = []
         for i, glider in enumerate(gliders):
@@ -71,6 +71,8 @@ class AccountViewModel(ViewModelBase):
             if (i + 1) % 3 == 0:
                 glider_grid.append(glider_list)
                 glider_list = []
+        if glider_list:
+            glider_grid.append(glider_list)
         self.glider_grid = glider_grid
 
         self.gliders = gliders

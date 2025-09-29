@@ -11,6 +11,20 @@
     <!-- Link to providers CSS and javascript for leaflet provider extension-->
     <script src="http://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="/static/js/leaflet-providers.js"></script>
+    <!-- CSS and javascript for datatables, requires jquery-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+    <!-- Setup datatables-->
+    <script>
+        $(document).ready( function () {
+            $('#projects_table').DataTable({
+            "paging": false,
+            "order": [[ 3, "desc" ]]
+            });
+        } );
+    </script>
+
 
 
     <title>Operations &bull; VOTO</title>
@@ -204,5 +218,34 @@ function colorlayer(feature, layer) {
             legend.addTo(map);
 
     </script>
+
+
+<div class="mt-4 container-xl glider-list">
+
+    <h2>VOTO Ocean Support Projects</h2>
+
+    Interested in Ocean Support? Read more about the initiave and how to apply on the <a href="https://voiceoftheocean.org/ocean-support/">Ocean Support page</a>.
+    <table class="table table-hover" id="projects_table">
+        <thead>
+        <tr>
+            {% for column in df_facilities.columns[:-4] %}
+                <th scope="col">{{ column }}</th>
+            {% endfor %}
+        </tr>
+        </thead>
+        <tbody>
+        {% for row in df_facilities.itertuples() %}
+
+        <tr>
+                {% for cell in row[1:-4] %}
+                    <td>{{ cell }}</td>
+                {% endfor %}
+        </tr>
+            {%  endfor %}
+        </tbody>
+    </table>
+</div>
+
+
 
 {% endblock %}

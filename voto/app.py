@@ -1,18 +1,14 @@
 import os
 import sys
 import logging
-import json
 from flask import Flask
 
 _log = logging.getLogger(__name__)
 
 folder = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, folder)
-from voto.data.db_session import initialise_database
+from voto.data.db_session import initialise_database, secrets
 
-# Store credentials in a external file that is never added to git or shared over insecure channels
-with open(folder + "/mongo_secrets.json") as json_file:
-    secrets = json.load(json_file)
 
 app = Flask(__name__)
 
@@ -47,6 +43,7 @@ def register_blueprints():
         platform_views,
         pilot_views,
         account_views,
+        project_views,
     )
 
     app.register_blueprint(home_views.blueprint)
@@ -54,6 +51,7 @@ def register_blueprints():
     app.register_blueprint(platform_views.blueprint)
     app.register_blueprint(pilot_views.blueprint)
     app.register_blueprint(account_views.blueprint)
+    app.register_blueprint(project_views.blueprint)
 
 
 if __name__ == "__main__":
