@@ -1,6 +1,7 @@
 import datetime
 from pathlib import Path
 from voto.data.db_classes import GliderMission
+from voto.services.json_conversion import glidermission_to_json
 from voto.viewmodels.shared.viewmodelbase import ViewModelBase
 from voto.services import mission_service
 
@@ -96,6 +97,13 @@ class GliderMissionViewModel(ViewModelBase):
 
         if extra_plot_html:
             self.extra_plots_html = f'<div class="row mb-2">\n{extra_plot_html}\n</div>'
+        point_json, line_json, glider_dict = glidermission_to_json(
+            self.platform_serial, self.mission
+        )
+        self.glider_lines = [line_json]
+        self.gliders = [glider_dict]
+        self.lon, self.lat = glider_dict["features"][0]["geometry"]["coordinates"]
+        self.zoom = 6
 
 
 class SailbuoyMissionViewModel(ViewModelBase):

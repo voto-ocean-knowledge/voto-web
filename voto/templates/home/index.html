@@ -64,19 +64,13 @@
         var emodnetBathy = L.tileLayer.wms('https://ows.emodnet-bathymetry.eu/wms', {
             layers: 'mean_atlas_land',
             attribution: '<a href="https://portal.emodnet-bathymetry.eu">EMODnet Bathymetry Consortium (2020)</a>'})
-        var Stamen_Watercolor = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}', {
-	    attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-	    subdomains: 'abcd',  minZoom: 1, maxZoom: 16, ext: 'jpg'});
-        var orthofr = L.tileLayer.provider('GeoportailFrance.orthos');
         var OpenStreetMap_Mapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 	        maxZoom: 19,
 	        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
 
         // Add basemap layers to a layer group
         var basemaps = {
-            Ortho: orthofr,
             "EMODnet bathy": emodnetBathy,
-            watercolor: Stamen_Watercolor,
             OSM: OpenStreetMap_Mapnik
         };
 

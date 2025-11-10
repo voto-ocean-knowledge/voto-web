@@ -1,10 +1,23 @@
 {% extends "layout.html" %}
 
 {% block additional_css %}
+    <!-- JS and CSS for leaflet maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+        integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+        crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+        integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+        crossorigin=""></script>
+    <!-- Link to fullscreen CSS and javascript for leaflet provider extension-->
+    <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
+    <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
     <title>{{glidermission.platform_serial}} Mission {{mission}}</title>
 {% endblock %}
 {% block main_content %}
-    <div class="container-xl mission-summary">
+<div class="container-xl mission-summary">
+	<div class="row">
+	<div class="col-md-8">
+
         <h2 class="mt-4">{{glidermission.platform_serial}} Mission {{mission}}</h2>
         <p>This mission was in <strong>{{glidermission.basin}}</strong>.
             <br> All missions from this glider: <a href="/fleet/{{glidermission.platform_serial}}"  class="link-primary">{{glidermission.platform_serial}} page</a>
@@ -17,9 +30,51 @@
         <p>
         <i>This study used data collected and made freely available by Voice of the Ocean Foundation
             (https://voiceoftheocean.org) accessed from https://erddap.observations.voiceoftheocean.org/erddap/index.html </i> </p>
+
+	</div>
+		<div class="col-md-4">
+            <br>
+                <div id="map" style="height: 300px; "></div>
+    <script>
+       // statics
+       	let seaexplorerIcon = L.icon({
+		iconUrl: '/static/img/icons/seaex.png',
+		iconSize:     [60, 40], // size of the icon
+		iconAnchor:   [30, 40], // point of the icon which will correspond to marker's location
+		popupAnchor:  [3, -40] // point from which the popup should open relative to the iconAnchor
+	    });
+        // Function adds popup content to markers
+	    function popupText(feature, layer) {
+		    layer.bindPopup(feature.properties.popupContent);}
+        // create map
+        var map = L.map('map', {fullscreenControl: {pseudoFullscreen: true}}).setView([{{lat}}, {{lon}}], {{zoom}});
+
+
+        var OpenStreetMap_Mapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+	        maxZoom: 19,
+	        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
+
+        var gliderLines = JSON.parse('{{ glider_lines| tojson | safe}}');
+        var gliders = JSON.parse('{{ gliders| tojson | safe}}');
+        L.geoJSON(gliderLines, {color:'#fffb08',
+            lineStringToLayer: function (feature, latlng) {
+                return L.line(latlng, );},
+            onEachFeature: popupText}).addTo(map);
+
+	    let gliderLayer = L.geoJSON(gliders, {
+		    pointToLayer: function (feature, latlng) {
+			return L.marker(latlng, {icon: seaexplorerIcon});},
+		    onEachFeature: popupText}).addTo(map);
+
+        L.control.scale().addTo(map);
+
+    </script>
+		</div>
+    </div>
         <hr>
         <p>Full interactive plots on the dashboard: <a href="https://dashboard.observations.voiceoftheocean.org/glider_explorer?pick_toggle=DatasetID&pick_dsids=%5B%27nrt_{{glidermission.platform_serial}}_M{{mission}}%27%5D"> Dashboard for {{glidermission.platform_serial}} Mission {{mission}}</a></p>
     </div>
+
 <div class="row mb-2"  style="height: 580px;">
  <iframe class="col-lg-12 col-md-12 col-sm-12" scrolling="no" src="https://dashboard.observations.voiceoftheocean.org/glider_explorer?pick_toggle=DatasetID&pick_dsids=%5B%27nrt_{{glidermission.platform_serial}}_M{{mission}}%27%5D">
  </iframe>
