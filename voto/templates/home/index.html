@@ -11,6 +11,9 @@
     <!-- Link to providers CSS and javascript for leaflet provider extension-->
     <script src="http://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="static/js/leaflet-providers.js"></script>
+    <!-- Various mapping functions and static-->
+    <script src="static/js/voto-map.js"></script>
+
     <title>Observations Portal &bull; VOTO</title>
 {% endblock %}
 
@@ -22,7 +25,6 @@
         Our <strong>{{glider_count}}</strong> gliders have recorded <strong>{{ "{:,}".format(profile_count) }}</strong>
         profiles during <strong>{{total_time}}</strong> at sea, covering <strong>{{"{:,}".format(total_dist)}} km</strong>.<br>
         Our <strong>{{sailbuoy_count}}</strong> sailbuoys have spent <strong>{{total_time_sailbuoy}}</strong> at sea sailing <strong>{{"{:,}".format(total_dist_sailbuoy)}} km</strong>.
-        <br>  <strong>N.B.</strong>: The Landsort observatory west of Gotland closed down 2025-03-01. Please reach out to us if you have any questions or concerns: <a href = "mailto: louise.biddle@voiceoftheocean.org"  class="link">louise.biddle@voiceoftheocean.org</a>
         </p>
         <h2>Live platform locations</h2>
     </div>
@@ -39,34 +41,10 @@
         var sailbuoyLines = JSON.parse('{{ sailbuoy_lines| tojson | safe}}');
         var sailbuoys = JSON.parse('{{ sailbuoys| tojson | safe}}');
 
-       // statics
-       	let seaexplorerIcon = L.icon({
-		iconUrl: '/static/img/icons/seaex.png',
-		iconSize:     [60, 40], // size of the icon
-		iconAnchor:   [30, 40], // point of the icon which will correspond to marker's location
-		popupAnchor:  [3, -40] // point from which the popup should open relative to the iconAnchor
-	    });
 
-       	let sailbuoyIcon = L.icon({
-		iconUrl: '/static/img/icons/sailbuoy.png',
-		iconSize:     [60, 40], // size of the icon
-		iconAnchor:   [30, 40], // point of the icon which will correspond to marker's location
-		popupAnchor:  [3, -40] // point from which the popup should open relative to the iconAnchor
-	    });
-
-        // Function adds popup content to markers
-	    function popupText(feature, layer) {
-		    layer.bindPopup(feature.properties.popupContent);}
         // create map
         var map = L.map('map').setView([58, 15.7], 6);
-
-        // A series of optional map layers. ortho has addTo(map) so is on by default
-        var emodnetBathy = L.tileLayer.wms('https://ows.emodnet-bathymetry.eu/wms', {
-            layers: 'mean_atlas_land',
-            attribution: '<a href="https://portal.emodnet-bathymetry.eu">EMODnet Bathymetry Consortium (2020)</a>'})
-        var OpenStreetMap_Mapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-	        maxZoom: 19,
-	        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
+        OpenStreetMap_Mapnik.addTo(map);
 
         // Add basemap layers to a layer group
         var basemaps = {
@@ -75,26 +53,8 @@
         };
 
         // add gliders and sailbuoys to map
-        L.geoJSON(sailbuoyLines, {color:'#f77a3c',
-                lineStringToLayer: function (feature, latlng) {
-                    return L.line(latlng, );},
-                onEachFeature: popupText}).addTo(map);
-
-	    let sailbuoyLayer = L.geoJSON(sailbuoys, {
-		    pointToLayer: function (feature, latlng) {
-			return L.marker(latlng, {icon: sailbuoyIcon});},
-		    onEachFeature: popupText}).addTo(map);
-
-        L.geoJSON(gliderLines, {color:'#fffb08',
-                lineStringToLayer: function (feature, latlng) {
-                    return L.line(latlng, );},
-                onEachFeature: popupText}).addTo(map);
-
-	    let gliderLayer = L.geoJSON(gliders, {
-		    pointToLayer: function (feature, latlng) {
-			return L.marker(latlng, {icon: seaexplorerIcon});},
-		    onEachFeature: popupText}).addTo(map);
-
+        sailbuoyToMap(sailbuoys, sailbuoyLines, map);
+        gliderToMap(gliders, gliderLines, map);
 
         // add controls to map
         controlPanel = L.control.layers(basemaps);
