@@ -19,6 +19,8 @@ def index():
     vm = IndexViewModel()
     vm.check_missions()
     vm.check_sailbuoys()
+    if vm.user_id:
+        vm.add_vessels()
     return vm.to_dict()
 
 

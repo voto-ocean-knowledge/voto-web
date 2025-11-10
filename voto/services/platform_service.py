@@ -9,7 +9,13 @@ _log = logging.getLogger(__name__)
 
 folder = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, folder)
-from voto.data.db_classes import Glider, GliderMission, Sailbuoy, SailbuoyMission
+from voto.data.db_classes import (
+    Glider,
+    GliderMission,
+    Sailbuoy,
+    SailbuoyMission,
+    Location,
+)
 from voto.services.utility_functions import fix_df_erddap_str
 
 
@@ -198,3 +204,12 @@ def get_ballast_table(platform_serial):
     df.columns = df.columns.str.replace("_", " ")
     df = fix_df_erddap_str(df)
     return df
+
+
+def list_vessels():
+    # todo make more efficient
+    vessels = pd.DataFrame(
+        Location.objects().only("platform_id").as_pymongo()
+    ).platform_id.unique()
+    vessels = [vessel for vessel in vessels if vessel[:5] == "Ocean"]
+    return vessels

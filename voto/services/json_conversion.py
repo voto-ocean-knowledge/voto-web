@@ -4,7 +4,7 @@ import json
 import numpy as np
 import geopandas as gp
 import pandas as pd
-from voto.data.db_classes import GliderMission, SailbuoyMission
+from voto.data.db_classes import GliderMission, SailbuoyMission, Location
 from voto.services import mission_service
 from voto.services.mission_service import (
     profiles_from_mission,
@@ -122,6 +122,65 @@ def sailbuoy_to_json(sailbuoy, mission):
         ],
     }
     return line_dict, last_dive_dict
+
+
+def lon_lat_to_coords(longitude, latitude):
+    # convert lon and lat arrays to the coordinate pairs that geojson uses
+    coords = []
+    for lon, lat in zip(longitude, latitude):
+        if np.isnan(lon) or np.isnan(lat):
+            continue
+        coords.append([lon, lat])
+    return coords
+
+
+def locations_to_geojson_line(df, popup, style):
+    coords = lon_lat_to_coords(df.lon.values, df.lat.values)
+    line_dict = {
+        "type": "Feature",
+        "properties": {"popupContent": popup, "style": style},
+        "geometry": {"type": "LineString", "coordinates": coords},
+    }
+    return line_dict
+
+
+def locations_to_geojson_point(df, popup):
+    coords = lon_lat_to_coords(df.lon.values, df.lat.values)
+    point_dict = {
+        "type": "Feature",
+        "properties": {"popupContent": popup},
+        "geometry": {"type": "Point", "coordinates": [coords[-1][0], coords[-1][1]]},
+    }
+    return point_dict
+
+
+vessel_links = {
+    "Ocean Nomad": "https://midocean.org/bat/ocean-nomad/",
+    "Ocean Rose": "https://midocean.org/bat/ocean-rose/",
+    "Ocean Seeker": "https://midocean.org/bat/ocean-seeker/",
+    "Ocean Scout": "https://www.marinetraffic.com/en/ais/details/ships/shipid:9018016/",
+}
+
+
+def vessel_loc_to_json(platform_id):
+    cutoff = datetime.datetime.now() - datetime.timedelta(days=3)
+    df = pd.DataFrame(
+        Location.objects(platform_id=platform_id, datetime__gt=cutoff).as_pymongo()
+    )
+    if df.empty:
+        return {}, {}
+    line_style = {"weight": 4, "opacity": 0.6, "color": "#001489"}
+    timestamp = str(df["datetime"].values[-1])[:19]
+
+    if platform_id in vessel_links.keys():
+        link = vessel_links[platform_id]
+    else:
+        link = ""
+    line_popup = f"<a href='{link}'>{platform_id}</a>"
+    point_popup = f"<a href='{link}'>{platform_id}</a><br>location at <br>{timestamp}"
+    line_dict = locations_to_geojson_line(df, line_popup, line_style)
+    loc_dict = locations_to_geojson_point(df, point_popup)
+    return line_dict, loc_dict
 
 
 def make_helcom_json():

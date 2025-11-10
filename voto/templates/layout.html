@@ -31,6 +31,8 @@
 
 {% if piloting %}
     <nav class="navbar sticky-top navbar-expand-md navbar-custom navbar-dark bg-danger">
+{% elif user_id %}
+    <nav class="navbar sticky-top navbar-expand-md navbar-custom navbar-dark bg-dark">
 {% else %}
     <nav class="navbar sticky-top navbar-expand-md navbar-custom navbar-dark">
 {% endif %}

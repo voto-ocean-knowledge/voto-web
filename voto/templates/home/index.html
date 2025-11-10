@@ -56,6 +56,10 @@
         sailbuoyToMap(sailbuoys, sailbuoyLines, map);
         gliderToMap(gliders, gliderLines, map);
 
+        // vessels
+        let vesselsJson = JSON.parse('{{ vessels | tojson | safe}}');
+        jsonToMap(vesselsJson, map);
+
         // add controls to map
         controlPanel = L.control.layers(basemaps);
         controlPanel.addTo(map);

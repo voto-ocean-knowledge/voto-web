@@ -53,3 +53,12 @@ function gliderToMap(gliders, gliderLines, map) {
 			return L.marker(latlng, {icon: seaexplorerIcon});},
 		    onEachFeature: popupText}).addTo(map);
 }
+
+
+function jsonToMap(jsonLocs, map) {
+        L.geoJSON(jsonLocs, {
+		style(feature) {
+			return feature.properties && feature.properties.style;
+		},
+		onEachFeature: popupText}).addTo(map);
+}

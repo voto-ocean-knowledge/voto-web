@@ -178,3 +178,15 @@ class VesselData(mongoengine.Document):
         "collection": "vesseldata",
         "indexes": ["vessel"],
     }
+
+
+class Location(mongoengine.Document):
+    platform_id = mongoengine.StringField(required=True)
+    lon = mongoengine.FloatField(required=True)
+    lat = mongoengine.FloatField(required=True)
+    datetime = mongoengine.DateTimeField(required=True)
+    source = mongoengine.StringField()
+    meta = {
+        "db_alias": "core",
+        "collection": "location",
+    }

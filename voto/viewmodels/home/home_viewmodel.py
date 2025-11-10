@@ -16,7 +16,9 @@ from voto.services.json_conversion import (
     load_facilities_json,
     load_facilities_table,
     write_sailbuoy_json,
+    vessel_loc_to_json,
 )
+from voto.services.platform_service import list_vessels
 from voto.viewmodels.shared.viewmodelbase import ViewModelBase
 import voto.services.mission_service as mission_service
 
@@ -29,6 +31,7 @@ class IndexViewModel(ViewModelBase):
         self.gliders = blank_json_dict
         self.sailbuoy_lines = blank_json_dict
         self.sailbuoys = blank_json_dict
+        self.vessels = blank_json_dict
         (
             self.profile_count,
             self.glider_count,
@@ -75,6 +78,17 @@ class IndexViewModel(ViewModelBase):
             self.plots_display += link
         self.sailbuoy_lines = sailbuoy_lines_json
         self.sailbuoys = sailbuoys_json
+
+    def add_vessels(self):
+        vessels = list_vessels()
+        vessel_json = []
+        for vessel_name in vessels:
+            line, loc = vessel_loc_to_json(vessel_name)
+            if not line:
+                continue
+            vessel_json.append(loc)
+            vessel_json.append(line)
+        self.vessels = vessel_json
 
 
 class MapViewModel(ViewModelBase):
