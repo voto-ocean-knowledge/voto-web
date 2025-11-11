@@ -76,8 +76,9 @@
 
           {% block extra_nav %}{% endblock %}
           {% if user_id %}
-            <li class="nav-item"><a class="nav-link" href="/account">Account</a>
-            <li class="nav-item"><a class="nav-link" href="/account/logout">Logout</a>
+          <li class="nav-item"><a class="nav-link" href="/account">Account</a></li>
+          <li class="nav-item"><a class="nav-link" href="/account/logout">Logout</a></li>
+            <span class="navbar-text"><div id="clock"></div></span>
           {% else %}
             <li class="nav-item"><a class="nav-link" href="/account/login">Login</a>
           {% endif %}
@@ -85,6 +86,32 @@
     </div>
   </div>
 </nav>
+
+
+<script>
+function startTime() {
+  var today = new Date();
+  var h = today.getUTCHours();
+  var m = today.getUTCMinutes();
+  var s = today.getUTCSeconds();
+  h = checkTime(h);
+  m = checkTime(m);
+  s = checkTime(s);
+  document.getElementById('clock').innerHTML = h + ":" + m + ":" + s;
+  var t = setTimeout(function() {
+    startTime()
+  }, 500);
+}
+
+function checkTime(i) {
+  if (i < 10) {
+    i = "0" + i
+  };
+  return i;
+}
+
+startTime()
+</script>
 
 <!-- This block is for the main page content -->
 <div class="main_content">

@@ -43,7 +43,7 @@ def main():
         filename=f"{secrets['log_dir']}/vessel.log",
         filemode="a",
         format="%(asctime)s %(levelname)-8s %(message)s",
-        level=logging.DEBUG,
+        level=logging.INFO,
         datefmt="%Y-%m-%d %H:%M:%S",
     )
     ais_file = Path("/data/vessels/aisstream_locs.csv")

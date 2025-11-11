@@ -177,7 +177,7 @@ def vessel_loc_to_json(platform_id):
     else:
         link = ""
     line_popup = f"<a href='{link}'>{platform_id}</a>"
-    point_popup = f"<a href='{link}'>{platform_id}</a><br>location at <br>{timestamp}"
+    point_popup = f"<a href='{link}'>{platform_id}</a><br>{timestamp[:10]}<br>{timestamp[11:]} UTC"
     line_dict = locations_to_geojson_line(df, line_popup, line_style)
     loc_dict = locations_to_geojson_point(df, point_popup)
     return line_dict, loc_dict

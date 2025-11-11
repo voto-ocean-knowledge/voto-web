@@ -207,9 +207,4 @@ def get_ballast_table(platform_serial):
 
 
 def list_vessels():
-    # todo make more efficient
-    vessels = pd.DataFrame(
-        Location.objects().only("platform_id").as_pymongo()
-    ).platform_id.unique()
-    vessels = [vessel for vessel in vessels if vessel[:5] == "Ocean"]
-    return vessels
+    return ["Ocean Nomad", "Ocean Rose", "Ocean Seeker", "Ocean Scout"]
