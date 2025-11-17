@@ -60,5 +60,13 @@ function jsonToMap(jsonLocs, map) {
 		style(feature) {
 			return feature.properties && feature.properties.style;
 		},
+		pointToLayer(feature, latlng) {
+			return L.circleMarker(latlng, {
+				radius: 10,
+				fillColor:feature.properties.style.color,
+				color: 'black',
+				fillOpacity: 1
+			});
+		},
 		onEachFeature: popupText}).addTo(map);
 }

@@ -11,6 +11,18 @@
     <!-- Link to providers CSS and javascript for leaflet provider extension-->
     <script src="http://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="static/js/leaflet-providers.js"></script>
+    <!-- Link to fullscreen CSS and javascript for leaflet provider extension-->
+    <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
+    <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
+	<link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/gokertanrisever/leaflet-ruler@master/src/leaflet-ruler.css"
+    integrity="sha384-P9DABSdtEY/XDbEInD3q+PlL+BjqPCXGcF8EkhtKSfSTr/dS5PBKa9+/PMkW2xsY"
+	crossorigin="anonymous"/>
+	<script
+    src="https://cdn.jsdelivr.net/gh/gokertanrisever/leaflet-ruler@master/src/leaflet-ruler.js"
+    integrity="sha384-8SqKZR7V8uOetpjjbcNJHvwuHpb074WS0UXjCLhzfJUqYn3B/uWx1WVv5mwRp1mV"
+    crossorigin="anonymous"></script>
     <!-- Various mapping functions and static-->
     <script src="static/js/voto-map.js"></script>
 
@@ -43,7 +55,7 @@
 
 
         // create map
-        var map = L.map('map').setView([58, 15.7], 6);
+        var map = L.map('map', {fullscreenControl: {pseudoFullscreen: true}}).setView([58, 15.7], 6);
         OpenStreetMap_Mapnik.addTo(map);
 
         // Add basemap layers to a layer group
@@ -64,6 +76,7 @@
         controlPanel = L.control.layers(basemaps);
         controlPanel.addTo(map);
         L.control.scale().addTo(map);
+        L.control.ruler().addTo(map);
 
     </script>
     <div class="container-xl current-missions">

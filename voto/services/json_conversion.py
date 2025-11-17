@@ -144,11 +144,11 @@ def locations_to_geojson_line(df, popup, style):
     return line_dict
 
 
-def locations_to_geojson_point(df, popup):
+def locations_to_geojson_point(df, popup, style):
     coords = lon_lat_to_coords(df.lon.values, df.lat.values)
     point_dict = {
         "type": "Feature",
-        "properties": {"popupContent": popup},
+        "properties": {"popupContent": popup, "style": style},
         "geometry": {"type": "Point", "coordinates": [coords[-1][0], coords[-1][1]]},
     }
     return point_dict
@@ -169,7 +169,6 @@ def vessel_loc_to_json(platform_id):
     )
     if df.empty:
         return {}, {}
-    line_style = {"weight": 4, "opacity": 0.6, "color": "#001489"}
     timestamp = str(df["datetime"].values[-1])[:19]
 
     if platform_id in vessel_links.keys():
@@ -178,8 +177,16 @@ def vessel_loc_to_json(platform_id):
         link = ""
     line_popup = f"<a href='{link}'>{platform_id}</a>"
     point_popup = f"<a href='{link}'>{platform_id}</a><br>{timestamp[:10]}<br>{timestamp[11:]} UTC"
+    color = "#001489"
+    if pd.to_datetime(df["datetime"].values[-1]) < (
+        datetime.datetime.now() - datetime.timedelta(hours=1)
+    ):
+        color = "#858e91"
+        point_popup += " <br><b>Stale location!</b>"
+    line_style = {"weight": 4, "opacity": 0.6, "color": color}
+    point_style = {"color": color}
     line_dict = locations_to_geojson_line(df, line_popup, line_style)
-    loc_dict = locations_to_geojson_point(df, point_popup)
+    loc_dict = locations_to_geojson_point(df, point_popup, point_style)
     return line_dict, loc_dict
 
 
