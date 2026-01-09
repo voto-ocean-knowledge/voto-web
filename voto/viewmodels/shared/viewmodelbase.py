@@ -9,6 +9,18 @@ class ViewModelBase:
     def __init__(self):
         self.request: Request = flask.request
         self.request_dict = request_dict.create("")
+        self.color_cycle = [
+            "#1f77b4",
+            "#ff7f0e",
+            "#2ca02c",
+            "#d62728",
+            "#9467bd",
+            "#8c564b",
+            "#e377c2",
+            "#7f7f7f",
+            "#bcbd22",
+            "#17becf",
+        ]
         self.error = None
         self.user_id = cookie_auth.get_user_id_via_auth_cookie(self.request)
         self.piloting = user_is_piloting(self.user_id)

@@ -119,31 +119,29 @@ function colorlayer(feature, layer) {
 }
 
 
-	// setting color from geojson. We have enough unique colors for 8 years. After that they'll all be black
+	// setting color from geojson. We have enough unique colors for 10 years. After that they'll all be black
         function getColor(style) {
           switch (style) {
             case 2020:
-              return "white";
+              return '{{color_cycle[0]}}';
             case 2021:
-              return '#1f77b4';
+              return '{{color_cycle[1]}}';
             case 2022:
-              return '#ff7f0e';
+              return '{{color_cycle[2]}}';
             case 2023:
-              return '#2ca02c';
+              return '{{color_cycle[3]}}';
             case 2024:
-              return '#d62728';
+              return '{{color_cycle[4]}}';
             case 2025:
-              return '#9467bd';
+              return '{{color_cycle[5]}}';
             case 2026:
-              return "#8c564b" ;
+              return '{{color_cycle[6]}}';
             case 2027:
-              return "#e377c2" ;
+              return '{{color_cycle[7]}}';
             case 2028:
-              return "#7f7f7f" ;
+              return '{{color_cycle[8]}}';
             case 2029:
-              return "#bcbd22" ;
-            case 2030:
-              return "#17becf" ;
+              return '{{color_cycle[9]}}';
             default:
               return 'black';
           }
@@ -152,10 +150,20 @@ function colorlayer(feature, layer) {
     {% if glidermissions %}
     function style(feature) {
         return {
-            weight: 5,
+            weight: 2,
             color: getColor(feature.properties.year),
         };
     }
+            var legend = L.control({ position: "bottomleft" });
+
+            legend.onAdd = function(map) {
+            var div = L.DomUtil.create("div", "legend");
+            div.innerHTML += "<h4>Operations year</h4>";
+            {{legend | safe}}
+            return div;
+            };
+
+            legend.addTo(map);
     {% else %}
         var style = {
         "weight": 2,

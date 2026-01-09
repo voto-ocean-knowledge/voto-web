@@ -339,7 +339,7 @@ def write_mission_json(basin=None):
             glider_lines_json = blank_json_dict
         for i, (platform_serial, mission) in enumerate(zip(gliders, missions)):
             point_json, line_json, glider_dict = glidermission_to_json(
-                platform_serial, mission
+                platform_serial, mission, subset=10
             )
             glider_lines_json.append(line_json)
         with open(f"/data/voto/json/{basin}.json", "w") as fout:

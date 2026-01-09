@@ -105,6 +105,7 @@ class MapViewModel(ViewModelBase):
         self.glidermissions = []
         self.facilities_json = blank_json_dict
         self.df_facilities = None
+        self.legend = ""
         basins = []
         for basin_id, basin_str in helcom_basins.items():
             b = types.SimpleNamespace()
@@ -146,6 +147,8 @@ class MapViewModel(ViewModelBase):
                 write_mission_json(basin=self.basin)
             with open(f"/data/voto/json/{self.basin}.json") as f:
                 glider_lines_json = json.load(f)
+            for i, year in enumerate(range(2020, datetime.datetime.now().year + 1)):
+                self.legend += f"div.innerHTML += '<i style=\"background: {self.color_cycle[i]}\"></i><span>{year}</span><br>'; "
         else:
             if not Path("/data/voto/json/all_missions_10.json").exists():
                 write_mission_json()
