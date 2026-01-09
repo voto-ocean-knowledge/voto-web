@@ -74,8 +74,11 @@ def glidermission_to_json(platform_serial, mission, subset=1):
                 "geometry": {"type": "LineString", "coordinates": coords},
                 "type": "Feature",
                 "properties": {
-                    "popupContent": f"<a href='/fleet/{mission.platform_serial}'>{platform_serial} {name}</a><br>"
-                    f"<a href='/{mission.platform_serial}/M{mission.mission}'> Mission {profile.mission}</a><br>Start {str(mission.start)[:11]}",
+                    "project": mission.project,
+                    "popupContent": f"{platform_serial} {name}</a><br>"
+                    f"<a href='/{mission.platform_serial}/M{mission.mission}'> Mission {profile.mission}</a><br>"
+                    f"Start {str(mission.start)[:11]}<br>"
+                    f"Project: {mission.project}<br>",
                     "year": mission.start.year,
                 },
             }

@@ -97,6 +97,7 @@ class MapViewModel(ViewModelBase):
         self.gliders = []
         self.missions = []
         self.glider_lines = blank_json_dict
+        self.samba_lines = blank_json_dict
         self.sailbuoy_lines = blank_json_dict
         self.helcom = blank_json_dict
         self.boos, self.boos_sub = load_boos_json()
@@ -155,6 +156,11 @@ class MapViewModel(ViewModelBase):
             with open("/data/voto/json/all_missions_10.json") as f:
                 glider_lines_json = json.load(f)
         self.glider_lines = glider_lines_json
+        self.samba_lines = [
+            feature
+            for feature in glider_lines_json
+            if feature["features"][0]["properties"]["project"] == "SAMBA"
+        ]
 
         if not Path("/data/voto/json/sailbuoy.json").exists():
             write_sailbuoy_json()

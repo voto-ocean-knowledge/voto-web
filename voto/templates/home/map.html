@@ -45,6 +45,7 @@
 
         // geojson
         var gliderLines = JSON.parse('{{ glider_lines | tojson | safe}}');
+        var sambaLines = JSON.parse('{{ samba_lines | tojson | safe}}');
         var helcom = JSON.parse('{{ helcom | tojson | safe}}');
         var boos = JSON.parse('{{ boos | tojson | safe}}');
         var boosSub = JSON.parse('{{ boos_sub | tojson | safe}}');
@@ -174,10 +175,16 @@ function colorlayer(feature, layer) {
     let gliderLayer = L.geoJSON(gliderLines, {style: style,
             lineStringToLayer: function (feature, latlng) {
                 return L.line(latlng, );},
+            onEachFeature: popupText});
+
+    let sambaLayer = L.geoJSON(sambaLines, {style: style,
+            lineStringToLayer: function (feature, latlng) {
+                return L.line(latlng, );},
             onEachFeature: popupText}).addTo(map);
 
     let mapLayers = {
-    gliders: gliderLayer,
+    "SAMBA gliders": sambaLayer,
+    "all gliders": gliderLayer,
     "HELCOM basins": helcomLayer,
     "BOOS susbet": boosSubLayer,
     "BOOS all stations": boosLayer,
