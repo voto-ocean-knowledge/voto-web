@@ -51,11 +51,19 @@ def vessel_data():
 
 @blueprint.route("/projects/skamix")
 @response(template_file="projects/skamixmap.html")
-def mission_list():
-    """
-    List of all glider missions
-    """
+def ska_mix():
     vm = SkamixViewModel()
+    vm.add_json()
+    return vm.to_dict()
+
+
+@blueprint.route("/projects/skamix2")
+@response(template_file="projects/skamixmap.html")
+def ska_mix2():
+    vm = SkamixViewModel()
+    vm.skamixdir = "skamix2"
+    vm.live = True
+    vm.title = "SkaMix2 operational map"
     vm.add_json()
     vm.add_time_info()
     return vm.to_dict()

@@ -61,9 +61,12 @@ class SkamixViewModel(ViewModelBase):
     def __init__(self):
         super().__init__()
         self.time_info = ""
+        self.title = "SkaMix operational map (archive)"
+        self.live = False
+        self.skamixdir = "skamix"
 
     def add_json(self):
-        json_dir = Path(folder + "/static/skamix/json")
+        json_dir = Path(folder + f"/static/{self.skamixdir}/json")
         for json_file in json_dir.glob("*.json"):
             var_name = json_file.name.split(".")[0] + "_json"
             with open(json_file, "r") as fin:
@@ -94,6 +97,8 @@ class SkamixViewModel(ViewModelBase):
             last_update = df.index.max()
             time_diff = now - last_update
             days = time_diff.days
+            if days > 3:
+                continue
             hours, rem = divmod(time_diff.seconds, 3600)
             minutes, seconds = divmod(rem, 60)
             diff_str = ""

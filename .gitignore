@@ -143,3 +143,5 @@ itgc/static/img/tiles/
 voto/static/img/glider/
 *secrets*.json
 *.csv
+voto/static/skamix
+voto/static/skamix2
