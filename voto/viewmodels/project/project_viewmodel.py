@@ -64,6 +64,7 @@ class SkamixViewModel(ViewModelBase):
         self.title = "SkaMix operational map (archive)"
         self.live = False
         self.skamixdir = "skamix"
+        self.isobaths = False
 
     def add_json(self):
         json_dir = Path(folder + f"/static/{self.skamixdir}/json")
@@ -117,3 +118,23 @@ class SkamixViewModel(ViewModelBase):
             info_string += info
         info_string += "</ul>"
         self.time_info = f"'{info_string}'"
+
+    def add_polygons(self):
+        isobath_dir = Path("/app/voto/voto/static/skamix2/json/isobaths/")
+        if not isobath_dir.exists():
+            return
+        self.isobaths = True
+        isobath_dict = {}
+        for depth in [180, 200, 220]:
+            with open(isobath_dir / f"{depth}m.json", "r") as myfile:
+                json_in = json.load(myfile)
+            isobath_dict["depth_" + str(depth) + "_m"] = json.loads(json_in)
+        self.isobath_dict = isobath_dict
+        with open(
+            Path(
+                "/home/callum/Documents/projects/SkaMixMap/static/skamix2/json/ftle/ftle_temp.json"
+            ),
+            "r",
+        ) as myfile:
+            poly = json.load(myfile)
+        self.ftle_temp = json.loads(poly)

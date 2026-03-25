@@ -66,4 +66,5 @@ def ska_mix2():
     vm.title = "SkaMix2 operational map"
     vm.add_json()
     vm.add_time_info()
+    vm.add_polygons()
     return vm.to_dict()
