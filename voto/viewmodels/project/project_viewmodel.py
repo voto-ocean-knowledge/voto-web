@@ -125,16 +125,15 @@ class SkamixViewModel(ViewModelBase):
             return
         self.isobaths = True
         isobath_dict = {}
-        for depth in [180, 200, 220]:
+        for depth in [100, 200]:
             with open(isobath_dir / f"{depth}m.json", "r") as myfile:
                 json_in = json.load(myfile)
             isobath_dict["depth_" + str(depth) + "_m"] = json.loads(json_in)
         self.isobath_dict = isobath_dict
+        with open(Path("/app/voto/voto/static/skamix2/json/ftle/ftle.json")) as myfile:
+            self.ftle = json.load(myfile)
         with open(
-            Path(
-                "/home/callum/Documents/projects/SkaMixMap/static/skamix2/json/ftle/ftle_temp.json"
-            ),
-            "r",
+            Path("/app/voto/voto/static/skamix2/json/ftle/ftle_temp.json")
         ) as myfile:
             poly = json.load(myfile)
         self.ftle_temp = json.loads(poly)
