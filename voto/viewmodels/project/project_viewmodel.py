@@ -130,10 +130,10 @@ class SkamixViewModel(ViewModelBase):
                 json_in = json.load(myfile)
             isobath_dict["depth_" + str(depth) + "_m"] = json.loads(json_in)
         self.isobath_dict = isobath_dict
-        with open(Path("/app/voto/voto/static/skamix2/json/ftle/ftle.json")) as myfile:
-            self.ftle = json.load(myfile)
-        with open(
-            Path("/app/voto/voto/static/skamix2/json/ftle/ftle_temp.json")
-        ) as myfile:
-            poly = json.load(myfile)
-        self.ftle_temp = json.loads(poly)
+        ftle_dir = Path("/app/voto/voto/static/skamix2/json/ftle")
+        ftle_dict = {}
+        for day in range(3):
+            with open(ftle_dir / f"ftle_{day}.json") as f:
+                json_in = json.load(f)
+            ftle_dict[f"day_{day}"] = json_in
+        self.ftle = ftle_dict
