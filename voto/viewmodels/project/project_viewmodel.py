@@ -132,8 +132,10 @@ class SkamixViewModel(ViewModelBase):
         self.isobath_dict = isobath_dict
         ftle_dir = Path("/app/voto/voto/static/skamix2/json/ftle")
         ftle_dict = {}
-        for day in range(3):
-            with open(ftle_dir / f"ftle_{day}.json") as f:
+        infiles = list(ftle_dir.glob("ftle_?.json"))
+        infiles.sort()
+        for day, infile in enumerate(infiles):
+            with open(infile) as f:
                 json_in = json.load(f)
             ftle_dict[f"day_{day}"] = json_in
         self.ftle = ftle_dict
