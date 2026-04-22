@@ -1,15 +1,27 @@
 /* VOTO fonts */
 
+@font-face {
+    font-family: 'N27';
+    src: url('/static/fonts/N27/N27-Regular.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'N27';
+    src: url('/static/fonts/N27/N27-Bold.otf') format('opentype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+
 * {
     font-family: 'N27', Arial, sans-serif;
-    font-weight: 400;
   }
 h1 {
-    font-family: 'N27', Arial, sans-serif;
-    font-weight: 700;
+    font-weight:bold;
 }
 h2 {
-  font-weight: 700;
     font-size: 24px;
 }
 
@@ -19,7 +31,6 @@ h2 {
 .navbar-custom {
     background-color: #07264f;
     height: 100px !important;
-    font-weight: 700;
 }
 
 /* change the brand and text color */
