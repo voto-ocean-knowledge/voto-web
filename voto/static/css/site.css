@@ -1,10 +1,11 @@
 /* VOTO fonts */
+
 * {
-    font-family: Roboto, sans-serif;
+    font-family: 'N27', Arial, sans-serif;
     font-weight: 400;
   }
 h1 {
-    font-family: Kanit;
+    font-family: 'N27', Arial, sans-serif;
     font-weight: 700;
 }
 h2 {
@@ -16,7 +17,9 @@ h2 {
 /* Bootstrap override colors */
 /* change the background color */
 .navbar-custom {
-    background-color: #001489;
+    background-color: #07264f;
+    height: 100px !important;
+    font-weight: 700;
 }
 
 /* change the brand and text color */
@@ -34,8 +37,8 @@ h2 {
 .navbar-custom .nav-item:hover .nav-link {
     color: #36a9e0;
 }
-.link-primary {color: #001489;}
-.btn-primary {background-color: #001489;}
+.link-primary {color: #07264f;}
+.btn-primary {background-color: #07264f;}
 
 /* Spacing */
 footer {
@@ -43,7 +46,7 @@ footer {
     padding: 1.5em;
     line-height:1.5;
     text-align: center;
-    background-color: #001489;
+    background-color: #07264f;
     color: #ffffff;
 
 }
@@ -68,10 +71,10 @@ footer {
    .about .desc{
     padding: 1em;
     /* margin: 0 6em; */
-    border-left:4px solid #001489;
+    border-left:4px solid #07264f;
    }
    .about .desc h3{
-    color: #001489;
+    color: #07264f;
    }
    .about .desc p{
     line-height:1.5;
