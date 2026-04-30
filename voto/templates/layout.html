@@ -83,7 +83,14 @@
       </ul>
     </div>
   </div>
-</nav>
+{% if piloting %}
+    </nav>
+{% elif user_id %}
+    </nav>
+{% else %}
+    </nav>
+{% endif %}
+
 
 {% if user_id %}
 
@@ -118,13 +125,38 @@
     {% block main_content %}{% endblock %}
 </div>
 
-<footer>
-    <div class="copyright">
-        All data collected by
-        <a href="https://voiceoftheocean.org/knowledge/"  class="link-light"  target="_blank" rel="noreferrer noopener">Voice of the Ocean Foundation</a><br>
-        Contact Callum <a href = "mailto: callum.rollo@voiceoftheocean.org"  class="link-light">callum.rollo@voiceoftheocean.org</a> and Louise <a href = "mailto: louise.biddle@voiceoftheocean.org"  class="link-light">louise.biddle@voiceoftheocean.org</a>
 
+<footer>
+<div class="container" style="padding-top: 40px">
+  <div class="row">
+    <div class="col-sm">
+        <a class="img" href="https://voiceoftheocean.org"  target="_blank" rel="noreferrer noopener"><img alt="VOTO" src="/static/img/icons/voto_long_blue.svg" height="40"></a>
+
+        <p>Voice of the Ocean supports science and communication regarding the ocean and its dynamic processes. Ultimately, we turn people’s attention to the ocean.</p>
+        <p>Voice of the Ocean Foundation</p>
+        <p>Org.nr: 802481-2730</p>
+        <a href = "mailto: hello@voiceoftheocean.org"  class="link">hello@voiceoftheocean.org</a>
     </div>
+    <div class="col-sm">
+      column 2
+    </div>
+    <div class="col-sm">
+        column 3
+    </div>
+  <div class="col-sm">
+      column 4
+  </div>
+  </div>
+</div>
+
+<div style="position: relative; display: flex; justify-content: center; align-items: center; width: 100%;">
+  <img src="/static/img/icons/voto-website-footer-desktop.svg"  style="width: 100%; height: auto;">
+  <div style="position: absolute; color: white; text-align: center;">
+      Copyright © 2019-<script>new Date().getFullYear()>2010&&document.write(+new Date().getFullYear());</script> Voice of the Ocean Foundation
+  </div>
+</div>
+
+
 </footer>
 
 {% block additional_js %}{% endblock %}
