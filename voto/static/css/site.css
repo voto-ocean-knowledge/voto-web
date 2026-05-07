@@ -44,12 +44,37 @@ h2 {
     color: #ffffff;
 }
 
+.link-secondary {
+    color: #000000;
+}
 /* change the color of active or hovered links */
 .navbar-custom .nav-item:hover .nav-link {
     color: #36a9e0;
 }
+
+/* VOTO branded footer */
+
 .link-primary {color: #07264f;}
 .btn-primary {background-color: #07264f;}
+
+.btn-circle {
+  height: 36px;
+  width: 36px;
+  background-color: #07264f;
+  text-align: center;
+  align-content: center;
+  color: #FFF;
+}
+
+.col {
+    padding:0px;
+
+}
+
+svg {
+    color : #f5eae1;
+}
+
 
 /* Spacing */
 footer {
