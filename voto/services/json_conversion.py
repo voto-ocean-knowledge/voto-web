@@ -1,5 +1,6 @@
 from pathlib import Path
 import datetime
+from datetime import timezone
 import json
 import numpy as np
 import geopandas as gp
@@ -166,7 +167,9 @@ vessel_links = {
 
 
 def vessel_loc_to_json(platform_id):
-    cutoff = datetime.datetime.now() - datetime.timedelta(days=3)
+    now = datetime.datetime.now(tz=timezone.utc).replace(tzinfo=None)
+    cutoff = now - datetime.timedelta(days=60)
+    line_cutoff = now - datetime.timedelta(days=3)
     df = pd.DataFrame(
         Location.objects(platform_id=platform_id, datetime__gt=cutoff).as_pymongo()
     )
@@ -181,14 +184,21 @@ def vessel_loc_to_json(platform_id):
     line_popup = f"<a href='{link}'>{platform_id}</a>"
     point_popup = f"<a href='{link}'>{platform_id}</a><br>{timestamp[:10]}<br>{timestamp[11:]} UTC"
     color = "#001489"
-    if pd.to_datetime(df["datetime"].values[-1]) < (
-        datetime.datetime.now() - datetime.timedelta(hours=1)
-    ):
+    time_diff = now - pd.to_datetime(df["datetime"].values[-1])
+    if time_diff > datetime.timedelta(hours=1):
         color = "#858e91"
-        point_popup += " <br><b>Stale location!</b>"
+        point_popup += f" <br><b>Last location:<br>{str(time_diff)[:12]}</b>"
     line_style = {"weight": 4, "opacity": 0.6, "color": color}
     point_style = {"color": color}
-    line_dict = locations_to_geojson_line(df, line_popup, line_style)
+    if pd.to_datetime(df["datetime"].values[-1]) < line_cutoff:
+        line_dict = {}
+    else:
+        df = pd.DataFrame(
+            Location.objects(
+                platform_id=platform_id, datetime__gt=line_cutoff
+            ).as_pymongo()
+        )
+        line_dict = locations_to_geojson_line(df, line_popup, line_style)
     loc_dict = locations_to_geojson_point(df, point_popup, point_style)
     return line_dict, loc_dict
 

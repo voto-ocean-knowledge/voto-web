@@ -84,10 +84,10 @@ class IndexViewModel(ViewModelBase):
         vessel_json = []
         for vessel_name in vessels:
             line, loc = vessel_loc_to_json(vessel_name)
-            if not line:
-                continue
-            vessel_json.append(loc)
-            vessel_json.append(line)
+            if line:
+                vessel_json.append(line)
+            if loc:
+                vessel_json.append(loc)
         self.vessels = vessel_json
 
 
