@@ -159,10 +159,12 @@ def locations_to_geojson_point(df, popup, style):
 
 
 vessel_links = {
-    "Ocean Nomad": "https://midocean.org/bat/ocean-nomad/",
     "Ocean Rose": "https://midocean.org/bat/ocean-rose/",
     "Ocean Seeker": "https://midocean.org/bat/ocean-seeker/",
-    "Ocean Scout": "https://www.marinetraffic.com/en/ais/details/ships/shipid:9018016/",
+    "Ocean Nomad": "https://midocean.org/bat/ocean-nomad/",
+    "Ocean Scout": "https://midocean.org/bat/ocean-scout/",
+    "Gnarly": "https://midocean.org/bat/gnarly/",
+    "Ocean Child": "https://www.marinetraffic.com/en/ais/details/ships/shipid:8814433",
 }
 
 
@@ -189,7 +191,7 @@ def vessel_loc_to_json(platform_id):
         color = "#858e91"
         point_popup += f" <br><b>Last location:<br>{str(time_diff)[:12]}</b>"
     line_style = {"weight": 4, "opacity": 0.6, "color": color}
-    point_style = {"color": color}
+    point_style = {"color": color, "radius": 8}
     if pd.to_datetime(df["datetime"].values[-1]) < line_cutoff:
         line_dict = {}
     else:

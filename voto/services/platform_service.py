@@ -207,4 +207,12 @@ def get_ballast_table(platform_serial):
 
 
 def list_vessels():
-    return ["Ocean Nomad", "Ocean Rose", "Ocean Seeker", "Ocean Scout"]
+    return [
+        "Ocean Nomad",
+        "Ocean Rose",
+        "Ocean Seeker",
+        "Ocean Scout",
+        "Ocean Focus",
+        "Gnarly",
+        "Ocean Child",
+    ]
