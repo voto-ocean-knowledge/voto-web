@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+
+{% block additional_css %}
+<!-- CSS and javascript for datatables, requires jquery-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+<!-- Setup datatables-->
+<script>
+    $(document).ready( function () {
+        $('#missions_table').DataTable({
+        "paging": false,
+        "order": [[ 0, "desc" ]]
+        });
+    } );
+</script>
+
+
+{% endblock %}
+{% block main_content %}
+
+<div class="mt-4 container-xl glider-list">
+    <h2>Membrane table</h2>
+    <table class="table table-hover" id="missions_table">
+        <thead>
+        <tr>
+            {% for column in tables[0].columns %}
+                <th scope="col">{{ column }}</th>
+            {% endfor %}
+        </tr>
+        </thead>
+        <tbody>
+        {% for row in tables[0].itertuples() %}
+        <tr>
+                {% for cell in row[1:] %}
+                    <td>{{ cell }}</td>
+                {% endfor %}
+        </tr>
+            {%  endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
