@@ -3,6 +3,7 @@ from voto.viewmodels.pilot.pilot_viewmodel import (
     AllPlotsViewModel,
     MonitorViewModel,
     CalibrateViewModel,
+    TablesViewModel,
 )
 from voto.infrastructure.view_modifiers import response
 
@@ -13,6 +14,13 @@ blueprint = flask.Blueprint("pilot", __name__, template_folder="templates")
 @response(template_file="pilot/all_missions.html")
 def all_missions_plots():
     vm = AllPlotsViewModel()
+    return vm.to_dict()
+
+
+@blueprint.route("/pilot/tables")
+@response(template_file="pilot/tables.html")
+def all_tables():
+    vm = TablesViewModel()
     return vm.to_dict()
 
 

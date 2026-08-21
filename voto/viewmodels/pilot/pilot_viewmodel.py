@@ -1,4 +1,5 @@
 from pathlib import Path
+import pandas as pd
 from voto.data.db_classes import GliderMission, SailbuoyMission
 from voto.viewmodels.shared.viewmodelbase import ViewModelBase
 import voto.services.mission_service as mission_service
@@ -82,3 +83,17 @@ class AllPlotsViewModel(ViewModelBase):
             content = f'<img class="img-fluid" src={plot}><br>'
             link = f'<div class="col-lg-6 themed-grid-col"><h2>SB{sailbuoy} M{mission}</h2><a href="/SB{sailbuoy}/M{mission}">{content}</a></div>'
             self.plots_display += link
+
+
+class TablesViewModel(ViewModelBase):
+    def __init__(self):
+        super().__init__()
+        tables_list = list(Path("/data/voto/pilot_tables").glob("*"))
+        tables_list.sort()
+        tables = []
+        for path in tables_list:
+            fn = path.name.split(".")[0]
+            df = pd.read_csv(path, sep=";")
+            tables.append(df)
+
+        self.tables = tables
