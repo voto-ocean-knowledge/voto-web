@@ -11,8 +11,14 @@ from add_profiles import init_db, secrets
 from voto.data.db_classes import Location
 
 
-def add_vessel_from_aisstream(csv_in, nrows=0):
+def add_vessel_from_ais(csv_in, nrows=0, source="unknown"):
     df = pd.read_csv(csv_in)
+    if source == "aishub.net":
+        df["vessel_name"] = df["NAME"].str.title().replace("Geo Focus", "Ocean Focus")
+        df = df.rename(
+            {"LONGITUDE": "longitude", "LATITUDE": "latitude", "TSTAMP": "datetime"},
+            axis=1,
+        )
     if nrows:
         df = df.tail(nrows)
     df["datetime"] = pd.to_datetime(df["datetime"])
@@ -31,11 +37,13 @@ def add_vessel_from_aisstream(csv_in, nrows=0):
         loc.lon = row["longitude"]
         loc.lat = row["latitude"]
         loc.platform_id = row["vessel_name"]
-        loc.source = "aisstream.io"
-        _log.debug(f"Add new location for {row['vessel_name']} {row['datetime']}")
+        loc.source = source
+        _log.debug(
+            f"Add new location from {source} for {row['vessel_name']} {row['datetime']}"
+        )
         loc.save()
         rows_added += 1
-    _log.info(f"added {rows_added} locations")
+    _log.info(f"added {rows_added} locations from {source}")
 
 
 def main():
@@ -46,13 +54,18 @@ def main():
         level=logging.INFO,
         datefmt="%Y-%m-%d %H:%M:%S",
     )
-    ais_file = Path("/data/vessels/aisstream_locs.csv")
-    if not ais_file.exists():
-        _log.error(f"Specified file {ais_file} not found")
-        return
     init_db()
-    _log.info(f"Start adding vessel data from {ais_file}")
-    add_vessel_from_aisstream(ais_file, nrows=100)
+    ais_files = {
+        "aishub.net": Path("/data/vessels/aishub_locs.csv"),
+        "aisstream.io": Path("/data/vessels/aisstream_locs.csv"),
+    }
+    for ais_source, ais_file in ais_files.items():
+        if not ais_file.exists():
+            _log.error(f"Specified file {ais_file} not found")
+            continue
+        _log.info(f"Start adding vessel data from {ais_file}")
+        add_vessel_from_ais(ais_file, nrows=100, source=ais_source)
+
     _log.info("Finished adding vessel data")
 
 
