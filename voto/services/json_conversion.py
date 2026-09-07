@@ -187,11 +187,17 @@ def vessel_loc_to_json(platform_id):
     point_popup = f"<a href='{link}'>{platform_id}</a><br>{timestamp[:10]}<br>{timestamp[11:]} UTC"
     color = "#001489"
     time_diff = now - pd.to_datetime(df["datetime"].values[-1])
-    if time_diff > datetime.timedelta(hours=1):
+    if time_diff > datetime.timedelta(days=3):
         color = "#858e91"
-        point_popup += f" <br><b>Last location:<br>{str(time_diff)[:12]}</b>"
-    line_style = {"weight": 4, "opacity": 0.6, "color": color}
+        point_popup += (
+            f" <br><b>Last location:</b><br>{str(time_diff).split('days')[0]} days"
+        )
+    elif time_diff > datetime.timedelta(hours=1):
+        color = "black"
+        point_popup += f" <br><b>Last location:</b><br>{str(time_diff)[:12]}"
+    line_style = {"weight": 4, "opacity": 0.4, "color": color}
     point_style = {"color": color, "radius": 8}
+    point_popup += f" <br>{df['source'].values[-1]}"
     if pd.to_datetime(df["datetime"].values[-1]) < line_cutoff:
         line_dict = {}
     else:
