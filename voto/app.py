@@ -21,7 +21,7 @@ def main():
 @app.route('/sites/glidertest/<path:path>')
 def send_report(path):
     # Using request args for path will expose you to directory traversal attacks
-    return send_from_directory('/data/plots/glidertest/sites/', path)
+    return send_from_directory('static/img/glider/glidertest/sites/', path)
 
 
 def configure():
