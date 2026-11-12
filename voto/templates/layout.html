@@ -43,34 +43,48 @@
         <li class="nav-item">
           <a class="nav-link" href="/">Live Map</a>
         </li>
-  <li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Missions</a>
-    <ul class="dropdown-menu">
-      <li><a class="dropdown-item" href="/map">Map</a></li>
-        <li><a class="dropdown-item" href="/missions">Table</a></li>
-    </ul>
-  </li>
-          <li class="nav-item">
-              <a class="nav-link" href="/fleet">Fleet</a>
+
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Missions</a>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="/map">Map</a></li>
+                <li><a class="dropdown-item" href="/missions">Missions Table</a></li>
+                <li><a class="dropdown-item" href="/fleet">Fleet</a></li>
+            </ul>
           </li>
-          <li class="nav-item">
-              <a class="nav-link" href="/data">Data</a>
+
+         <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Observatories</a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" target="_blank" href="/sites/glidertest/SAMBA_01/index.html">SAMBA_01 Skagerak</a></li>
+              <li><a class="dropdown-item" target="_blank" href="/sites/glidertest/SAMBA_02/index.html">SAMBA_02 Bornholm</a></li>
+              <li><a class="dropdown-item" target="_blank" href="/sites/glidertest/SAMBA_03/index.html">SAMBA_03 Eastern Gotland </a></li>
+              <li><a class="dropdown-item" target="_blank" href="/sites/glidertest/SAMBA_04/index.html">SAMBA_04 Western Gotland</a></li>
+              <li><a class="dropdown-item" target="_blank" href="/sites/glidertest/SAMBA_05/index.html">SAMBA_05 Åland Sea</a></li>
+              <li><a class="dropdown-item" target="_blank" href="/sites/glidertest/SAMBA_06/index.html">SAMBA_06 Central Gotland</a></li>
+            </ul>
           </li>
-          <li class="nav-item">
-              <a class="nav-link" href="/stats">Stats</a>
-          </li>
+
+
           <li class="nav-item">
               <a class="nav-link" href="/dashboard">Dashboard</a>
           </li>
-           <li class="nav-item dropdown">
+
+          <li class="nav-item dropdown">
     <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Projects</a>
     <ul class="dropdown-menu">
       <li><a class="dropdown-item" href="/projects">Projects map</a></li>
        <div class="dropdown-divider"></div>
-      <li><a class="dropdown-item" href="/projects/skamix">SkaMix</a></li>
-      <li><a class="dropdown-item" href="/projects/skamix2">SkaMix2</a></li>
+      <li><a class="dropdown-item" href="/projects/skamix2">SkaMix</a></li>
     </ul>
   </li>
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">About</a>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="/data">Data</a></li>
+                <li><a class="dropdown-item" href="/stats">Stats</a></li>
+            </ul>
+          </li>
 
           {% block extra_nav %}{% endblock %}
           {% if user_id %}

@@ -2,6 +2,7 @@ import os
 import sys
 import logging
 from flask import Flask
+from flask import send_from_directory
 
 _log = logging.getLogger(__name__)
 
@@ -16,6 +17,11 @@ app = Flask(__name__)
 def main():
     configure()
     app.run(debug=True, port=5006)
+
+@app.route('/sites/glidertest/<path:path>')
+def send_report(path):
+    # Using request args for path will expose you to directory traversal attacks
+    return send_from_directory('/data/plots/glidertest/sites/', path)
 
 
 def configure():
